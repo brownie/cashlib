@@ -1,0 +1,213 @@
+\newcommand{\myvar}[1]{{{\mathit{#1}}}}
+\newcommand{\block}{\myvar{block}}
+\newcommand{\chunks}{\myvar{chunk}}
+\newcommand{\proofs}{\myvar{proof}}
+\newcommand{\ctext}{\myvar{ctext}}
+\newcommand{\chash}{\myvar{chash}}
+\newcommand{\bhash}{\myvar{bhash}}
+\newcommand{\comm}{\myvar{comm}}
+\newcommand{\coinp}{\ensuremath{\mathit{coin}'}\xspace}
+\newcommand{\timeout}{\myvar{timeout}}
+\newcommand{\mendorsement}{\myvar{endorsement}}
+\newcommand{\data}{\myvar{data}}
+\newcommand{\contract}{\myvar{contract}}
+\newcommand{\contractp}{\myvar{contract}'}
+\newcommand{\escrow}{\myvar{escrow}}
+\newcommand{\database}{\myvar{DB}}
+\newcommand{\mproof}{\myvar{MProof}}
+\newcommand{\merkle}{\myvar{MHash}}
+\newcommand{\merkProve}{\myvar{MProve}}
+\newcommand{\merkproof}{\myvar{MProof}}
+\newcommand{\merkVer}{\myvar{MVerify}}
+\newcommand{\chunk}{\myvar{chunk}}
+\newcommand{\ignore}[1]{}
+
+
+% keys
+\newcommand{\skAlice}{\ensuremath{sk_{\mathcal{A}}}}
+\newcommand{\pkAlice}{\ensuremath{pk_{\mathcal{A}}}}
+\newcommand{\pkBob}{\ensuremath{pk_{\mathcal{B}}}}
+\newcommand{\skBob}{\ensuremath{sk_{\mathcal{B}}}}
+\newcommand{\pkTTP}{\ensuremath{pk_{Arbiter}}}
+
+\subsection{Buy}
+Let Alice be the \emph{buyer} and Bob be the \emph{seller}.
+As a precondition, the
+protocol assumes that Alice already knows $\bhash$, which is the root of the Merkle hash tree computed on the block $\block$ that Alice wants to buy.
+
+\subsubsection{Merkle tree}
+First, we give the procedure $\merkle(h,\block,\ell)$ to compute
+$\bhash$, the Merkle hash function that outputs the root of the
+depth-$\ell$ Merkle tree of a given $\block$ with hash function $h$.
+Next, we give (1) the procedure to compute the proof
+$\merkProve((h,\block,\ell),i)$ that a particular value 
+is the $i^\mathit{th}$ leaf of the Merkle hash tree of which
+$\bhash$ is the root; the procedure 
+$\merkVer((h,\ell),(\bhash,i,\chunk))$ to verify the proof $\mproof$ that
+ the value
+$\chunk$ is the $i^\mathit{th}$ leaf of the Merkle hash tree of which
+$\bhash$ is the root.
+
+
+First, let us explain the idea of the $\merkle$ procedure.  Consider a rooted
+binary tree with $2^\ell$ leaves (\emph{i.e.} it is a binary tree of
+height $\ell$).  Associated with every node the tree, there is the
+address $a$ of the node.  Specifically, the label $a$ associated with
+the root node is the empty string $\varepsilon$. The label of a left
+(resp. right) child is derived by concatenating $0$ (resp., $1$) to
+the label of the parent node. Thus, the label $a$ associated with the
+$i^{\mathit{th}}$ leaf is the integer $i$ written in binary.  Stored
+at a node labeled with $a$, is a value $v_a$.  In a Merkle tree,
+stored at each leaf $0\leq a\leq 2^\ell-1$ is the value $v_a =
+h(chunk_a)$, where $\chunk_a$ is the $a^\mathit{th}$ chunk of the block; 
+and stored at every internal node $0\leq a \leq 2^i-1$ at
+depth $i\geq 1$ is the value $v_a=h(v_{a||0}||v_{a||1})$.  Finally,
+the value corresponding to the root node is $v_\varepsilon =
+h(v_0||v_1)$.  The algorithm $\merkle$ outputs this value.
+
+\begin{algorithm}[H]\label{alg:merkle}
+\SetKwComment{Comment}{}{}
+\SetKwInput{Pre}{Pre-conditions}
+\SetKwInput{Post}{Post-conditions}
+\dontprintsemicolon
+
+\KwIn{A collision-resistant hash function $h~:~\{0,1\}^*\mapsto \{0,1\}^\hashLength$, the data block $\block$, the desired tree height $\ell$.}
+\Pre{None.}
+\KwOut{The value $\bhash$.}
+\Post{None.}
+\BlankLine
+
+
+
+\Indp
+  If $\ell=0$, output $h(\block)$. \;
+  Otherwise, divide the block $\block$ into $\block_0$ and $\block_1$, $2$ strings of approximately equal byte lengths (this has to be done in a deterministic fashion so that running twice on same input gives same results) and output $h(\merkle(h,\block_0,\ell-1)||\merkle(h,\block_1,\ell-1))$\;
+\Indm
+
+\caption{$\merkle$: Generating a Merkle hash tree.}
+\end{algorithm}
+
+
+To prove that $\chunk$ is the $i^\mathit{th}$ chunk of the block
+represented by $\bhash=\merkle(\block)$, reveal the values $v_{a_j}$
+where for $1 \leq j \leq \ell$, the label $a_j$ is obtained by taking
+the first $j-1$ bits of the binary representation of $i$, and
+concatenating to them the negation of the $j^\mathit{th}$ bit. (For
+example, if $i = 0101$, then $a_1 = 1$, $a_2=00$, $a_3=011$ and $a_4 =
+0100$.)  In the Merkle tree, the node $a_j$ will be the sibling of the
+$j^\mathit{th}$ node on the path from the root to the chunk in
+question.  The procedure for doing this is as follows:
+
+
+\begin{algorithm}[H]\label{alg:merkleproof}
+\SetKwComment{Comment}{}{}
+\SetKwInput{Pre}{Pre-conditions}
+\SetKwInput{Post}{Post-conditions}
+\dontprintsemicolon
+
+\KwIn{A collision-resistant hash function $h~:~\{0,1\}^*\mapsto \{0,1\}^\hashLength$, the data block $\block$, the desired tree height $\ell$; the index $i$.}
+\Pre{$0\leq i < 2^\ell$}
+\KwOut{The value $\merkproof$.}
+\Post{None.}
+\BlankLine
+
+
+\Indp
+  If $\ell=0$, return $\block$. \;
+  Otherwise, divide the block $\block$ into $\block_0$ and $\block_1$, $2$ strings of approximately equal byte lengths (this has to be done in a deterministic fashion, the same as what is done by the algorithm $\merkle$). \;
+  If $i\geq 2^{\ell-1}$, return $(\merkle(h,\block_0,\ell-1),\merkProve((h,\block_1,\ell-1),i-2^{\ell-1}))$.\;
+  Else return $(\merkle(h,\block_1,\ell-1),\merkProve((h,\block_0,\ell-1),i))$.\;
+\Indm
+
+\caption{Generating the proof $\merkproof=(v_1,\ldots,v_j,\chunk)$ that $\chunk$ is the $i^\mathit{th}$ leaf of the Merkle tree.}
+\end{algorithm}
+
+To verify that $(v_1,...,v_\ell)$ is a valid proof that $\chunk$ is the $i^\mathit{th}$ chunk of $\block$
+associated with $\bhash$, 
+we recompute the labels $a_j$ (as above).  We know that $v_j = v_{a_j}$ is the value that should be associated with node labelled
+$a_j$.  Let $i=i_1i_2\ldots i_\ell$, \emph{i.e.} $i_j$ is the $j^\mathit{th}$
+bit of the $\ell$-bit binary representation of $i$.
+Let $b_j = i_1\ldots i_j$ be the $j$-bit prefix of $i$.
+First, we know that $v_i = h(\chunks)$.
+For each $j$, $\ell-1\geq j \geq 0$, compute $v_{b_j}=h(v_{b_j||0}||v_{b_j||1})$.
+We can do it because one of $(v_{b_j||0},v_{b_j||1})$ is $v_{a_{j+1}}$,
+and the other one is computed in the previous step.
+Finally, verify that $v_\varepsilon = \bhash$.  The pseudocode for this procedure is as follows:
+
+\begin{algorithm}[H]\label{alg:merkleverify}
+\SetKwComment{Comment}{}{}
+\SetKwInput{Pre}{Pre-conditions}
+\SetKwInput{Post}{Post-conditions}
+\dontprintsemicolon
+
+\KwIn{A collision-resistant hash function $h~:~\{0,1\}^*\mapsto \{0,1\}^\hashLength$, 
+the value $\bhash$, the desired tree height $\ell$; the proof $\merkproof$, the index $i$.}
+\Pre{$0\leq i < 2^\ell$}
+\KwOut{Accept or reject.}
+\Post{None.}
+\BlankLine
+
+TO BE WRITTEN
+
+\caption{Verifying the proof $\merkproof=(v_1,\ldots,v_j,\chunk)$ that $\chunk$ is the $i^\mathit{th}$ leaf of the Merkle tree.}
+\end{algorithm}
+
+
+If two conflicting proofs can be constructed (\emph{i.e.} for
+$\chunks\neq\chunks'$, there are proofs that
+each of them is the $i^\mathit{th}$ chunk of $\block$
+associated with $\bhash$), then a collision in $h$
+is found, contradicting the assumption that $h$ is collision-resistant. 
+
+\subsubsection{The Buy protocol}
+We present our protocol that lets the Buyer buy a file block from the Seller.
+Before the start of the protocol, the Buyer has (1) $\bhash = \merkle(\block)$;
+and (2) has withdrawn a wallet from the Bank and is ready to create unendorsed coins together with their endorsements.
+from a trusted authority (\emph{i.e.} tracker).  Alice and Bob will agree on a
+$\timeout$ by when Bob must provide Alice with the block.  The protocol
+works as follows:
+
+\ignore{
+\begin{enumerate}
+
+\item
+Bob chooses a symmetric key $K$ and sends $\ctext =\break \Encrypt{K}{\block}$ to Alice.
+
+\item 
+  Alice constructs an endorsed e-coin $(\coinp,\mendorsement)$.
+  Alice calculates $\chash = \merkle(h,\ctext,\ell)$,
+  chooses a random value $r$ and calculates the exchange ID
+    $v = h(r)$.
+  Alice sets $\contract = (\bhash,\chash,\timeout,\coinp,v)$.
+  She escrows the $\mendorsement$ under the arbiter's public-key:
+  $\escrow = \TVEncrypt{Arbiter}{\mendorsement}{\contract}$.
+  Alice sends Bob $(\coinp, \contract, \escrow)$.
+
+\item
+Bob verifies that $(\coinp, \contract, \escrow)$ is formed correctly. If he is s
+atisfied, he establishes a secure connection to Alice using standard techniques 
+and sends the key $K$.  Otherwise, Bob terminates.
+
+%\item[*]$\quad B \rightarrow A : \quad K$
+
+\item %4.
+If Alice receives a $K$ that lets her decrypt
+  $\ctext$ correctly before $\timeout$, she responds with
+  $\mendorsement$. Otherwise, Alice waits until $\timeout$ and then
+  calls $\AliceResolve(r)$ on the arbiter, as in 
+  Algorithm~\ref{sec:protocol}.\ref{alg_AliceResolve}.
+
+%\item[*]$\quad A \rightarrow B : \quad \mendorsement$
+
+\item %5.
+If Bob does not receive a correct $\mendorsement$ 
+%that lets him deposit $\coinp$
+  before $\timeout$, he calls $\BobResolve(K, \escrow, \contract)$
+  on the arbiter, as 
+  in Algorithm~\ref{sec:protocol}.\ref{alg_BobResolve}.
+\end{compactenum}
+
+\subsubsection{The buyer's resolution algorithm}
+\subsubsection{The seller's resolution algorithm}
+\subsubsection{The arbiter's algorithm}
+}

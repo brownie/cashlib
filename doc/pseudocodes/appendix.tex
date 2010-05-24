@@ -1,0 +1,26 @@
+\section{Common Functionalities}
+
+\textsc{Randomization}:\\
+
+\begin{algorithm}[H]\label{randomize}
+\linesnumbered
+\SetKwComment{Comment}{}{}
+\SetKwInput{Pre}{Pre-conditions}
+\dontprintsemicolon
+
+\KwIn{Definition of the group, number of random elements $k$, number of fixed elements $l$, bases $g_1,\ldots,g_{k+l-1},h$, fixed elements $x_1,\ldots,x_l$ if any.}
+\Pre{$l < k$, $k \geq 1$, $l \geq 0$}
+\KwOut{random element $R$, random exponenets $openR$}
+\BlankLine
+
+\Comment{Randomize} \;
+\Indp
+  Pick $k-1$ random numbers $s_i$ from the domain of randomness $D_R$. \;
+  Pick another random number $t$ from the domain of randomness $D_R$. \;
+  Compute $R = [\prod_{i=1}^{l} g_i^{x_i}] [\prod_{i=1}^{k-1} g_{l+i}^{s_i}] h^{t}$ using group operations. \;
+  Output the random group element $R$ and random exponents $openR = s_1,\ldots,s_{k-1},t$. \;
+\Indm
+
+\caption{Procedure to generate a random group element with associated random exponents. Call this procedure \textbf{Randomize}.}
+\end{algorithm}
+ 

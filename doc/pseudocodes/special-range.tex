@@ -1,0 +1,14 @@
+\subsection{Proof that a committed value lies within an interval [mean-delta,mean+delta]}
+
+The range proof given by the Range protocol can be made almost twice as efficient if the interval we want to prove has a special type: $[mean-delta,mean+delta]$ \cite{chlCOMPACT}. Call this protocol \textbf{SpecialRange}, which should be used instead of Range whenever possible, even if not stated explicitly. Note that, $x$ is in that interval iff $lo^2 - (x-mean)^2 \geq 0$. As before, the interval (and hence $lo,hi$) are publicly known. Let $A = delta^2 - (x-mean)^2 = delta^2 - mean^2 + 2*mean*x - x^2$.
+
+For ease of notation, let $D = g_{1}^{delta^2 - mean^2}$, $E = (g_{1}^{2hi} C_{x}^{-1})$. A commitment $F$ to $A$ can be computed as $D * E^x * h^{r_A}$. Note that the Prover can compute this, but the Verifier can only compute $D$ and $E$.
+
+
+The Verifier knows a commitment $C_x$ to $x$, the interval (meaning $lo,hi$), and the RSA group definition, and can compute $D$ and $E$. The Prover, in addition to these, also knows the opening $open_x = x,r_x$ to $C_x$.
+
+
+\begin{enumerate}
+ \item The Prover computes $F = D * E^x * h^{r_A} = g_{1}^{A} h^{r'_A}$ and proves that $F$ and $C_x$ are commitments to the same number under the bases $D,E,h$ and $1,g,h$ using the PoEoDLR protocol.
+ \item The Prover runs the Non-Negative protocol for $A$ using $F$ as the commitment to $A$, where $r'_A = r_A - x r_x$.
+\end{enumerate}

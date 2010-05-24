@@ -1,0 +1,190 @@
+\section{Verifiable Encryption}
+We will be using Caminisch-Shoup verifiable encryption \cite{csVE}. This will later be the verifiable escrow method used in fair exchange.
+
+\textsc{Assumptions}:\\
+The security of the scheme relies on Strong RSA assumption, Paillier's Decision Composite Residuosity assumption \cite{paillierENC}, and existence of a collision-resistant family of hash functions.
+
+
+\textsc{Parameters}:\\
+The parameter $m$ denotes the number of messages that can be verifiably encrypted at once. For Endorsed E-Cash, we need $m=3$.
+
+
+
+\textsc{Setup}:\\
+The key generation of CS verifiable encryption uses two runs of special RSA group generation as in Algorithm \ref{setupRSA}. The important differences are clearly identified below:
+\begin{itemize}
+\item Let $N$ be the modulus returned by the first special RSA group generation. The generators will be picked in a completely different way. In fact, the group that will be in use will be a subgroup of $Z_{N^2}^{*}$ instead of $Z_{N}^{*}$.
+\item Pick a random number $f'$ from $Z_{N^2}^{*}$. Compute $f = f'^{2n} \mod N^2$.
+\item Pick random numbers $x_1,\ldots,x_m,y,z$ from the interval $(0,N^2 / 4)$. Compute $a_i = f^{x_i} \mod N^2$ for $1 \leq i \leq m$, $d = f^{y} \mod N^2$, $e = f^{z} \mod N^2$.
+\item Compute $b = (1+N) \mod N^2$. Notice that $b$ is an element of order $N$ in $Z_{N^2}^{*}$.
+\\
+\item Let the second special RSA group generation return a group with modulus $n$ and generators $g_1,\ldots,g_m,h$.
+\\
+\item Also, pick a key $\hk$ as the key for a keyed hash function. For simplicity in presentation below, we will omit the key in hashes, but it will be used for every hash calculation.
+\\
+\item The public key (\ie encryption and verification key) is composed of all public parts of the groups, and the hash function key: $VEPK = N,a_1,\ldots,a_m,b,d,e,f,n,g_1,\ldots,g_m,h,\hk$.
+\item The secret key (\ie decryption key) is the secret parts of the groups $VESK = P,Q,x_1,\ldots,x_m,y,z,p,q$ such that $N=PQ$ and $n=pq$.
+\end{itemize}
+
+
+The absolute value algorithm below will be used in the verifiable encryption scheme a lot.
+
+
+\begin{algorithm}[H]\label{absVE}
+\SetKwComment{Comment}{}{}
+\SetKwInput{Pre}{Pre-conditions}
+\dontprintsemicolon
+
+\KwIn{$x$ in range $(0,N^2)$}
+\Pre{$x$ needs to be in range $(0,N^2)$}
+\KwOut{$\abs(x)$}
+\BlankLine
+
+\Comment{abs} \;
+\Indp
+  \If{$x > N^2 / 2$}
+    {Output $(N^2 - x) \mod N^2$ \;}
+  \Else
+    {Output $x \mod N^2$ \;}
+\Indm
+
+\caption{Absolute Value procedure for Camenisch-Shoup verifiable encryption scheme.}
+\end{algorithm}
+
+
+
+
+
+\subsection{Encrypt}
+The encryption procedure creates a ciphertext. To turn it into verifiable encryption, we will need some specialized non-interactive zero knowledge proofs. Just as we need for fair exchange, this is a labeled encryption scheme \cite{LABELED-ENC}. The \textit{label} is also known as \textit{tag}, or \textit{contract}.
+
+
+
+\begin{algorithm}[H]\label{encryptVE}
+\SetKwComment{Comment}{}{}
+\SetKwInput{Pre}{Pre-conditions}
+\SetKwInput{Post}{Post-conditions}
+\dontprintsemicolon
+
+\KwIn{Verifiable encryption public key $VEPK = N,a_1,\ldots,a_m,b,d,e,f,n,g_1,\ldots,g_m,h,\hk$, messages to be verifiably encrypted $x_1,\ldots,x_m$, a label $L$}
+%\Pre{}
+\KwOut{Ciphertext $u_1,\ldots,u_m,v,w$.}
+%\Post{}
+\BlankLine
+
+\Comment{Encrypt} \;
+\Indp
+  Pick a random number $r$ from the interval $(0,N / 4)$. \;
+  \For{$i$ : $1..m$}
+    {Compute $u_i = b^{x_i} * a_{i}^{r} \mod N^2$. \;}
+  Compute $v = f^r \mod N^2$ \;
+  Compute $w = \abs([d * e^{\hash(u_1 \cc \ldots \cc u_m \cc v \cc L)}]^r \mod N^2)$ \;
+  Output $u_1,\ldots,u_m,v,w$. \;
+\Indm
+
+\caption{Encryption procedure for Camenisch-Shoup verifiable encryption scheme. This procedure is run by the Encryptor. This is a sub-procedure; it's not verifiable yet.}
+\end{algorithm}
+
+
+
+
+\subsection{Verifiably Encrypt}
+We will now provide a conversion from regular encryption to verifiable encryption for Camenisch-Shoup verifiable encryption scheme. This will involve non-interactive zero knowledge proofs.
+
+This verification can be used to prove correct encryption of discrete logarithms. When we consider Endorsed E-Cash, the Prover will verifiably encrypt $x_1,x_2,r_y$ such that $y = g_1^{x_1} * g_2^{x_2} * f^{r_y}$ in the group chosen by the Endorsed E-Cash setup. Take a note that it is a different group than the ones used in verifiable encryption here. $X$ below will be $y$ of the Endorsed E-Cash.
+
+
+\begin{algorithm}[H]\label{verifiablyEncryptVE}
+\SetKwComment{Comment}{}{}
+\SetKwInput{Pre}{Pre-conditions}
+\SetKwInput{Post}{Post-conditions}
+\dontprintsemicolon
+
+\KwIn{Verifiable encryption public key $VEPK = N,a_1,\ldots,a_m,b,d,e,f,n,g_1,\ldots,g_m,h,\hk$, commitment $X$ to all messages $x_1,\ldots,x_m$ (or a commitment $X_i$ to each one of them), a label $L$}
+%\Pre{}
+\KwOut{Ciphertext and its proof $u_1,\ldots,u_m,v,w,X',\pi_{VE}$.}
+%\Post{}
+\BlankLine
+
+\Comment{Verifiably Encrypt} \;
+\Indp
+  Get the ciphertext $u_1,\ldots,u_m,v,w$ from the Encrypt function in Algorithm \ref{encryptVE}, along with the randomness $r$ used in the encryption. \;
+  Pick a random number $s$ from the interval $(0,N / 4)$. \;
+  Compute a Fujisaki-Okamoto commitment $X'$ to $x_1,\ldots,x_m$ using the randomness $s$ in the group defined by $n,g_1,\ldots,g_m,h$ (the second RSA group generated for verifiable encryption purposes). \;
+  Prove knowledge of $r,s,x_1,\ldots,x_m$ such that $v^2 = f^{2r} \mod N^2$, $w^2 = [d * e^{\hash(u_1 \cc \ldots \cc u_m \cc v \cc L)}]^{2r} \mod N^2$, and that each $u_{i}^2 = b^{2 x_i} * a_{i}^{2r} \mod N^2$, and that each $x_i$ corresponds to the one in $X'$ and $X$, and that the range of each $x_i$ is $(-N/2,N/2)$ (SpecialRange). Call this proof $\pi_{VE}$. \;
+  Output $u_1,\ldots,u_m,v,w,X',\pi_{VE}$. \;
+\Indm
+
+\caption{Verifiable Encryption procedure for Camenisch-Shoup verifiable encryption scheme. This procedure is run by the Encryptor/Prover.}
+\end{algorithm}
+
+
+
+Any party with the verifiable encryption public key can verify the encryption.
+
+
+
+\begin{algorithm}[H]\label{verifyVE}
+\SetKwComment{Comment}{}{}
+\SetKwInput{Pre}{Pre-conditions}
+\SetKwInput{Post}{Post-conditions}
+\dontprintsemicolon
+
+\KwIn{Verifiable encryption public key $VEPK = N,a_1,\ldots,a_m,b,d,e,f,n,g_1,\ldots,g_m,h,\hk$, commitment $X$ (or commitments $X_1,\ldots,X_m$), a label $L$, ciphertext and its proof $u_1,\ldots,u_m,v,w,X',\pi_{VE}$}
+%\Pre{}
+\KwOut{\accept or \reject.}
+%\Post{}
+\BlankLine
+
+\Comment{Verify} \;
+\Indp
+  Verify $\pi_{VE}$. If verification fails, output \reject. \;
+  \If{$\abs(w) = w \mod N^2$}
+    {Output \accept. \;}
+  \Else
+    {Output \reject. \;}
+\Indm
+
+\caption{Verification procedure for Camenisch-Shoup verifiable encryption scheme. This procedure is run by the Verifier.}
+\end{algorithm}
+
+
+
+
+
+\subsection{Decrypt}
+Only a party equipped with the correct secret key can decrypt. In the fair exchange, this party will be the Arbiter.
+
+
+\begin{algorithm}[H]\label{decryptVE}
+\SetKwComment{Comment}{}{}
+\SetKwInput{Pre}{Pre-conditions}
+\SetKwInput{Post}{Post-conditions}
+\dontprintsemicolon
+
+\KwIn{Verifiable encryption public key $VEPK = N,a_1,\ldots,a_m,b,d,e,f,n,g_1,\ldots,g_m,h,\hk$, associated secret key $VESK = P,Q,x_1,\ldots,x_m,y,z,p,q$, a label $L$, ciphertext $u_1,\ldots,u_m,v,w$}
+\KwOut{Plaintext $m_1,\ldots,m_m$ or \error.}
+%\Post{}
+\BlankLine
+
+\Comment{Decrypt} \;
+\Indp
+  \If{$\abs(w) \neq w \mod N^2$ OR $v^{y + z * \hash(u_1 \cc \ldots \cc u_m \cc v \cc L)} \neq w^2 \mod N^2$}
+    {Output \error. \;}
+  Compute $t = 2^{-1} \mod N$. \;
+  \For{$i$ : $1..m$}
+    {Compute $m'_i = (u_i / v^{x_i})^{2t} \mod N^2$. \;
+     Set $m_i = (m'_i - 1) / N \mod N^2$. \;
+     \If{$m_i$ is not in range $(0,N)$}
+       {Output \error. \;}}
+  Output $m_1,\ldots,m_m$ \;
+\Indm
+
+\caption{Decryption procedure for Camenisch-Shoup verifiable encryption scheme. This procedure is run by the Decryptor/Arbiter.}
+\end{algorithm}
+
+
+
+
+\subsection{Prove Decryption}
+This part is complicated, and for now, will not be employed since the Arbiter in the fair exchange will be a trusted entity.

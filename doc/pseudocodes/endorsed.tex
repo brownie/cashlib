@@ -1,0 +1,121 @@
+\subsection{Endorsed E-Cash}
+The Withdraw, Deposit, and Identify Double-Spenders protocols of Endorsed E-Cash \cite{clmENDORSED} are the same as the Compact E-Cash. It makes different assumptions, though.
+
+\textsc{Assumptions}:\\
+Endorsed E-cash works in the Random Oracle model and makes Discrete Logarithm and Strong RSA assumptions, and also the following assumptions:
+
+Diffie-Hellman Assumption:
+
+q-Diffie-Hellman Inversion Assumption:
+
+
+\subsubsection{Spend}
+The only different part of the Endorsed E-Cash is how to spend a coin. 
+The spend algorithm below is run by the user, who, on input a valid
+set of values for $(\info,\ses)$, outputs the unendorsed coin and its
+endorsment.
+
+\begin{algorithm}[H]\label{spendEndorsed}
+\SetKwComment{Comment}{}{}
+\SetKwInput{Pre}{Pre-conditions}
+\SetKwInput{Post}{Post-conditions}
+\dontprintsemicolon
+
+\KwIn{The User, as well as the Merchant who will ultimately receive the coin, know the definition of the prime-order group, and the Bank's CL signature public key $CLPK$. The User knows her wallet $sk_u,s,t,W,\sigma(sk_u,s,t,W)$, and the index $J$. Both parties know $R = \hash(\info,\ses)$.}
+\Pre{The User must have withdrawn a wallet from the Bank, and the wallet must contain an unused coin. Furthermore, $R$ must be computed as directed above.}
+\KwOut{The unendorsed coin is $\mathit{uecoin} = (B,C,D,W,S,T,J,\pi_{CL},\pi_{ST})$.  The corresponding endorsement is $\mathit{endorsement}= (x_1,x_2,r_y)$}
+\BlankLine
+
+\Comment{Spend Endorsed E-Cash} \;
+\Indp
+  The User creates Pedersen commitments $B$ to $sk_u$, $C$ to $s$, and $D$ to $t$. The User prepares a non-interactive proof of knowledge of a CL signature on these values, where $W$ is a public value. Call this proof $\pi_{CL}$. \;
+  The User picks random $x_1,x_2,r_y$ from $Z_{\primeOrder}^*$. The User sets $y = g_1^{x_1} * g_2^{x_2} * f^{r_y}$; i.e., $y$ is a Pedersen commitment to $(x_1,x_2,x_3)$. (The bases used for $y$ are also generators of the prime-order group, but they are different generators than used for $B,C,D,S,T$.) \;
+  The User computes $S = g^{1/(s+J)} * g^{x_1}$ and $T = pk_u * g^{R/(t+J)} * g^{x_2}$. \;
+  The User prepares a non-interactive proof that $S,T,E$ are formed
+  correctly. This is done by proving the knowledge of
+  $s,t,sk_u,r_B,\alpha,r_1,\beta,r_2,x_1,x_2,r_y$ such that $y =
+  g_1^{x_1} * g_2^{x_2} * f^{r_y}$, $B = g^{sk_u} * h^{r_B}$, $g =
+  (g^J * C)^{\alpha} h^{r_1}$ (the Prover knows $r_1 = - r_C / (s+J)
+  \mod \primeOrder$), $g = (g^J * D)^{\beta} h^{r_2}$ (the Prover
+  knows $r_2 = - r_D / (t+J) \mod \primeOrder$), $S = g^{\alpha} *
+  g^{x_1}$, $T = g^{sk_u} * (g^R)^{\beta} * g^{x_2}$. Call this proof
+  $\pi_{ST}$. \;
+
+  The unendorsed coin is $\mathit{uecoin}=(B,C,D,W,S,T,J,\pi_{CL},\pi_{ST},y)$. \;
+  The endorsement is $(x_1,x_2,r_y)$.\;
+\Indm
+
+\caption{The algorithm whereby a user generates an unendorsed coin together with a valid endorsement}
+\end{algorithm}
+
+
+
+\begin{algorithm}[H]\label{verifyUnEndorsed}
+\SetKwComment{Comment}{}{}
+\SetKwInput{Pre}{Pre-conditions}
+\SetKwInput{Post}{Post-conditions}
+\dontprintsemicolon
+
+\KwIn{The input is a purported unendorsed coin $\mathit{uecoin} = (B,C,D,W,S,T,J,\pi_{CL},\pi_{ST})$.}
+\Pre{The Merchant verifying the coin knows the definition of the prime-order group, the Bank's CL signature public key $CLPK$, and the values $\info$, $\ses$ and $R = \hash(\info,\ses)$.}
+\KwOut{Accept or reject}
+\BlankLine
+\Indp
+  To verify that $\mathit{uecoin}$ is a valid unendorsed coin for a given $R=\hash(\info,\ses)$, check that (1) the coin index is correct: $0 \leq J < W$; (2) the proof of knowledge of the CL signature $\pi_{CL}$ verifies; (3) $S,T,y$ are correct under the proof $\pi_{ST}$. If all three checks pass, output Accept. Else, output Reject.
+\Indm
+
+\caption{The algorithm to verify an unendorsed coin.}
+\end{algorithm}
+
+\begin{algorithm}[H]\label{verifyEndorsed}
+\SetKwComment{Comment}{}{}
+\SetKwInput{Pre}{Pre-conditions}
+\SetKwInput{Post}{Post-conditions}
+\dontprintsemicolon
+
+\KwIn{The input is an unendorsed coin $\mathit{uecoin} = (B,C,D,W,S,T,J,\pi_{CL},\pi_{ST})$ and an endorsement $\mathit{endorsement}=(x_1,x_2,r_y)$.}
+\Pre{The Merchant verifying the coin knows the definition of the prime-order group; the unendorsed coin $\mathit{uecoin}$ has already been verified using Algorithm~\ref{verifyUnEndorsed}.}
+\KwOut{Accept or reject}
+\BlankLine
+\Indp
+Check that $y$ (from the unendorsed coin) is as follows: $y=g_1^{x_1}g_2^{x_2}f^{r_y}$. If so, accept, else, reject.
+\Indm
+
+\caption{The algorithm to verify the endorsement for a given unendorsed coin.}
+\end{algorithm}
+
+
+The Deposit protocol consists of doing Algorithms \ref{verifyUnEndorsed} and \ref{verifyEndorsed} together. Notice that, the resulting coin is the same as in the Compact E-Cash, except that the proofs $\pi_{CL},\pi_{ST}$ are slightly different, and that we should use $S' = S / g^{x_1}, T' = T / g^{x_2}$ for double-spending detection and identification purposes.
+
+The Withdraw protocol stays the same since no extra information needs to be stored in the wallet for the Endorsed E-Cash. The usefulness of Endorsed E-Cash will be clear once we see Verifiable Encryption and Fair Exchange protocols.
+
+
+
+
+
+\subsection{E-Cash FAQ}
+Q: Why do we have Algorithm \ref{randomizeTogether} before the withdrawal to randomize $s$?
+
+\noindent A: If multiple users use the same $s$, then their coins will have identical $S$ values. This means, to identify a double-spender, the Bank needs to check all $2$-combinations of those coins. Therefore, malicious users might mount a denial-of-service attack on the Bank this way.
+
+
+Q: Why does the user pick the wallet size $W$ from only a limited list of wallet sizes?
+
+\noindent A: The problem occurs since for efficiency we send both $W$ and the coin index $J$ in clear when spending. Consider a wallet size of $1$ million coins. Only very few people will have such a wallet, and once anyone sees a coin index that's very large, the spender can be identified as one of the rich guys. A fully flexible and secure version would commit to $W$ and $J$ and change the proofs accordingly. A range proof that proves a value is in a committed range (as opposed to a public range) is also required.
+
+
+Q: Why do we need Endorsed E-Cash?
+
+\noindent A: The values $x_1,x_2,r_y$ can be easily used in verifiable encryption to prove that $y$, and hence the coin is formed correctly. Then, it is very easy and fast to fairly exchange $x_1,x_2,r_y$ with the material being bought.
+
+
+Q: What is the deal with the randomness $R$ in the coin?
+
+\noindent A: We use $R = \hash(\ses,\info)$ for mainly two reasons. Use of $\ses$ ensures that no one other than the User and Merchant knows that value, and thus prevents man-in-the-middle attacks. The use of $\info$ ensures that the Merchant uses different $R$ values for each transaction, which means all the coins he receives will be honored, and so the Bank can catch double-spenders.
+
+Note that other types of contracts can also be used. What is required from a contract is that it is different for each transaction. This benefits the Merchant and the Bank, but not the User who wants to cheat. Therefore, the Merchant needs to input enough randomness (in the form of $\info$ above) into the contract. The other use of the contract prevents man-in-the-middle attacks. Consider the case above where $\ses$ is not used and only $\info$ is used. Then, an attacker can just forward the coin he gets from the User to the Merchant. One possible problem of this is that the man-in-the-middle gets the service in effect ``for free''. This may not present a problem in all the scenarios, but we choose to be on the safe side. With $\ses$ in use, the connections of the attacker to the User and the Merchant will be distinguished.
+
+
+Q: We can identify the public keys of double-spenders, but can we do more?
+
+\noindent A: Another version of e-cash is available where the Bank gets enough information to trace all the coins spent from a wallet of a double-spender. The idea is that during withdrawal, the Bank learns a verifiable encryption of the wallet secret under some other secret. Later on, when double-spending occurs, the Bank learns the secret encryption key similar to the way he learns the User's public key. Using the wallet decrypted secret, the Bank can create a blacklist for wallets/coins that the merchants should not accept. This way, further double-spending will be prevented online. Unfortunately, this version reveals all purchases of the double-spender. The double-spending may be accidental (faulty software, stolen card, \etc), and so the privacy of an innocent user may be lost this way. There are ``glitch protection'' methods \cite{cloneWars} to let some number of accidents happen, but this means all the adversarial users will double-spend some allowed number of coins every time. Therefore, blacklisting only ``future'' coins is an important open problem.

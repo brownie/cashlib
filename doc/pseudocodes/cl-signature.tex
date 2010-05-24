@@ -1,0 +1,167 @@
+\section{CL signatures}
+
+CL signatures is an example of blind signatures, where the signer may not know the values she signed. Besides, useful protocols such as proving existence of a CL signature on a secret value is also necessary. The version of CL signatures we will present here uses special RSA groups \cite{cl1,cl2,cgCL,bcl}.
+
+
+\textsc{Setup}:\\
+The key generation of CL signatures is exactly as generating a special RSA group as in Algorithm \ref{setupRSA}:
+\begin{itemize}
+\item We have the following generators: $f,g_1,\ldots,g_m,h$, and the key owner (signer) needs to provide a non-interactive proof that all these generators generate the same group (namely, $QR_n$). This can be done by proving the knowledge of $a_i$ such that $g_i = h^{a_i} \mod n$ and $a$ such that $f = h^a \mod n$.
+\item The public key (\ie verification key) is $CLPK = n,f,g_1,\ldots,g_m,h$.
+\item The secret key (\ie signing key) is $CLSK = p,q$.
+\end{itemize}
+
+
+\textsc{Assumptions}:\\
+The security of the scheme relies on Strong RSA assumption.
+
+
+\textsc{Parameters}:\\
+This scheme uses the following (security) parameters: $\RSALength$ for the length of the RSA modulus, $m$ for the number of bases (maximum number of messages that can be signed at once), $l_x$ for the length of a message and $D_x$ for the domain of messages (each message $x_i$ is in $D_x = \{0,1\}^{l_x}$). We can also use messages in the domain $D_x = [-(2^{l_x}-1) , 2^{l_x}-1]$. Further define $l_e = l_x + 2$ and $l_v = \RSALength + l_x + 2*\stat$.
+
+
+\begin{algorithm}[H]\label{signCL}
+\SetKwComment{Comment}{}{}
+\SetKwInput{Pre}{Pre-conditions}
+\SetKwInput{Post}{Post-conditions}
+\dontprintsemicolon
+
+\KwIn{CL signature public key $CLPK = n,f,g_1,\ldots,g_m,h$, secret key $CLSK = p,q$, messages to be signed $x_1,\ldots,x_k$}
+\Pre{Each message $x_i$ needs to be in $D_x$.}
+\KwOut{signature $\sigma = A,e,v$}
+%\Post{}
+\BlankLine
+
+\Comment{Sign} \;
+\Indp
+  Pick a random \textbf{prime} number $e$ of length $l_e$. \;
+  Pick a random number $v$ of length $l_v$. \;
+  Compute the value $A$ such that $A^e = f h^v \Pi_{i = 1}^{k} g_{i}^{x_i} \mod n$. This can be done with the knowledge of the $CLSK = p,q$ by setting $A = [ f h^v \Pi_{i = 1}^{k} g_{i}^{x_i} ]^{1/e}$ \;
+  Output the signature $A,e,v$. \;
+\Indm
+
+\caption{Signing procedure for a CL signature. This is the signing procedure to sign a public message (not a blind signature yet). This procedure is run by the Signer.}
+\end{algorithm}
+
+
+\begin{algorithm}[H]\label{verifyCL}
+\SetKwComment{Comment}{}{}
+\SetKwInput{Pre}{Pre-conditions}
+\SetKwInput{Post}{Post-conditions}
+\dontprintsemicolon
+
+\KwIn{CL signature public key $CLPK = n,f,g_1,\ldots,g_m,h$, messages $x_1,\ldots,x_k$, signature $\sigma = A,e,v$}
+\Pre{Each message $x_i$ needs to be in $D_x$. $e$ needs to be of length $l_e$, $v$ needs to be of length $l_v$.}
+\KwOut{$\accept$ or $\reject$}
+%\Post{}
+\BlankLine
+
+\Comment{Verify} \;
+\Indp
+  Check the pre-conditions (Length checks are important !!). \;
+  \If{$A^e = f h^v \Pi_{i = 1}^{k} g_{i}^{x_i} \mod n$}
+    {Output $\accept$ \;}
+  \Else
+    {Output $\reject$ \;}
+\Indm
+
+\caption{Verification procedure for a CL signature. This is the verification procedure to verify a public message (not a blind signature yet). This procedure is run by the Verifier.}
+\end{algorithm}
+
+
+
+\subsection{Obtaining a Blind CL signature}
+Here, we present the protocol to obtain the CL signature on messages that are committed by the Recipient. Without loss of generality, let the first $l$ out of $k$ messages be the committed messages, and the rest be public messages.
+
+Hence, both the Recipient and the Issuer knows the Fujisaki-Okamoto commitments $C_1,\ldots,C_l$ to messages $x_1,\ldots,x_l$ (note that another version can just use one commitment to all $x_1,\ldots,x_l$ under different bases. The extension is very straightforward, and hence not shown). The Issuer knows the public (or issuer-chosen) messages $x_{l+1},\ldots,x_k$. The Recipient knows all the messages $x_1,\ldots,x_k$.
+
+
+
+\begin{algorithm}[H]\label{receiveCL}
+\SetKwComment{Comment}{}{}
+\SetKwInput{Pre}{Pre-conditions}
+\SetKwInput{Post}{Post-conditions}
+\dontprintsemicolon
+
+\KwIn{CL signature public key $CLPK = n,f,g_1,\ldots,g_m,h$, messages $x_1,\ldots,x_k$, commitments $C_1,\ldots,C_l$ and their openings $openC_1,\ldots,openC_l$ which include $r_1,\ldots,r_l$ (if there was only one commitment to those messages, there's just on $r$)}
+\Pre{Each message $x_i$ needs to be in $D_x$.}
+%\KwOut{}
+%\Post{}
+\BlankLine
+
+\Comment{Receive} \;
+\Indp
+  Choose a random $v'$ of length $\RSALength + \stat$. \;
+  Compute $C = h^{v'} \Pi_{i=1}^{l} g_{i}^{x_i}$. \;
+  Prove using PoEoDLR protocol that the discrete logarithm representation of each secret $x_i$ in $C$ corresponds to those in $C_1,\ldots,C_l$ and also prove that each secret $x_i$ is in $D_x$ (note that for $D_x = [-(2^{l_x}-1) , 2^{l_x}-1]$, this is a SpecialRange proof). \;
+\Indm
+
+\caption{This procedure is run by the Recipient of a blind CL signature to initiate the signature issuing process.}
+\end{algorithm}
+
+
+
+\begin{algorithm}[H]\label{issueCL}
+\SetKwComment{Comment}{}{}
+\SetKwInput{Pre}{Pre-conditions}
+\SetKwInput{Post}{Post-conditions}
+\dontprintsemicolon
+
+\KwIn{CL signature public key $CLPK = n,f,g_1,\ldots,g_m,h$, secret key $CLSK = p,q$, messages $x_{l+1},\ldots,x_k$, commitments $C_1,\ldots,C_l$}
+\Pre{Each message $x_i$ needs to be in $D_x$.}
+\KwOut{partial signature $\sigma' = A,e,v''$}
+%\Post{}
+\BlankLine
+
+\Comment{Issue} \;
+\Indp
+  Pick a random \textbf{prime} number $e$ of length $l_e$. \;
+  Choose a random $v''$ of length $\RSALength + l_x + \stat$. \;
+  Compute $A = [f C h^{v''} \Pi_{i=l+1}^{k} g_{i}^{x_i})]^{1/e}$. Let us explain this step in detail. The given commitment is re-randomized using $v''$. Then, public messages are added to the signature in the $\Pi$ clause. Finally, the signature is computed. \;
+  Send $A,e,v''$ to the Recipient and prove using PoKoDLR protocol the knowledge of $1/e$ in the equation above. \;
+\Indm
+
+\caption{This procedure is run by the Issuer of a blind CL signature to issue a blind CL signature.}
+\end{algorithm}
+
+
+
+\begin{algorithm}[H]\label{constructCL}
+\SetKwComment{Comment}{}{}
+\SetKwInput{Pre}{Pre-conditions}
+\SetKwInput{Post}{Post-conditions}
+\dontprintsemicolon
+
+\KwIn{CL signature public key $CLPK = n,f,g_1,\ldots,g_m,h$, partial signature $\sigma' = A,e,v''$}
+\Pre{Each message $x_i$ needs to be in $D_x$. $e$ must be a prime of length $l_e$, $v''$ needs to be of length $l_v$.}
+\KwOut{signature $\sigma = A,e,v$}
+%\Post{}
+\BlankLine
+
+\Comment{Construct} \;
+\Indp
+  Check the range (and optionally primality) for $e$ \;
+  Set $v = v' + v''$ \;
+  Output signature $\sigma = \{A,e,v\}$ \;
+\Indm
+
+\caption{This procedure is run by the Recipient of a blind CL signature to construct a CL signature upon receipt of the partial signature.}
+\end{algorithm}
+
+
+
+
+
+\subsection{Proving a CL signature}
+
+Now that the Recipient has a blind CL signature, he wants to prove that fact to a verifier, without revealing the signature. Without loss of generality, let the first $l$ out of $k$ messages be the committed messages, and the rest be public messages.
+
+Hence, both the Recipient and the Verifier knows the Fujisaki-Okamoto commitments $C_1,\ldots,C_l$ to messages $x_1,\ldots,x_l$ (as before, there can be just one commitment to all those messages). The Verifier knows the public (or issuer-chosen) messages $x_{l+1},\ldots,x_k$. The Recipient knows all the messages $x_1,\ldots,x_k$ and the signature $\sigma = A,e,v$. Of course, both parties know the CL signature public key $CLPK = n,f,g_1,\ldots,g_m,h$.
+
+\begin{itemize}
+\item The Recipient choses a random number $r$ from $\{0,1\}^{\RSALength + \stat}$.
+\item The Recipient computes $A' = A h^r$ and sends $A'$ to the Verifier. Set $v' = v + r*e$.
+\item The Verifier and the Recipient both separately computes the public value $D = \Pi_{i=l+1}^{k} g_{i}^{x_i}$ using public messages $x_{l+1},\ldots,x_k$.
+\item The Recipient computes the commitment $C = h^{r_C} \Pi_{i=1}^{l} g_{i}^{x_i}$ for secret messages (using a random $r_C$ from $\{0,1\}^{\RSALength + \stat}$), and proves to the Verifier using PoEoDLR protocol that the discrete logarithm representation of each secret $x_i$ in $C$ corresponds to those in $C_1,\ldots,C_l$ and also proves that each secret $x_i$ is in $D_x$ (note that for $D_x = [-(2^{l_x}-1) , 2^{l_x}-1]$, this is a SpecialRange proof), and of course the knowledge of $r_C$. \;
+\item Lastly, the Recipient proves using PoKoDLR protocol the knowledge of $e,v'$ such that $A'^e h^{r_C} = f h^{v'} C D$ (actually, prove that $f C D = A'^e * h^{(r_C - v')}$ or equivalently $f C D = A'^e * (1/h)^{v' - r_C}$).
+\end{itemize}

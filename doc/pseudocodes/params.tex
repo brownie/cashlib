@@ -1,0 +1,16 @@
+\section{Security Parameters}\label{sec-params}
+In our system, we will use a unified security parameter $ \security $, which corresponds to the conjecture that any attack that breaks the system must perform roughly $2^{\security}$ steps.  We also define the following security parameters for ease of notation:
+
+$ \RSALength $ defines the bit-length of an RSA modulus.
+
+$ \stat $ defines the statistical security parameter. That is to say, two statistically indistinguishable distributions will be $2^{-\stat}$ close to each other.
+
+$ \hashLength $ defines the length of the output of a hash function used for collision resistance or as a random oracle.
+
+$ \orderLength $ defines the bit-length of the order of the prime-order group we will use. $ \primeLength $ defines the bit-length of the modulus of $Z_{\primeMod}^*$. The prime-order group will be a subgroup of $Z_{\primeMod}^*$ of order $ \primeOrder $.
+
+To get $ \security = 80 $, which is considered the bare minimum requirement for security, we need to have $ \RSALength = 1024 $, $ \stat = \security = 80 $, $ \hashLength = 2*\security = 160 $, $ \orderLength = 2*\security = 160 $, $ \primeLength = 1024 $. We will use these numbers for performance evaluation. The reasoning for hash functions and prime order is related to the birthday bound, and states the best known algorithms break them in $2^{\hashLength / 2}$ and $2^{\orderLength / 2}$ time respectively (DON'T WE NEED A CITATION FOR THIS?). We will use SHA-1 as our hash function.
+
+To get a longer-lasting security, we should use $ \security = 128 $, which corresponds to $ \RSALength = 2048 $, $ \stat = \security = 128 $, $ \hashLength = 2*\security = 256 $, $ \orderLength = 2*\security = 256 $, $ \primeLength = 1024 $. For our BitTorrent system, we should use AES-128 as the block cipher and SHA-256 as the hash function whenever necessary (note that these numbers correspond to $ \security = 112 $ \cite{RSAlabs1, RSAlabs2}).
+
+Finally, if we are feeling paranoid, we can easily set $ \RSALength = 4096 $, $ \primeLength = 2048 $, and use SHA-512 and AES-256. The only issue is that we will sacrifice some amount of efficiency.

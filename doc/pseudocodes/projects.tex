@@ -1,0 +1,62 @@
+\documentclass[11pt]{article}
+\usepackage{fullpage}
+\topmargin-1cm
+\textheight24cm
+\pagestyle{plain}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+%\usepackage[ruled, algosection]{algorithm2e}
+
+\title{Summer Project Plans}
+\date{}
+\author{
+Brownie Points\\
+{\normalsize\tt brownie@cs.brown.edu}\\
+}
+
+\begin{document}
+\maketitle
+
+\section{Systems}
+
+\subsection{BitTorrent with E-cash}
+
+The goal of this project is to modify the {\tt libtorrent} C++ library (GPL, used by many applications; the lead developer now works for BitTorrent, Inc.) to support transactions using e-cash.  The BitTorrent extension protocol~\cite{BEP10} (and the {\tt libtorrent} plugin API) allow clients to advertise support for optional extensions when first connecting to a peer; these extensions are implemented as new protocol messages, supplementing existing messages such as {\tt request} and {\tt have}.  We will augment the BitTorrent protocol with protocol messages for requesting and sending encrypted blocks, buying and bartering keys for those blocks, and possibly also others for negotiating prices and contracts associated with e-cash transactions (in the variable-price model).
+
+When connected to peers that support our extension, our client will send these peers only encrypted blocks, and require payment or barter in exchange for the associated keys.  E-coins received as payment must be sent for deposit to the bank, and withdrawn again when more currency is needed.  This will require modifications to the block-requesting algorithm used by {\tt libtorrent} to schedule transactions so that a client will not be stalled by unnecessarily going bankrupt.  This team should work with the simulation team to implement a simple strategy for requesting and selling blocks.
+
+{\bf Status}: Chris is working on modifying {\tt libtorrent}, and has stub code in place for protocol messages to request and send encrypted data, {\tt request\_enc} and {\tt piece\_enc}; the other messages still need to be defined.  He is also looking at how best to modify {\tt libtorrent}'s piece-picking strategy; to this end he built a toy client that downloads blocks sequentially (\emph{i.e.} to watch streaming video).
+
+\subsection{The bank}
+
+Another project could be the design and implementation of the bank.  A distributed, load-balanced bank would be necessary for a large userbase, but a simple centralized bank server would be fairly easy to implement.
+
+{\bf Status}: Implementing a bank relies on the e-cash crypto library being available.   We could assign the goal of demonstrating a simple bank accepting deposits from a dummy client to the crypto team.
+
+\section{Simulation}
+
+\subsection{P2P Economy}
+
+This project works with the simulation team to design a model of a currency-based P2P file-sharing system.  This model should account for agents who can participate in multiple files or ``swarms'' (unlike some previous work), with the goal of helping the team to design and evaluate competing agent strategies.  The system should consist of content of varied popularity, and viewers of varied interests, bandwidth constraints, availability (churn), levels of altruism, and content consumption rates.  There is some previous work~\cite{golle,friedman} on P2P payment models and agent stragey to draw inspiration from.
+
+Can we model this scenario, put game theory into practice, and demonstrate a simple strategy that works---like the threshold earning strategy that Friedman {\em et al.} show results in equilibrium~\cite{friedman}?  Can we design a strategy and system that uses variable pricing to improve overall efficiency?
+
+\subsection{Streaming TV}
+
+Model a ``P2P Video'' scenario.  This could be simpler than the above model: for example, imagine a new episode of a soap opera is released each day, and viewers wish to apply credit earned from uploading the last episode towards downloading the next.  Or, the model could have fewer constraints, taking into account a larger population of users and videos.
+
+What differentiates this situation from the last is that viewers would like to watch videos on demand, and thus wish to download the blocks of each video roughly sequentially.  Does using e-cash provide better service guarantees to users who perform their fair share of work for the system?  In combating free-riding, does this approach overly penalize slow users?
+
+\begin{thebibliography}{1}
+\bibitem{BEP10}
+Arvid Norberg, Ludvig Strigeus, and Greg Hazel.  Extension Protocol.  BitTorrent Enhancement Proposal \#10.  {\tt
+  http://www.bittorrent.org/beps/bep\_0010.html}.
+\bibitem{golle}
+P. Golle, K. Leyton-Brown, I. Mironov, and M. Lillibridge.  Incentives for sharing in peer-to-peer networks.  In {\em Proc. 3rd ACM Conf. on Electronic Commerce}, 2001.
+\bibitem{friedman}
+E.J. Friedman, J.Y. Halpern, and I. Kash.  Efficiency and Nash equilibria in a scrip system for P2P networks.  In {\em ACM Conf. Electronic Commerce, (EC'06)}, June 2006.
+\end{thebibliography}
+
+
+\end{document}

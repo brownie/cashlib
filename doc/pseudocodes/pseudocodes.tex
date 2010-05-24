@@ -1,0 +1,75 @@
+\documentclass[letterpaper,11pt]{article}
+\usepackage{fullpage}
+\usepackage[ruled,noend,linesnumbered]{algorithm2e}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{multirow}
+\usepackage{hyperref}
+
+% Our style
+\usepackage{pseudo}
+
+\hbadness=10000
+
+%opening
+\title{Description of Algorithms used in Cashlib}
+%\author{Brownies}
+
+\begin{document}
+
+\maketitle
+
+%\begin{abstract}
+
+%\end{abstract}
+
+
+\newpage
+\tableofcontents
+\newpage
+
+\input{params}
+\input{assumptions}
+\input{setup}
+
+\section{Commitment Schemes}
+\input{fujisaki-okamoto}
+\input{pedersen}
+
+\input{hvzk}
+\input{dlr}
+\input{equality}
+\input{multiplication}
+\input{range}
+\input{special-range}
+
+\input{cl-signature}
+
+\section{E-cash}
+In this section, we provide a description of the offline versions of
+compact e-cash~\cite{chl:compact-ecash:ec05} and endorsed 
+e-cash~\cite{clm:endorsed-ecash:ieee07}.  We require that all connections 
+between a user and the bank must be over an authenticated and secure channel 
+(i.e., an SSL connection using the bank's certificate).
+\input{compact}
+\input{endorsed}
+
+
+\input{verifiable}
+
+\section{Fair Exchange}
+Use regular encryption, signatures, public-key encryption, e-cash and verifiable encryption to perform fair exchange.
+\input{buy}
+\subsection{Barter}
+\subsubsection{Alice}
+\subsubsection{Bob}
+\subsubsection{Arbiter}
+
+\appendix
+\input{appendix}
+
+\bibliographystyle{plain}
+\bibliography{sarah}
+
+\end{document}

@@ -1,0 +1,14 @@
+\section{Assumptions}
+The suggested security parameters above are set to satisfy the following 
+assumptions (by conjecture).
+
+Strong RSA Assumption: For $N = pq$ with $p,q$ prime, it is difficult for any
+computationally bounded adversary $\A$ to compute $x$ on input $N$, $e$, and 
+$y=x^e\bmod N$
+for some $e$ such that $\gcd(e,\phi(N)) = 1$, even if $\A$ is allowed to pick 
+$e$ itself (note that this last condition is what makes this assumption the
+``strong'' verison of the standard RSA assumption).
+
+Discrete Logarithm Assumption: For a cyclic group $G$ of order $q$ with
+generator $g$, it is difficult for any computationally bounded adversary $\A$ 
+to compute $x$ on input $g^x$, for $x\in{\Z_q}$.
