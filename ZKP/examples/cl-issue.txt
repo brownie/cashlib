@@ -1,0 +1,25 @@
+// issue a CL blind signature
+
+computation:  
+given:  
+	group: pkGroup = <f, g[1:l+k], h>
+	element in pkGroup: C
+	exponents in pkGroup: x[1:k+l]
+	integers: stat, modSize, l_x
+compute: 
+	random integer in [0,2^(modSize+l_x+stat)): vdoubleprime
+	random prime of length l_x+2: e
+	einverse := 1/e 
+	A := (f * C * h^vdoubleprime * for(i, l+1:k+l, *, g_i^x_i))^einverse
+
+proof: 
+given:  
+	group: pkGroup = <f, g[1:l+k], h>  
+	elements in pkGroup: A, C
+	exponents in pkGroup: e, vdoubleprime, x[l+1:k]
+
+prove knowledge of: 
+	exponents in pkGroup: einverse
+
+such that:
+	A = (f * C * h^vdoubleprime * for(i, l+1:k+l, *, g_i^x_i))^einverse

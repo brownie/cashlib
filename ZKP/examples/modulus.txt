@@ -1,0 +1,8 @@
+
+computation:
+given:
+	group: G
+		modulus: n
+compute:
+	random integer in [0,n/2): s
+	plusone := n + 1

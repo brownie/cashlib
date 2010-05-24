@@ -1,0 +1,30 @@
+// obtain a CL blind signature
+
+computation:  
+given:  
+	group: pkGroup = <f, g[1:l+k], h>	
+	exponents in pkGroup: x[1:l]
+	integers: stat, modSize
+compute: 
+	random integer in [0,2^(modSize + stat)): vprime
+	C := h^vprime * for(i, 1:l, *, g_i^x_i)
+
+proof: 
+given:  
+	group: pkGroup = <f, g[1:l+k], h>  
+	// this is specific to e-cash
+	group: comGroup = <fprime, gprime, hprime, h1, h2>
+	element in pkGroup: C
+	elements in comGroup: c[1:l]
+		for(i, 1:l, commitment to x_i: c_i = gprime^x_i * hprime^r_i)
+	integer: l_x
+
+prove knowledge of: 
+	integers: x[1:l] 
+	exponents in comGroup: r[1:l]
+	exponents in pkGroup: vprime 
+
+such that:
+	for(i, 1:l, range in pkGroup: (-(2^l_x - 1)) <= x_i < 2^l_x)
+	C =  h^vprime * for(i, 1:l, *, g_i^x_i)
+	for(i, 1:l, c_i = gprime^x_i * hprime^r_i)

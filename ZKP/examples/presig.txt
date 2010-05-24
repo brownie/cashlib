@@ -1,0 +1,11 @@
+
+proof:
+given:
+	group: cashGroup = <f,g,h,h1,h2>
+	elements in cashGroup: A, pk_u
+		commitment to sk_u: A = g^sk_u * h^r_u
+prove knowledge of:
+	exponent in cashGroup: sk_u, r_u
+such that:
+	pk_u = g^sk_u
+	A = g^sk_u * h^r_u

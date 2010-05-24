@@ -1,0 +1,37 @@
+// CL signature proof program
+
+computation:
+given: 
+	group: pkGroup = <f, g[1:l+k], h>
+	elements in pkGroup: A
+	exponents in pkGroup: e, v, x[1:l]
+	integers: modSize, stat
+compute:
+	random integers in [0,2^(modSize + stat)): r, r_C
+	vprime := v + r*e
+	Aprime := A * h^r
+	C := h^r_C * for(i, 1:l, *, g_i^x_i)
+	D := for(i, l+1:l+k, *, g_i^x_i)
+	// useful for not computing inverses later on
+	fCD := f * C * D
+	
+proof:
+given:
+	group: pkGroup = <f, g[1:l+k], h>
+	group: comGroup = <fprime, gprime, hprime, h1, h2>
+	elements in pkGroup: C, D, Aprime, fCD
+	elements in comGroup: c[1:l]
+		for(i, 1:l, commitment to x_i: c_i = gprime^x_i * hprime^r_i)
+	exponents in pkGroup: x[l+1:l+k]
+	integer: l_x
+
+prove knowledge of:
+	integers: x[1:l]
+	exponents in comGroup: r[1:l]
+	exponents in pkGroup: e, vprime, r_C
+
+such that:
+	for(i, 1:l, range in pkGroup: (-(2^l_x - 1)) <= x_i < 2^l_x)
+	C = h^r_C * for(i, 1:l, *, g_i^x_i)
+	for(i, 1:l, c_i = gprime^x_i * hprime^r_i)
+	fCD = (Aprime^e) * h^(r_C - vprime)

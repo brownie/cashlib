@@ -1,0 +1,7 @@
+
+computation:
+given:
+	group: G = <g,h>
+compute:
+	random exponents in G: x, r_x
+	c_x := g^x * h^r_x

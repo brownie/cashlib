@@ -1,0 +1,11 @@
+
+proof:
+given:
+	group: G = <g,h>
+	integers: W
+
+prove knowledge of:
+	integers: J
+
+such that:
+	range in G: 0 <= J < W

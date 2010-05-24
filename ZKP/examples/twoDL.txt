@@ -1,0 +1,22 @@
+
+computation:
+given:
+	group: G = <g, h>
+compute:
+	random exponents in G: x, y, r_x, r_y
+	c_x := g^x * h^r_x
+	c_y := g^y * h^r_y
+
+proof:
+given:
+	group: G = <g, h>
+	elements in G: c_x, c_y
+		commitment to x: c_x = g^x * h^r_x
+		commitment to y: c_y = g^y * h^r_y
+
+prove knowledge of: 
+	exponents in G: x, y, r_x, r_y
+
+such that:
+	c_x = g^x * h^r_x
+	c_y = g^y * h^r_y

@@ -1,0 +1,12 @@
+
+computation:
+given:
+	group: G
+	group: RSAGroup
+		modulus: N
+	elements in G: f, b, a[1:m]
+	exponents in G: x[1:m]
+compute:
+	random integer in [0,N/4): r
+	for(i, 1:m, u_i := b^x_i * a_i^r)
+	v := f^r

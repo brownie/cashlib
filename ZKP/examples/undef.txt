@@ -1,0 +1,15 @@
+
+// example where things are used but not defined
+
+proof:
+
+given:
+	group: G = <g1, g2>
+	elements in G: c_x
+		commitment to x: c_x = g1^x * g2^r_x
+	
+prove knowledge of:
+	exponents in G: x, r_x
+
+such that:
+	x = a * b

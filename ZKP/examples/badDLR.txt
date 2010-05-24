@@ -1,0 +1,22 @@
+
+computation:
+given:
+	group: G = <g, h>
+	integers: J
+compute:
+	random exponents in G: r_C, s
+	alpha := 1 / (s + J)
+	C := g^s * h^r_C
+
+proof:
+given:
+	group: G = <g, h>
+	elements in G: C
+		commitment to s: C = g^s * h^r_C
+	
+prove knowledge of:
+	exponents in G: r_C, alpha, s
+	integers: J
+
+such that:
+	g = (g^J * C)^alpha * h^(-r_C * alpha)

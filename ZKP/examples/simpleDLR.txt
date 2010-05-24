@@ -1,0 +1,20 @@
+
+computation:
+given:
+	group: G = <g,h>
+compute:
+	random exponents in G: x
+	C := g^x 
+	y := 1 / x
+	D := g^y
+
+proof:
+given:
+	group: G = <g,h>
+	elements in G: C, D
+
+prove knowledge of:
+	exponents in G: x, y
+
+such that:
+	g = C^y

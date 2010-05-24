@@ -1,0 +1,133 @@
+
+spec := (computation)? (proof)?
+
+computation := "computation" COLON "given" COLON givenList "compute" COLON
+			  computeRandomList computeEquationList
+
+proof := "proof" COLON "given" COLON givenList "prove" "knowledge" "of" COLON
+		 knowledgeList "such" "that" COLON suchThatList
+
+suchThatList := (suchThatRel)+
+
+suchThatRel := equalRelation | rangeRelation | forRelation
+
+knowledgeList := (exponentDecl | integerDecl)+
+
+givenList := (groupDecl | elementsDecl | exponentDecl | integerDecl)+
+
+randomBndDecl := ("integer"|"integers") "in" LBRACKET expr COMMA expr
+				 RPAREN COLON idGeneralDeclList
+
+randomPrimeDecl := ("prime"|"primes") "of" "length" expr COLON 
+				   idGeneralDeclList 
+
+computeRandomList := ("random" (randExponentDecl | randomPrimeDecl | 
+					 randomBndDecl))*
+
+groupDecl := "group" COLON identifierDecl (EQUAL setDecl)? ("modulus" COLON
+			 subscriptIdentifierDecl)?
+
+randExponentDecl := ("exponent"|"exponents") "in" identifier COLON 
+					idGeneralDeclList
+
+exponentDecl := ("exponent"|"exponents") "in" identifier COLON
+				idGeneralDeclList
+
+elementsDecl := ("element"|"elements") "in" identifier COLON 
+				idGeneralDeclList (elementsEquationList)?
+
+integerDecl := ("integer"|"integers") COLON idGeneralDeclList
+
+computeEquationList := (computeEquation)+
+
+computeEquation := equalDeclRelation | comRelation | forRelation
+
+forRelation := "for" LPAREN identifier COMMA expr COLON expr COMMA
+			   (rangeRelation | genEqual) RPAREN
+
+forCom := "for" LPAREN identifier COMMA expr COLON expr COMMA
+		  comRelation RPAREN
+
+elementsEquationList := (elementsEquation)+
+
+elementsEquation := comRelation | forCom
+
+comRelation := "commitment" "to" idSubList COLON subscriptIdentifier
+			   EQUAL expr
+
+genEqual := identifier (SUBSCRIPT (ID | INTLIT))? (EQUAL|CEQUAL) expr
+
+equalRelation := subscriptIdentifier EQUAL expr
+
+equalDeclRelation := subscriptIdentifierDecl CEQUAL expr
+
+rangeRelation := "range" COLON expr ((LTHAN|LEQ) expr (LTHAN|LEQ) expr | 
+				 (GTHAN|GEQ) expr (GTHAN|GEQ) expr)
+
+expr := prodExpr (ADD prodExpr | SUB prodExpr)*
+
+forExpr := "for" LPAREN identifier COMMA expr COLON expr COMMA
+		   (ADD | MUL) COMMA expr RPAREN
+
+prodExpr := powExpr (MUL powExpr | DIV powExpr)*
+
+powExpr := unaryExpr | baseExpr
+
+unaryExpr := SUB baseExpr | baseExpr
+
+baseExpr := INTLIT | subscriptIdentifier | LPAREN expr RPAREN | forExpr
+
+setDecl := LTHAN idGeneralDeclList GTHAN
+
+idSubDeclList := (subscriptIdentifierDecl)+
+
+idGeneralDeclList := (idDeclGeneral)+
+
+idDeclList := (identifierDecl)+
+
+idSubList := (subscriptIdentifier)+
+
+idList := (identifier)+
+
+idDeclGeneral := idDeclRange | subscriptIdentifierDecl
+
+idDeclRange := identifierDecl LBRACKET expr COLON expr RBRACKET
+
+subscriptIdentifierDecl := identifier (SUBSCRIPT (ID | INTLIT))?
+
+identifierDecl := ID
+
+subscriptIdentifier := identifier (SUBSCRIPT (ID | INTLIT))?
+
+identifier := ID
+
+-----------------------------------
+
+LPAREN := "("
+RPAREN := ")"
+LBRACKET := "["
+RBRACKET := "]"
+LCURLY := "{"
+RCURLY := "}"
+COMMA := ","
+SCOLON := ";"
+COLON := ":"
+
+CEQUAL := ":" "="
+EQUAL := "="
+LTHAN := "<"
+GTHAN := ">"
+LEQ := "<" "="
+GEQ := ">" "="
+
+ADD := "+"
+SUB := "-"
+MUL := "*"
+DIV := "/"
+POW := "^"
+
+SUBSCRIPT := "_"
+
+ID := ('a'..'z' | 'A'..'Z')('a'..'z'|'A'..'Z'|'0'..'9')*
+
+INTLIT := '0' | ('1'..'9')('0'..'9')*

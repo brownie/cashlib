@@ -1,0 +1,9 @@
+
+proof:
+given:
+	group: G = <f,g,h,h1,h2>
+	element in G: pk_u
+prove knowledge of:
+	exponent in G: sk_u
+such that:
+	pk_u = g^sk_u

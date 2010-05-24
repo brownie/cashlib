@@ -1,0 +1,3 @@
+.deps test *.P *.o gmon.out brownieTest
+Serialize.h.gch
+zkptest

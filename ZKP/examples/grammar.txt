@@ -1,0 +1,67 @@
+
+BASICS
+
+letter = "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k"
+			 | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u"
+			 | "v" | "w" | "x" | "y" | "z" | "A" | "B" | "C" | "D" | "E" 
+			 | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" 
+			 | "P" | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z"
+digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+whitespace = " "
+
+character = letter | digit
+alpha_or_space = character | whitespace
+
+comment = "//", {letter}
+
+number = [ "-" ], digit, {digit}
+(name has to start with an alphabetic letter)
+ID = letter, {character}
+crypto_num = number | ID
+
+CLAUSES
+
+expr = sumExpr
+sumExpr = prodExpr, { ("+" | "-"), prodExpr }  
+prodExpr = powExpr, { ("*" | "/"), powExpr }
+powExpr = atom, { "^", atom } 
+atom = crypto_num | "(", sumExpr, ")"
+
+assignment = name, "=", expr
+
+BLOCKS
+
+namelist = name | name, ",", namelist
+
+group_name = "group:", name, "=", "<", namelist, ">"
+integer_name = "integers:", namelist
+
+declare_elmt_list = "elements in ", name, ":", namelist
+declare_exp_list = "exponents in ", name, ":", namelist
+declare_num_list = declare_elmt_list | declare_exp_list
+
+(can name groups, integers, elements, exponents)
+declaration = group_name | integer_name | declare_num_list
+
+random = "random", declare_num_list
+
+(write range as either low < x < high or as high > x > low)
+range = name, "<", ["="], name, "<", ["="], name 
+		| name, ">", ["="], name, ">", ["="], name
+		| "0", "<=", name
+		| name, ">=", "0"
+clsig = "CL signature on ", namelist
+
+(possible relations for now)
+relation = assignment | range | clsig 
+
+declaration_block = declaration | declaration, "\n", {declaration}
+assignment_block = assignment | assignment, "\n" , assignment_block
+
+given_block = "given:", "\n", declaration_block
+compute_block = "compute:", "\n", {random}, assignment_block
+prove_block = "prove knowledge of:", "\n", declaration_block
+relation_block = "such that:", "\n", relation, "\n", {relation}
+
+program = [ given_block, compute_block], given_block, "\n", prove_block, "\n",
+			relation_block

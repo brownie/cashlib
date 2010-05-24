@@ -1,0 +1,106 @@
+
+// just computation (independent of proof)
+computation:
+given: 
+	group: rangeGroup = <g1, g2>
+	group: cashGroup = <f, g, h, h1, h2>
+    exponents in cashGroup: s, t, sk_u
+    integers: J
+compute: 
+    random exponents in cashGroup: r_B, r_C, r_D, x[1:2], r_y
+	random exponents in rangeGroup: r_J
+    c_J := g1^J * g2^r_J
+	alpha := 1 / (s + J)
+	beta := 1 / (t + J)
+	C := f^alpha * g^r_C
+    D := f^beta * g^r_D
+    y := h1^x_1 * h2^x_2 * f^r_y
+    U := g^sk_u * h^r_B
+    S := g^alpha * g^x_1
+    T := g^sk_u * (g^R)^beta * g^x_2
+
+// for prover and verifier
+proof:
+given:
+	group: rangeGroup = <g1, g2>
+	group: cashGroup = <f, g, h, h1, h2>
+	integers: W, low
+	elements in cashGroup: y, S, T, C, D, U
+    	commitment to alpha: C = f^alpha * g^r_C
+    	commitment to beta: D = f^beta * g^r_D
+    	commitment to sk_u: U = g^sk_u * h^r_B
+	elements in rangeGroup: c_J
+    	commitment to J: c_J = g1^J * g2^r_J
+
+prove knowledge of:
+    exponents in cashGroup: x_1, x_2, r_y, sk_u, alpha, beta, s, t, 
+							r_B, r_C, r_D, R
+    exponents in rangeGroup: r_J
+    integers: J
+
+such that:
+    y = h1^x1 * h2^x2 * f^r_y
+    S = g^alpha * g^x_1
+    T = g^sk_u * (g^R)^beta * g^x_2
+    g = (g^J * C)^alpha * h^(-r_C / s+J)
+    g = (g^J * D)^beta * h^(-r_D / t+J)
+    low <= J < W
+    CL signature on alpha, beta, sk_u
+
+------------------------------------------------------------------------
+
+proof:
+given:
+	group: G = <g, h>
+	elements in G: v_x, v_s, v_xy, y[1:3], c[1:4]
+
+prove knowledge of:
+	exponents in G: rho, mu, nu, H
+
+such that:
+	v_x = v_s^rho * v_xy^(-mu)
+	c_1 = g^mu
+	c_2 = h^nu
+	c_3 = y_1^nu * g^mu
+	c_4 = (y_2 * y_3^H)^nu
+	
+------------------------------------------------------------------------
+
+proof:
+given:
+	group: Zpstar = <g>
+	elements in Zpstar: x[1:3]
+
+prove knowledge of:
+	exponents in Zpstar: w[1:3]
+
+such that:
+	x_1 = g^w_1
+	x_2 = g^w_2
+	x_3 = g^w_3
+
+------------------------------------------------------------------------
+
+computation:
+given: 
+	group: G = <g,h>
+compute:
+	random exponents in G: a, b, r_x, r_a, r_b
+	x := a * b
+	c_x = g^x * h^r_x
+	c_a = g^a * h^r_a
+	c_b = g^b * h^r_b
+
+proof:
+given:
+	group: G = <g,h>
+	elements in G: c_x, c_a, c_b
+		commitment to x: c_x = g^x * h^r_x
+		commitment to a: c_a = g^a * h^r_a
+		commitment to b: c_b = g^b * h^r_b
+
+prove knowledge of:
+	exponents in G: x, a, b, r_x, r_a, r_b
+
+such that:
+	x = a * b

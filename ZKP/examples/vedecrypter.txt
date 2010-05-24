@@ -1,0 +1,14 @@
+
+computation:
+given:
+	group: RSAGroup
+		modulus: N
+	group: G
+	element in G: f0
+compute:
+	random integers in [0,N/4): x[1:3], y, z
+	f := f0^(2*N)
+	for(i, 1:3, a_i := f^x_i)
+	d := f^y
+	e := f^z
+	b := 1 + N

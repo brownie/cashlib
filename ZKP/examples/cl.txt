@@ -1,0 +1,34 @@
+input: RSA_length, stat, L, x[1:m]
+
+computation:
+given: 
+	group: G = <f, g[1:m], h>
+	elements in G: A
+	exponents in G: e, v
+	integers: RSA_length, stat
+compute:
+	random exponents in [0:2^(RSA_length + stat)): r, r_C
+	vprime := v + r*e
+	Aprime := A * h^r
+	// XXX: should compute C and D externally?
+	C := h^r_C * for(i, 1:L, *, g_i^x_i)
+	D := prod(i, L+1:k, g_i^x_i)
+			for(i, 1:L, &&, commitment to x_i: c_i = g^x_i * h^r_i)
+	
+proof:
+given:
+	group: G = <f, g[1:m], h>
+	elements in G: c[1:L]
+
+	exponents in G: x[L+1:k]
+	integers: l_x
+
+prove knowledge of:
+	exponents in G: x[1:L], r[1:L], A, e, v
+
+such that:
+	// XXX: need a way to do for each?
+	for(i, 1:L, &&, -(2^l_x - 1) <= x_i < 2^l_x)
+	C = for(i, 1:L, *, c_i^1 * h^(-r_i)) * h^r_C
+	f = C^(-1) * D^(-1) * Aprime^e * h^(r_C - vprime)
+	

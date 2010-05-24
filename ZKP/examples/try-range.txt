@@ -1,0 +1,35 @@
+
+computation:
+given:
+	group: G = <f,g,h,g_1,g_2>
+	integers: J, lo, hi
+
+compute:
+	random exponents in G: r_J, r_2
+	c_J := g^J * h^r_J
+	J_lo := J - lo
+	hi_J := hi - J
+	c_Jlo := c_J * g^(-lo)
+	c_hiJ := g^hi * c_J^(-1)
+	hiJJlo := Jlo * hiJ
+	c_hiJJlo := g^hiJJlo * h^r_2
+
+proof:
+given:
+	group: G = <g,h>
+	integers: W
+	elements in G: c_J, c_Jlo, c_hiJ, c_hiJJlo
+		commitment to J: c_J = g^J * h^r_J
+		commitment to Jlo: c_Jlo = c_J * g^(-lo)
+		commitment to hiJ: c_hiJ = g^hi * c_J^(-1)
+		commitment to hiJJlo: c_hiJJlo = g^hiJJlo * h^r_2
+
+prove knowledge of:
+	integers: J
+	exponents in G: r_J, r_2
+
+such that:
+	// XXX: should we complain if G isn't an RSA group?
+	c_J = g^J * h^r_J
+	hiJJlo = Jlo * hiJ
+	0 <= hiJJlo

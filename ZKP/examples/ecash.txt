@@ -1,0 +1,40 @@
+// just computation (independent of proof)
+computation:
+given: 
+	group: cashGroup = <f, g, h, h1, h2>
+	exponents in cashGroup: s, t, sk_u
+	integer: J
+compute: 
+	random exponents in cashGroup: r_B, r_C, r_D, x1, x2, r_y, R
+	alpha := 1 / (s + J)
+	beta := 1 / (t + J)
+	C := g^s * h^r_C
+    D := g^t * h^r_D
+    y := h1^x1 * h2^x2 * f^r_y
+    B := g^sk_u * h^r_B
+	// XXX: again, should be able to automate this change later
+  	S := g^(alpha + x1)
+    T := g^(sk_u + R*beta + x2)
+
+// for prover and verifier
+proof:
+given:
+	group: cashGroup = <f, g, h, h1, h2>
+	element in cashGroup: y
+	elements in cashGroup: y, S, T, B, C, D
+    	commitment to sk_u: B = g^sk_u * h^r_B
+    	commitment to s: C = g^s * h^r_C
+    	commitment to t: D = g^t * h^r_D
+
+prove knowledge of:
+    exponents in cashGroup: x1, x2, r_y, sk_u, alpha, beta, s, t, 
+							r_B, r_C, r_D, R
+	integer: J
+
+such that:
+    y = h1^x1 * h2^x2 * f^r_y
+    S = g^(alpha + x1)
+	// XXX: doing this to get better numbers for now
+    T = g^(sk_u + x2 + R*beta)
+    g = (g^J * C)^alpha * h^(-r_C / (s+J))
+	g = (g^J * D)^beta * h^(-r_D / (t+J))

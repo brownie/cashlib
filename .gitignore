@@ -1,0 +1,11 @@
+.deps
+test
+*.P
+*.o
+*.d
+*~
+gmon.out
+brownieTest
+Serialize.h.gch
+zkptest
+libcash.a

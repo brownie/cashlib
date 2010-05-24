@@ -1,0 +1,21 @@
+
+computation:
+given:
+	group: G = <f, g, h, h1, h2>
+compute:
+	random exponents in G: r, x, r_x, rando
+	c_x := g^x * h^r_x
+	alpha := r_x - rando * r
+	other := (g^x * h^r_x)^x * h^alpha
+
+proof:
+given:
+	group: G = <g, h>
+	elements in G: c_x, other
+		commitment to x: c_x = g^x * h^r_x
+	
+prove knowledge of:
+	exponents in G: r, r_x, x, alpha, rando
+
+such that:
+	other = c_x^x * h^(r_x - rando * r)

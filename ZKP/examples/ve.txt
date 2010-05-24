@@ -1,0 +1,47 @@
+// see also encrypt.txt for first part
+
+computation:
+given:
+	group: secondGroup = <g[1:m], h>
+	// this group is just for specifying the modulus
+	group: RSAGroup
+		modulus: N
+	group: G
+	// XXX: this is specific to e-cash
+	group: cashGroup = <f_3, gprime, hprime, f_1, f_2>
+	exponents in G: x[1:m]
+	elements in G: u[1:m], v, w
+compute:
+	random integer in [0,N/4): s
+	random exponents in secondGroup: r[1:m]
+	for (i, 1:m, c_i := g_1^x_i * g_2^r_i)
+	Xprime := for(i, 1:m, *, g_i^x_i) * h^s
+	// it is faster to do things this way than to have to compute inverses
+	vsquared := v^2
+	wsquared := w^2
+	for(i, 1:m, usquared_i := u_i^2)
+
+proof:
+given:
+	group: secondGroup = <g[1:m], h>
+	group: G
+	group: RSAGroup
+		modulus: N
+	group: cashGroup = <f_3, gprime, hprime, f_1, f_2>
+	element in cashGroup: X
+	elements in secondGroup: Xprime, c[1:m]
+		for(i, 1:m, commitment to x_i: c_i = g_1^x_i * g_2^r_i)
+	elements in G: a[1:m], b, d, e, f, usquared[1:m], vsquared, wsquared
+
+prove knowledge of:
+	integers: x[1:m], r
+	exponent in G: hash
+	exponents in secondGroup: r[1:m], s
+
+such that:
+	for(i, 1:m, range in secondGroup: -N/2 + 1 <= x_i < N/2)
+	vsquared = f^(2*r)
+	wsquared = (d * e^hash)^(2*r)
+	for(i, 1:m, usquared_i = b^(2*x_i) * a_i^(2*r))
+	X = for(i, 1:m, *, f_i^x_i)
+	Xprime = for(i, 1:m, *, g_i^x_i) * h^s

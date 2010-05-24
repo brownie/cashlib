@@ -1,0 +1,25 @@
+computation:
+given: 
+	group: G = <g,h>
+	exponents in G: a, b
+compute:
+	random exponents in G: r_x, r_a, r_b
+	x := a * b
+	c_x := g^x * h^r_x
+	c_a := g^a * h^r_a
+	c_b := g^b * h^r_b
+	oops := g^g
+
+proof:
+given:
+	group: G = <g,h>
+	elements in G: c_x, c_a, c_b
+		commitment to x: c_x = g^x * h^r_x
+		commitment to a: c_a = g^a * h^r_a
+		commitment to b: c_b = g^b * h^r_b
+
+prove knowledge of:
+	exponents in G: x, a, b, r_x, r_a, r_b
+
+such that:
+	x = a * b

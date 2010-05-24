@@ -1,0 +1,74 @@
+define dumpstlht
+  set $s = $arg0._M_ht._M_buckets._M_impl._M_start
+  set $e = $arg0._M_ht._M_buckets._M_impl._M_finish
+  set $b = 0
+  while $s < $e 
+    printf "bucket %d\n", $b
+    set $x = *$s
+    while $x != 0
+      p $x->_M_val
+      set $x = $x->_M_next
+    end
+    set $b = $b + 1
+    set $s = $s + 1
+    printf "\n"
+  end
+end
+
+define dumpvec
+  set $s = $arg0._M_impl._M_start
+  set $e = $arg0._M_impl._M_finish
+  set $i = 0
+  while $s < $e
+    printf "%d:", $i
+    p *$s
+    set $i = $i + 1
+    set $s = $s + 1
+    printf "\n"
+  end
+end
+
+define dumpstlrbt
+  set $h = $arg0._M_t._M_impl._M_header
+  set $i = $h->_M_left
+  while $i != $h
+    p ((_Rb_tree_node*) $i)->_M_value_field
+    if $i->_M_right != 0
+      set $i = $i->_M_right
+      while $i->_M_left != 0
+        set $i = $i->_M_left
+      end
+    else
+      set $p = $i->_M_parent
+      while $i == $p->_M_right
+        set $i = $p
+        set $p = $p->_M_parent
+      end
+      if $i->_M_right != $p
+        set $i = $p
+      end
+    end
+  end
+end
+
+define dumpmap
+  dumpstlrbt $arg0
+end
+
+define dumpset
+  dumpstlrbt $arg0
+end
+
+define dumphmap
+  dumpstlht $arg0
+end
+
+
+define dumphset
+  dumpstlht $arg0
+end
+
+define dumpstr
+  printf "[Capacity = %u, Length = %u, References = %d]\n\"%s\"\n", $arg0._M_rep()->_M_capacity, $arg0._M_rep()->_M_length, $arg0._M_rep()->_M_refcount, $arg0._M_data()
+end
+
