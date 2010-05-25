@@ -203,7 +203,7 @@ int Ciphertext::decrypt(const string &key, string &to,
     char *tobuf = (char *)malloc(from.size());
     assert(tobuf);
 
-	// throw exception if key not long enough
+	// XXX throw exception if key not long enough
 	if (key.size() < keyLength(cipher))
         throw CashException(CashException::CE_SIZE_ERROR,
                             "[Ciphertext::decrypt] key not long enough for cipher %s", 
@@ -323,8 +323,8 @@ static void AES_counter128_set(unsigned char *counter, const unsigned char *iv,
     c = GETU32(iv + 8);
     PUTU32(counter + 8, c);
 
-    // just clear bottom 32 bits (use 64?) of IV for counter value: 
-    // could also use XOR, addition, hashing
+    // XXX just clear bottom 32 bits (use 64?) of IV for counter value: 
+    //     could also use XOR, addition, hashing
     PUTU32(counter + 12, val);
 }
 

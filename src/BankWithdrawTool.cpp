@@ -49,7 +49,7 @@ ProofMessage* BankWithdrawTool::sign(ProofMessage* id, ProofMessage* cl){
 	variable_map v;
 	v["pk_u"] = userPublicKey;
 	verifier.compute(v, id->publics);
-	bool idVerified = verifier.verify(id->proof, stat);
+	bool idVerified = verifier.verifyProof(id->proof, stat);
 	if (!idVerified) {
 		throw CashException(CashException::CE_UNKNOWN_ERROR,
 				"[BankWithdrawTool::sign] Proof of ID did not verify");

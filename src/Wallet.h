@@ -27,8 +27,17 @@ class Wallet {
 
 		/*! returns a coin for a given index */
 		Coin* newCoin(const ZZ &R, int coinIndex);
+		void newCoin(Coin& coin, const ZZ &R, int coinIndex);
 
 		bool replaceCoin(ZZ &index);
+
+		// some accessors
+		int getWalletSize() const { return walletSize; }
+		int getNumCoinsUsed() const { return numCoinsUsed; }
+		int getNumCoinsLeft() const { return walletSize - numCoinsUsed; }
+		int getDenomination() const { return coinDenom; }
+		int getRemainingValue() const { return getNumCoinsLeft() * coinDenom; }
+		bool empty() const { return (walletSize == numCoinsUsed); }
 
 	private:
 		ZZ sk_u, s, t;

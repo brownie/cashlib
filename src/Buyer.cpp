@@ -27,9 +27,12 @@ Buyer::~Buyer() {
 
 void Buyer::reset() {
 	inProgress = false;
+#ifdef DELETE_BUFFERS
 	for (unsigned i = 0; i < ptext.size(); i++) {
 		delete ptext[i];
     }
+#endif
+	ptext.clear();
 	delete contract;
 	contract = NULL;
 }
@@ -117,7 +120,12 @@ VECiphertext Buyer::makeEscrow() {
 
 void Buyer::makeCoin(Wallet& w, const ZZ& R) {	
 	// get coin from wallet
-	coin = w.nextCoin(R);
+	setCoin( w.nextCoin(R) );
+}
+
+void Buyer::setCoin(const Coin& c)
+{	
+	coin = c;
 	endorsement = coin.getEndorsement();
 	coin.unendorse();
 }

@@ -3,8 +3,18 @@
 #define _ENVIRONMENT_H_
 
 #include "../Group.h"
-#include <boost/functional/hash.hpp>
-#include <boost/unordered_map.hpp>
+
+#ifdef USE_STD_MAP
+// XXX for some reason, BuyMessages are not working when unordered_map
+// is used in ProofMessages: may have to do with map serialization
+ #include <map>
+ #define MAP_TYPE std::map
+#else
+ #include <boost/functional/hash.hpp>
+ #include <boost/unordered_map.hpp>
+ #define MAP_TYPE boost::unordered_map
+#endif
+
 #include "DLRepresentation.h"
 #include "SigmaProof.h"
 #include "ASTNode.h"
@@ -29,18 +39,19 @@ struct DecompNames {
 // hash function for use with boost::hash and unordered_map, etc
 std::size_t hash_value(const ZZ& n);
 
-typedef boost::unordered_map<string, ZZ> variable_map;
-typedef boost::unordered_map<string, const Group*> group_map;
-typedef boost::unordered_map<string, string> commitment_map;
-typedef boost::unordered_map<string, DLRepresentation> dlr_map;
-typedef boost::unordered_map<string, vector<DecompNames> > decomp_map;
-typedef boost::unordered_map<ZZ, vector<ZZ>, boost::hash<ZZ> > decomp_val_map;
-typedef boost::unordered_map<string, VarInfo> variable_type_map;
-typedef boost::unordered_map<string, bool> privacy_map;
-typedef boost::unordered_map<string, ASTExprPtr> expr_map;
-typedef boost::unordered_map<string,ZZ> input_map;
-typedef boost::unordered_map<string, int> base_map;
-typedef boost::unordered_map<vector<string>, int> multi_base_map;
+typedef MAP_TYPE<string, ZZ> variable_map;
+typedef MAP_TYPE<string, const Group*> group_map;
+typedef MAP_TYPE<string, string> commitment_map;
+typedef MAP_TYPE<string, DLRepresentation> dlr_map;
+typedef MAP_TYPE<string, vector<DecompNames> > decomp_map;
+typedef MAP_TYPE<ZZ, vector<ZZ> > decomp_val_map;
+//typedef boost::unordered_map<ZZ, vector<ZZ>, boost::hash<ZZ> > decomp_val_map;
+typedef MAP_TYPE<string, VarInfo> variable_type_map;
+typedef MAP_TYPE<string, bool> privacy_map;
+typedef MAP_TYPE<string, ASTExprPtr> expr_map;
+typedef MAP_TYPE<string,ZZ> input_map;
+typedef MAP_TYPE<string, int> base_map;
+typedef MAP_TYPE<vector<string>, int> multi_base_map;
 
 /*! struct stores a proof, public variables needed for verifying the 
  * proof, and some possible additional variable information */

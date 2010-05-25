@@ -34,10 +34,12 @@ FEInitiator::~FEInitiator() {
 
 void FEInitiator::reset() {
 	exchangeType = TYPE_NONE;
+#ifdef DELETE_BUFFERS
 	for (unsigned i = 0; i < ptextB.size(); i++)
 		delete ptextB[i];
 	for (unsigned i = 0; i < ctextA.size(); i++)
 		delete ctextA[i];
+#endif
 	ctextA.clear();
 	ctextB.clear();
 	ptextA.clear();
@@ -45,6 +47,7 @@ void FEInitiator::reset() {
 	
 	delete contract;
 	contract = NULL;
+	// XXX MEMORY delete message
 }
 
 /*----------------------------------------------------------------------------*/
@@ -305,10 +308,10 @@ FEMessage* FEInitiator::barter(const vector<EncBuffer*>& ctextR,
 	// the same key
 	vector<ZZ> keys;
 	if (ctextA.size() > 1 && ctextA[0]->key == ctextA[1]->key)
-		keys.push_back(CommonFunctions::ZZFromBytes(ctextA[0]->key));
+		keys.push_back(ZZFromBytes(ctextA[0]->key));
 	else {
 		for (unsigned i = 0; i < ctextA.size(); i++) {
-			keys.push_back(CommonFunctions::ZZFromBytes(ctextA[i]->key));
+			keys.push_back(ZZFromBytes(ctextA[i]->key));
 		}
 	}
 	

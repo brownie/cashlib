@@ -111,7 +111,7 @@ bool Coin::verifyCoin() const {
 	variable_map coinPub = coinProof.publics;
 	SigmaProof cashProof = coinProof.proof;
 	verifier.compute(cashV, coinPub);
-	bool ecashVerified = verifier.verify(cashProof, stat);
+	bool ecashVerified = verifier.verifyProof(cashProof, stat);
 
 	// now do CL stuff		
 	startTimer();
@@ -144,6 +144,6 @@ ZZ Coin::getTPrime() const {
 }
 
 hash_t Coin::hash() const {
-    return Hash::hash(CommonFunctions::ZZToBytes(S), Hash::SHA1, string(), 
+    return Hash::hash(ZZToBytes(S), Hash::SHA1, string(), 
 					  Hash::TYPE_PLAIN);
 }

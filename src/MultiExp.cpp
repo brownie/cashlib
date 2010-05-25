@@ -37,10 +37,12 @@ struct MultiExpCacher {
 	// the multi-exponentiation cache
 	typedef __gnu_cxx::hash_map<hash_t, cache_entry_t> cache_t;
 	cache_t cache;
+	// XXX may cause lots of vec_ZZ::operator== tests in hash_map::find
+	//__gnu_cxx::hash_map<vec_ZZ, cache_entry_t> cache;
 
 	ZZ exp(const vector<ZZ>& bases, const vector<ZZ>& exponents, const ZZ& mod) {
 		hash_t h = Hash::hash(saveString(bases) +
-							  CommonFunctions::ZZToBytes(mod), 
+							  ZZToBytes(mod), 
 							  Hash::SHA1, string(), Hash::TYPE_PLAIN);
 		//cout << "[MultiExpCacher::exp] multi-exp bases length " << bases.length() 
 		//	 << " hash " << base64_encode(h.c_str(), h.size()) << endl;
@@ -54,7 +56,7 @@ struct MultiExpCacher {
 #endif
 			// not in cache: precompute G_i for these bases
 
-			// can only handle between 2 and 4 bases right now
+			// XXX can only handle between 2 and 4 bases right now
 			assert(blen > 1 && blen <= 4);
 
 			vector<ZZ> Gi(1 << blen);

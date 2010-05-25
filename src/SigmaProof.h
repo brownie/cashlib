@@ -15,9 +15,14 @@
 #include "CommonFunctions.h"
 #include "Debug.h"
 #include "Hash.h"
-#include <boost/unordered_map.hpp>
 
-typedef boost::unordered_map<string, ZZ> var_map;
+#ifdef USE_STD_MAP
+ #include <map>
+ typedef map<string, ZZ> var_map;
+#else
+ #include <boost/unordered_map.hpp>
+ typedef boost::unordered_map<string, ZZ> var_map;
+#endif
 
 class SigmaProof {
 	public:

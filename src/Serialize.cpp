@@ -115,7 +115,7 @@ template <class T, class Ar>
 inline void loadGZFile_(T & o, const char* fn) {
 #if 1
 	//std::ifstream ifs(fn, std::ios::in|std::ios::binary);
-    //assert(ifs.good()); // catch if file not found
+    //assert(ifs.good()); // XXX catch if file not found
 	bio::filtering_istream in;
 	in.push(bio::gzip_decompressor());
 	in.push(bio::file_source(fn, std::ios_base::binary));
@@ -132,7 +132,7 @@ inline void loadGZFile_(T & o, const char* fn) {
 #else
 
 	//	std::ifstream ifs(fn, std::ios::in|std::ios::binary);
-	//	assert(ifs.good()); // catch if file not found
+	//	assert(ifs.good()); // XXX catch if file not found
 	bio::filtering_istream f; 
 	f.push(bio::gzip_decompressor()); 
 	f.push(bio::file_source(fn, std::ios_base::binary)); 

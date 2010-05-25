@@ -36,7 +36,7 @@ void InterpreterVerifier::compute(variable_map &v, const variable_map &p,
 	computeIntermediateValues();
 }
 
-bool InterpreterVerifier::verify(const SigmaProof &proof, int stat) {
+bool InterpreterVerifier::verifyProof(const SigmaProof &proof, int stat) {
 	// if some commitments were already wrong, no point in continuing
 	if (badComs)
 		return false;

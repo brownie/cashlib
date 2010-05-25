@@ -62,7 +62,7 @@ vector<ZZ> VEProver::encrypt(const vector<ZZ> &messages, const string &label,
 		}
 	}
 	string hashKey = pk->getHashKey();
-	ZZ hash = CommonFunctions::ZZFromBytes(Hash::hash(ciphertext, label,
+	ZZ hash = ZZFromBytes(Hash::hash(ciphertext, label,
 													  hashAlg, hashKey));
 	e.variables["hash"] = hash;
 	ZZ eHash = PowerMod(eVal, hash, bigNSquared);
@@ -109,6 +109,7 @@ VECiphertext VEProver::verifiableEncrypt(const ZZ &commitment,
 	Environment e = prover.getEnvironment();
 
 	variable_map publics = prover.getPublicVariables();
+	// XXX: would like better way to do this
 	// can take a lot of stuff out of this map before giving to verifier
 	publics.erase("b");
 	publics.erase("d");

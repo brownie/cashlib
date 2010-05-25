@@ -30,7 +30,7 @@ class InterpreterVerifier : public Interpreter {
 
 		/*! given a proof, calls on the equality verifier to check if
 		 * the proof is valid or not */
-		bool verify(const SigmaProof &proof, int stat);
+		bool verifyProof(const SigmaProof &proof, int stat);
 
 	private:
 		/*! this computes all the commitment values in the rangeComs map */

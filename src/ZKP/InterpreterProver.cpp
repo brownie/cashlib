@@ -32,6 +32,7 @@ void InterpreterProver::compute(variable_map &vars, group_map grps) {
 		groupBinder.apply(tree);
 	}
 	// if groups and generators are there, add the rest
+	// XXX: should be more efficient way to do this
 	for (variable_map::iterator it = vars.begin(); it != vars.end(); ++it){
 		env.variables[it->first] = it->second;
 	}

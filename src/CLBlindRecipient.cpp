@@ -2,7 +2,6 @@
 #include "CLBlindRecipient.h"
 #include "ZKP/InterpreterVerifier.h"
 #include <assert.h>
-#include "Timer.h"
 
 CLBlindRecipient::CLBlindRecipient(const GroupRSA* pk, const Group* comGroup,
 								   int lx, const vector<ZZ> &coms, 
@@ -74,11 +73,9 @@ ProofMessage* CLBlindRecipient::getC(const vector<SecretValue>& privates,
 	}
 	// XXX: what about public messages?
 	
-	startTimer();
 	prover.compute(v);
 	variable_map publics = prover.getPublicVariables();
 	SigmaProof proof = prover.computeProof(hashAlg);
-	printTimer("[CLBlindRecipient] created proof");
 	
 	variable_map vals;
 	variable_map pVars = prover.getEnvironment().variables;
@@ -88,7 +85,7 @@ ProofMessage* CLBlindRecipient::getC(const vector<SecretValue>& privates,
 }
 
 bool CLBlindRecipient::verifySig(const ProofMessage &pm, int stat){
-	startTimer();
+	
 	InterpreterVerifier verifier;
     verifier.check("ZKP/examples/cl-issue.txt", inputs);
 	// XXX: does the verifier really not need any inputs of its own?
@@ -97,9 +94,7 @@ bool CLBlindRecipient::verifySig(const ProofMessage &pm, int stat){
 	variable_map pubs = pm.publics;
     verifier.compute(q, pubs, g);
 	
-	bool verified = verifier.verify(pm.proof, stat);
-	printTimer("[CLBlindRecipient] verified issuer proof");
-	return verified;
+	return verifier.verifyProof(pm.proof, stat);
 }
 
 vector<ZZ> CLBlindRecipient::createSig(const vector<ZZ> &partialSig) {

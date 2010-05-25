@@ -48,6 +48,8 @@ BankTool::BankTool(const BankTool &o)
 
 BankTool::~BankTool() {
 	delete bankParameters;
+	// XXX: this was causing a seg fault...
+	//delete publicBankParameters;
 }
 
 BankWithdrawTool* BankTool::getWithdrawTool(const ZZ &userPK, int wSize, 
@@ -65,7 +67,7 @@ bool BankTool::verifyIdentity(ProofMessage* idProof, const ZZ &userPK) const {
 	variable_map v;
 	v["pk_u"] = userPK;
 	verifier.compute(v, idProof->publics);
-	return verifier.verify(idProof->proof, stat);
+	return verifier.verifyProof(idProof->proof, stat);
 }
 
 bool BankTool::verifyCoin(const Coin &coin) const {

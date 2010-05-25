@@ -56,6 +56,7 @@ class UserWithdrawTool {
 
 		ZZ getUserPublicKey() const { return userPublicKey; }
 		int getDenomination() const { return coinDenom; }
+		bool isVerified() const { return verified; }
 
 	private:
 		/*! creates and stores CLBlindRecipient that interacts with

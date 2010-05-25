@@ -5,6 +5,9 @@
 #include "GroupPrime.h"
 #include "GroupRSA.h"
 
+// XXX: why does this class exist? seems like we are using BankTool and
+// BankWithdrawTool but not this class
+
 class Bank {
 
 	public:

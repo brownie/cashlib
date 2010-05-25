@@ -7,6 +7,8 @@
 bool VEVerifier::verify(const VECiphertext& text, const ZZ& x, 
                         const Group *grp, const string& label, 
                         const hashalg_t& hashAlg, int stat) {
+	// XXX: I'm not actually using ciphertext here... just prover's public
+	// variables map
 	// set everything up (a lot like the prover side)
 	Environment env;
 	env.variables["X"] = x;
@@ -39,5 +41,5 @@ bool VEVerifier::verify(const VECiphertext& text, const ZZ& x,
 	InterpreterVerifier verifier;
 	verifier.check("ZKP/examples/ve.txt", inputs, env.groups);
 	verifier.compute(env.variables, proof.getCommitments(), publics);
-	return verifier.verify(proof, stat);
+	return verifier.verifyProof(proof, stat);
 }

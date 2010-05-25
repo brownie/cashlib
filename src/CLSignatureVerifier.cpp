@@ -54,6 +54,6 @@ bool CLSignatureVerifier::verify(const ProofMessage* pm, int stat) {
 	variable_map publics1 = pm->proof.getCommitments();
 	variable_map publics2 = pm->publics;
 	verifier.compute(v, publics1, publics2, g);
-	return verifier.verify(proof, stat);
+	return verifier.verifyProof(proof, stat);
 }
 
