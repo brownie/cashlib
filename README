@@ -1,0 +1,23 @@
+ZKPDL (Zero-knowledge proof description language) and Cashlib
+
+A language-based system for zero-knowledge proofs and electronic cash (e-cash).
+
+For a detailed description of this software please see our paper in
+USENIX Security 2010:
+  http://cseweb.ucsd.edu/users/smeiklejohn/files/usenix10.pdf
+
+Pseudocode descriptions of our protocols are available in the
+"doc/pseudocodes" directory.  A short manual describing our language
+syntax can also be found in the "doc/manual" directory.  These
+documents are still under development and should improve in the
+future.
+
+Many example programs are available in the "src/ZKP/examples" directory.
+
+Feel free to contact us if you have any questions or comments!
+
+Chris Erway <cce@cs.brown.edu>
+Sarah Meiklejohn <smeiklej@cs.ucsd.edu>
+
+The Brownie Points project
+http://www.cs.brown.edu/research/brownie/
