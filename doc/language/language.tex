@@ -13,6 +13,8 @@
 
 \hbadness=10000
 
+\newcommand{\tbf}[1]{\textbf{#1}}
+
 %opening
 \title{Description of ZKPDL}
 %\author{Brownies}
@@ -20,14 +22,6 @@
 \begin{document}
 
 \maketitle
-
-
-
-%\newpage
-%\tableofcontents
-%\newpage
-
-
 
 
 \section{Syntax}\label{sec:syntax}
@@ -280,5 +274,7 @@ verifier.compute(vv, proofMsg.publics);
 bool verified = verifier.verify(proofMsg.proof);
 }
 \end{alltt}
+
+\input{grammar}
 
 \end{document}

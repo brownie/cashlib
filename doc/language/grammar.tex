@@ -1,0 +1,104 @@
+\section{ZKPDL Grammar}\label{sec:grammar}
+
+%\begin{figure}[h]
+To enhance the overview of our language, we provide here a full EBNF
+  grammar.\\
+
+ \fbox{
+\begin{minipage}[c]{6 in}
+
+ \centering
+
+\raggedright
+\tt
+\footnotesize
+%\small
+\noindent\tbf{spec} := (computation)? (proof)?\\
+\tbf{computation} := ``computation'' COLON ``given'' COLON 
+givenList ``compute'' COLON computeRandomList 
+computeEquationList\\
+\tbf{proof} := ``proof'' COLON ``given'' COLON givenList 
+			   ``prove'' ``knowledge'' ``of'' COLON knowledgeList 
+			   ``such'' ``that'' COLON suchThatList\\
+\tbf{suchThatList} := (suchThatRel)+\\
+\tbf{suchThatRel} := equalRelation \vline~rangeRelation \vline~forRelation\\
+\tbf{knowledgeList} := (exponentDecl \vline~integerDecl)+\\
+\tbf{givenList} := (groupDecl \vline~elementsDecl \vline~exponentDecl \vline~integerDecl)+\\
+\tbf{randomBndDecl} := (``integer'' \vline~``integers'') ``in'' LBRACKET expr COMMA expr
+				 RPAREN COLON idGeneralDeclList\\
+\tbf{randomPrimeDecl} := (``prime'' \vline~``primes'') ``of'' ``length'' expr COLON 
+				   idGeneralDeclList\\
+\tbf{computeRandomList} := (``random'' (randExponentDecl  \vline~randomPrimeDecl  \vline~randomBndDecl))*\\
+\tbf{groupDecl} := ``group'' COLON identifierDecl (EQUAL setDecl)? (``modulus'' COLON
+			 subscriptIdentifierDecl)?\\
+\tbf{randExponentDecl} := (``exponent'' \vline~``exponents'') ``in'' identifier COLON 
+					idGeneralDeclList\\
+\tbf{exponentDecl} := (``exponent'' \vline~``exponents'') ``in'' identifier COLON
+				idGeneralDeclList\\
+\tbf{elementsDecl} := (``element'' \vline~``elements'') ``in'' identifier COLON 
+				idGeneralDeclList (elementsEquationList)?\\
+\tbf{integerDecl} := (``integer'' \vline~``integers'') COLON idGeneralDeclList\\
+\tbf{computeEquationList} := (computeEquation)+\\
+\tbf{computeEquation} := equalDeclRelation  \vline~comRelation  \vline~forRelation\\
+\tbf{forRelation} := ``for'' LPAREN identifier COMMA expr COLON expr COMMA
+			   (rangeRelation  \vline~genEqual) RPAREN\\
+\tbf{forCom} := ``for'' LPAREN identifier COMMA expr COLON expr COMMA
+		  comRelation RPAREN\\
+\tbf{elementsEquationList} := (elementsEquation)+\\
+\tbf{elementsEquation} := comRelation  \vline~forCom\\
+\tbf{comRelation} := ``commitment'' ``to'' idSubList COLON subscriptIdentifier
+			   EQUAL expr\\
+\tbf{genEqual} := identifier (SUBSCRIPT (ID  \vline~INTLIT))? (EQUAL \vline~CEQUAL) expr\\
+\tbf{equalRelation} := subscriptIdentifier EQUAL expr\\
+\tbf{equalDeclRelation} := subscriptIdentifierDecl CEQUAL expr\\
+\tbf{rangeRelation} := ``range'' COLON expr (LTHAN \vline~LEQ) expr
+(LTHAN \vline~LEQ) expr  \vline~(GTHAN \vline~GEQ) expr (GTHAN \vline~GEQ) expr\\
+\tbf{expr} := prodExpr (ADD prodExpr  \vline~SUB prodExpr)*\\
+\tbf{forExpr} := ``for'' LPAREN identifier COMMA expr COLON expr COMMA
+		   (ADD  \vline~MUL) COMMA expr RPAREN\\
+\tbf{prodExpr} := powExpr (MUL powExpr  \vline~DIV powExpr)*\\
+\tbf{powExpr} := unaryExpr  \vline~baseExpr\\
+\tbf{unaryExpr} := SUB baseExpr  \vline~baseExpr\\
+\tbf{baseExpr} := INTLIT  \vline~subscriptIdentifier  \vline~LPAREN expr RPAREN  \vline~forExpr\\
+\tbf{setDecl} := LTHAN idGeneralDeclList GTHAN\\
+\tbf{idSubDeclList} := (subscriptIdentifierDecl)+\\
+\tbf{idGeneralDeclList} := (idDeclGeneral)+\\
+\tbf{idDeclList} := (identifierDecl)+\\
+\tbf{idSubList} := (subscriptIdentifier)+\\
+\tbf{idList} := (identifier)+\\
+\tbf{idDeclGeneral} := idDeclRange  \vline~subscriptIdentifierDecl\\
+\tbf{idDeclRange} := identifierDecl LBRACKET expr COLON expr RBRACKET\\
+\tbf{subscriptIdentifierDecl} := identifier (SUBSCRIPT (ID  \vline~INTLIT))?\\
+\tbf{identifierDecl} := ID\\
+\tbf{subscriptIdentifier} := identifier (SUBSCRIPT (ID  \vline~INTLIT))?\\
+\tbf{identifier} := ID\\
+
+% \noindent\tbf{LPAREN} := ``(''\\
+% \tbf{RPAREN} := ``)''\\
+% \tbf{LBRACKET} := ``[''\\
+% \tbf{RBRACKET} := ``]''\\
+% \tbf{LCURLY} := ``{''\\
+% \tbf{RCURLY} := ``}''\\
+% \tbf{COMMA} := ``,''\\
+% \tbf{SCOLON} := ``;''\\
+% \tbf{COLON} := ``:''\\
+% \tbf{CEQUAL} := ``:'' ``=''\\
+% \tbf{EQUAL} := ``=''\\
+% \tbf{LTHAN} := ``<''\\
+% \tbf{GTHAN} := ``>''\\
+% \tbf{LEQ} := ``<'' ``=''\\
+% \tbf{GEQ} := ``>'' ``=''\\
+% \tbf{ADD} := ``+''\\
+% \tbf{SUB} := ``-''\\
+% \tbf{MUL} := ``*''\\
+% \tbf{DIV} := ``/''\\
+% \tbf{POW} := ``\^''\\
+% \tbf{SUBSCRIPT} := ``\_''\\
+\tbf{ID} := ('a'..'z'  \vline~'A'..'Z')('a'..'z' \vline~'A'..'Z' \vline~'0'..'9')*\\
+\tbf{INTLIT} := '0'  \vline~('1'..'9')('0'..'9')*\\
+
+\end{minipage}
+}
+%\label{fig:ebnf}
+%\end{figure}
+
