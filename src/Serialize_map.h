@@ -75,7 +75,10 @@ inline void load(
    boost::serialization::stl::load_collection< 
        Archive, 
        boost::unordered_multimap<Key, Type, Hash, Compare, Allocator>, 
-       boost::serialization::stl::archive_input_multimap< 
+       // "archive_input_multimap" was removed in Dec 2009:
+       // http://lists.boost.org/boost-commit/2009/12/21089.php
+       // seems safe to use archive_input_map here, for all boost versions (??)
+       boost::serialization::stl::archive_input_map< 
            Archive, boost::unordered_multimap<Key, Type, Hash, 
 Compare, Allocator> 
 >, 
