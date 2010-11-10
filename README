@@ -1,0 +1,40 @@
+ZKPDL and Cashlib
+
+ZKPDL (Zero-Knowledge Proof Description Language) is a high-level
+language designed for specifying cryptographic operations and in
+particular zero-knowledge proofs.  Its corresponding interpreter will,
+given a program and a set of inputs, output a proof when acting as the
+prover and verify a proof when acting as the verifier.
+
+The Cashlib library provides functionality for endorsed e-cash and
+fair exchange protocols.  Classes are provided for withdrawing,
+spending, and depositing e-coins, as well as for bartering for files
+using an e-coin only as a placeholder.  Resolution protocols are
+provided as well.
+
+For a detailed description of this software please see our paper in
+USENIX Security 2010:
+  http://www.cs.brown.edu/research/brownie/usenix10.pdf
+
+Pseudocode descriptions of the cryptographic protocols used are
+available in the "doc/pseudocodes" directory.
+  http://github.com/brownie/cashlib/raw/master/doc/pseudocodes.pdf
+
+A short manual describing our language syntax can also be found in the
+"doc/manual" directory.
+  http://github.com/brownie/cashlib/raw/master/doc/language.pdf
+
+These documents are still under development and should improve in the
+future.
+
+Many example programs are available in the "src/ZKP/examples" directory.
+
+We would love to hear about your interest in ZKPDL and Cashlib.  Feel
+free to contact us if you have any questions or comments!
+
+Chris Erway <cce@cs.brown.edu>
+Sarah Meiklejohn <smeiklej@cs.ucsd.edu>
+
+The Brownie Points project
+brownie@cs.brown.edu
+http://www.cs.brown.edu/research/brownie/
