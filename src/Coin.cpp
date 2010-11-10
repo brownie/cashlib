@@ -111,7 +111,7 @@ bool Coin::verifyCoin() const {
 	variable_map coinPub = coinProof.publics;
 	SigmaProof cashProof = coinProof.proof;
 	verifier.compute(cashV, coinPub);
-	bool ecashVerified = verifier.verifyProof(cashProof, stat);
+	bool ecashVerified = verifier.verify(cashProof, stat);
 
 	// now do CL stuff		
 	startTimer();

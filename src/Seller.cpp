@@ -50,7 +50,6 @@ Seller::~Seller() {
 
 void Seller::reset() {
 	inProgress = false;
-	// XXX: I was getting seg faults otherwise...
 	//delete escrow;
 #ifdef DELETE_BUFFERS
 	for (unsigned i = 0; i < ctext.size(); i++) {

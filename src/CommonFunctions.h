@@ -12,16 +12,6 @@ class CommonFunctions {
 	
 	public:
 		static bool isTTP(const string &name);
-	
-		// XXX: there has to be a better (i.e. faster) way of doing this!
-		static vector<long> binaryRep(const ZZ &n) {
-			vector<long> bits;
-			for (long i = 0; i < NumBits(n); i++) {
-				if (bit(n, i) != 0)
-					bits.push_back(i);
-			}
-			return bits;
-		}
 
 		static string vecToBytes(const vector<ZZ>& vec) {
 			size_t sz = 0;

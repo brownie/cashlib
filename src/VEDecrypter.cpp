@@ -36,8 +36,6 @@ void VEDecrypter::setup(const int m, const int modLength,
 	InterpreterProver prover;
 	input_map inputs;
 	inputs["m"] = m;
-	// XXX: should we give groups in at beginning?  this program is really
-	// only run once...
 	prover.check("ZKP/examples/vedecrypter.txt", inputs, g);
 	prover.compute(v);
 	Environment env = prover.getEnvironment();

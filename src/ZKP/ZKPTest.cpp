@@ -193,7 +193,7 @@ int main(int argc, char** argv) {
 				InterpreterVerifier verifier;
 				verifier.check(fname);
 				verifier.compute(v, publics, g);
-				verifier.verifyProof(proof, stat);
+				verifier.verify(proof, stat);
 			}
 		}
 	} catch(antlr::ANTLRException& e) {

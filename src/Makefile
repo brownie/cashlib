@@ -97,7 +97,7 @@ UNITTEST_OBJS = $(UNITTEST_SRCS:.cpp=.o)
 #DEBUG_CFLAGS=-D_GLIBCXX_DEBUG -fno-inline # ANTLR segfaults with _GLIBCXX_DEBUG
 DEBUG_CFLAGS=-fno-inline
 LIBS=-L${NTLDIR}/lib -lgmpxx -lgmp -lm $(OPENSSL_LIB) -ldl -lboost_thread-mt -lboost_serialization-mt -lboost_iostreams-mt -lantlr
-CFLAGS=-O3 -Wno-deprecated -Wall  -Wno-sequence-point -Wno-parentheses -g -I. -I${NTLDIR}/include $(OPENSSL_INC) $(DEBUG_CFLAGS)
+CFLAGS=-O3 -Wno-deprecated -Wall -Wno-sequence-point -Wno-parentheses -g -I. -I${NTLDIR}/include $(OPENSSL_INC) $(DEBUG_CFLAGS) -DUSE_STD_MAP
 #CFLAGS=-O0 -fno-inline -Wno-deprecated -Wall  -Wno-sequence-point -Wno-parentheses -g -I. -I${NTLDIR}/include $(OPENSSL_INC) $(DEBUG_CFLAGS)
 
 CPP_SRCS=$(CASHSOURCE) $(TEST_SRCS) $(ZKPTEST_SRCS)

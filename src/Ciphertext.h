@@ -186,9 +186,8 @@ class Ciphertext {
 		void serialize(Archive& ar, const unsigned int ver) {
 			ar	& auto_nvp(key)
 				& auto_nvp(encAlg)
-				& auto_nvp(*buf) // XXX don't see how this can work
+				& auto_nvp(*buf) 
 				& auto_nvp(len)
-//				& make_nvp("buf", make_binary_object(buf, len)) // XXX probably won't load correctly
 				;
 		}
     };

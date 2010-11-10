@@ -21,10 +21,9 @@ vector<string> Arbiter::buyerResolve(const ZZ &r){
 vector<unsigned> Arbiter::sellerResolveI(const ResolutionPair &keyMessagePair){
 	// first, store the keys
 	keys = keyMessagePair.first;
-	// now, unwrap and check the buyMessage
+	// now, unwrap and check the buyMessage, then store everything
 	BuyMessage* buyMessage = keyMessagePair.second;
 	Coin coinPrime = buyMessage->getCoinPrime();
-	// XXX: any reason not to store a pointer for these two?
 	VECiphertext escrow = *buyMessage->getEscrow();
 	// want to store the contract as well (for stage II)
 	contract = *buyMessage->getContract();
@@ -140,10 +139,8 @@ vector<unsigned> Arbiter::responderResolveI(const vector<string> &ks,
 	// this is the regular encryption
 	vector<ZZ> sigEscrow = message->getEscrow();
 	// this is the verifiable encryption
-	// XXX: same thing with storing pointers
 	VECiphertext vEscrow = *setup->getEscrow();
 	contract = message->getContract();
-	
 	const Signature::Key* sigPK = setup->getPK();
 	
 	// verify that the signature given in BarterMessage is correct

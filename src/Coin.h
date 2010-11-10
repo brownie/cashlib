@@ -28,7 +28,7 @@ class Coin {
 
 		Coin(const Coin &o);
 	
-		Coin() {} // XXX: required by seller (for now at least)
+		Coin() {} // required by seller (for now at least)
 
 		bool verifyCoin() const;
 

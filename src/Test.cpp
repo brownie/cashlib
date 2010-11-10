@@ -510,7 +510,7 @@ double* testProofInteraction() {
 	timers[timer++] = printTimer(timer, "Verifier computed values for DLR "
 										"program");
 	startTimer();
-	bool verified = v.verifyProof(proof, stat);
+	bool verified = v.verify(proof, stat);
 	timers[timer++] = printTimer(timer, "Verifier verified proof for DLR program");
 
 	if (verified)
@@ -549,7 +549,7 @@ double* testProofInteraction() {
 	timers[timer++] = printTimer(timer, "Verifier computed values for "
 										"multiplication program");
 	startTimer();
-	bool verified2 = v.verifyProof(proof2, stat);
+	bool verified2 = v.verify(proof2, stat);
 	timers[timer++] = printTimer(timer, "Verifier verified proof for "
 										"multiplication program");
 
@@ -591,7 +591,7 @@ double* testProofInteraction() {
 	timers[timer++] = printTimer(timer, "Verifier computed values for range "
 										"program");
 	startTimer();
-	bool verified3 = v.verifyProof(proof3, stat);
+	bool verified3 = v.verify(proof3, stat);
 	timers[timer++] = printTimer(timer, "Verifier verified proof for range "
 										"program");
 

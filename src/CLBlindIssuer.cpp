@@ -1,6 +1,7 @@
 
 #include "CLBlindIssuer.h"
 #include "ZKP/InterpreterProver.h"
+#include "Timer.h"
 
 CLBlindIssuer::CLBlindIssuer(const GroupRSA* sk, const Group* comGroup, 
 							 int lx, const vector<ZZ> &coms,
@@ -67,7 +68,10 @@ ProofMessage* CLBlindIssuer::getPartialSignature(const ZZ &C,
     verifier.compute(v, proverPublics, pv);
 
 	SigmaProof proof = pm.proof;
-	if(verifier.verifyProof(proof, stat)){
+	startTimer();
+	bool verified = verifier.verify(proof, stat);
+	printTimer("[CLBlindIssuer] verified recipient proof");
+	if(verified){
 		// XXX: should we be checking that public values are in the 
 		// proper range? same goes for recipient side of things too...
 		if((int)publics.size() != numPublics) 
@@ -75,13 +79,12 @@ ProofMessage* CLBlindIssuer::getPartialSignature(const ZZ &C,
 			"[CLBlindIssuer::getPartialSignature] Number of public inputs "
 			"does not match the number the issuer was constructed with");
 
+		startTimer();
 		InterpreterProver prover;
 		prover.check("ZKP/examples/cl-issue.txt", inputs, g);
 
 		// want to keep the same inputs and groups, but need a new variable 
 		// map for doing issue program
-		// XXX: I bet there is a better way to just selectively erase
-		// stuff we don't need, so let's fix that later on
 		ZZ lx = v.at("l_x");
 		v.clear();
 		const GroupRSA* grp = (GroupRSA*) g.at("pkGroup");
@@ -102,6 +105,7 @@ ProofMessage* CLBlindIssuer::getPartialSignature(const ZZ &C,
 		
 		variable_map p = prover.getPublicVariables();
 		SigmaProof  pr = prover.computeProof(hashAlg);
+		printTimer("[CLBlindIssuer] computed issuer proof");
 		return new ProofMessage(partialSig, p, pr);
 	} else {
 		 throw CashException(CashException::CE_PARSE_ERROR,
