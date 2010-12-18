@@ -22,8 +22,6 @@
 
 #define UNUSED 0
 
-using boost::shared_ptr;
-
 void Interpreter::check(const string &programName, input_map inputs,
 						group_map groups) {
 	// first check if program has already been compiled

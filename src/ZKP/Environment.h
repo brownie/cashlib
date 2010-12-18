@@ -122,8 +122,8 @@ class Environment {
 		 * computed by verifier at runtime */
 		dlr_map rangeComs;
 		/*! information for caching powers of known bases */	
-		boost::shared_ptr<PowerCache> cache;
-		boost::shared_ptr<MultiExpCache> multiCache;
+		Ptr<PowerCache> cache;
+		Ptr<MultiExpCache> multiCache;
 
 		/*! clears out all the maps */
 		void clear();
