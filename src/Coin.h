@@ -60,16 +60,18 @@ class Coin {
 		ZZ getSPrime() const;
 		ZZ getTPrime() const;
 
+		void setParameters(const BankParameters* p) { parameters = p; }
+
 		hash_t hash() const;
 
 	private:
 		int stat, lx, coinDenom;
-		const BankParameters *parameters;
+		const BankParameters *parameters; // NOT serialized
 		int walletSize; // this is W
 		int coinIndex; // this is J
-		ZZ sk_u, s, t;
+		ZZ sk_u, s, t; // NOT serialized
 		ZZ R;
-		hashalg_t hashAlg;
+		hashalg_t hashAlg; // XXX NOT serialized (??)
 		ZZ B, C, D; // B is commitment to sk_u, C to s, and D to t
 		ZZ S, T; // S = g^(1/(s+J)), T = g^(1/(t+J))
 		vector<ZZ> endorsement; // this is x1, x2, r_y

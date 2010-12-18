@@ -26,8 +26,11 @@ class BuyMessage {
 
 		~BuyMessage() { /*delete contract;*/ delete escrow; }
 
-		//BuyMessage(const string& s, const BankParameters *bankP)
-		//	: coinPrime(bankP), contract(), escrow() {loadString(*this, s);}
+		BuyMessage(const string& s, const BankParameters *params) {
+			// need to set params for Coin contained in message
+			loadGZString(make_nvp("BuyMessage", *this), s); 
+			coinPrime.setParameters(params);
+		}
 
 		/*! check contents (verify coin and escrow) */
 		bool check(const VEPublicKey* pk, const int stat, const ZZ& R) const;

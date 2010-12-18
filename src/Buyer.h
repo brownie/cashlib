@@ -62,6 +62,7 @@ class Buyer {
 		bool canAbortLocally() {return !inProgress; };
 		
 		// setters
+		void setCoin(const Coin& coin);
 		void setTimeout() { timeout =time(NULL) + timeoutLength; }
 		void setSecurity(const int newstat) {stat = newstat;}
 		void setVEPublicKey(const VEPublicKey* newpk) {pk = newpk;}

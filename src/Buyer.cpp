@@ -117,7 +117,12 @@ VECiphertext Buyer::makeEscrow() {
 
 void Buyer::makeCoin(Wallet& w, const ZZ& R) {	
 	// get coin from wallet
-	coin = w.nextCoin(R);
+	setCoin( w.nextCoin(R) );
+}
+
+void Buyer::setCoin(const Coin& c)
+{	
+	coin = c;
 	endorsement = coin.getEndorsement();
 	coin.unendorse();
 }

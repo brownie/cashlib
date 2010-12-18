@@ -15,8 +15,7 @@ bool FEContract::checkTimeout(int timeoutTolerance) const {
 bool FEContract::checkEncAlgB(const cipher_t& encAlgR) const {
 	if(encAlgB != encAlgR)
 		throw CashException(CashException::CE_FE_ERROR,
-			"[FEContract::checkEncAlgB] Malformed contract (responder encryption "
-			"algorithm does not match)");
+							"[FEContract::checkEncAlgB] Malformed contract (responder encryption algorithm %s does not match %s)", encAlgR.c_str(), encAlgB.c_str());
 	return true;
 }
 

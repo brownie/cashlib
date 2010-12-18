@@ -57,8 +57,15 @@ Coin Wallet::nextCoin(const ZZ &rValue) {
 }
 
 Coin* Wallet::newCoin(const ZZ &rValue, int coinIndex) {
-	return new Coin(params, walletSize, coinIndex, sk_u, s, t, signature, stat, 
+	return new Coin(params, walletSize, coinIndex, 
+					sk_u, s, t, signature, stat, 
 					lx, rValue, coinDenom, hashAlg);
+}
+
+void Wallet::newCoin(Coin& coin, const ZZ &rValue, int coinIndex) {
+	coin = Coin(params, walletSize, coinIndex,
+				sk_u, s, t, signature, stat,
+				lx, rValue, coinDenom, hashAlg);
 }
 
 bool Wallet::replaceCoin(ZZ &index) {

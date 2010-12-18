@@ -28,6 +28,12 @@ class FESetupMessage {
 		
 		/*! destructor */
         ~FESetupMessage() { delete signPK; }
+
+		FESetupMessage(const string& s, const BankParameters *params) {
+			// need to set params for Coin contained in message
+			loadGZString(make_nvp("FESetupMessage", *this), s); 
+			coinPrime.setParameters(params);
+		}
 		
 		/*! check contents (verify coin and escrow) */
 		bool check(const VEPublicKey* pk, const int stat, const ZZ& R) const;

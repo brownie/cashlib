@@ -99,6 +99,7 @@ class FEInitiator {
 		void setRegularPublicKey(const VEPublicKey* newpk) {regularPK = newpk;}
 		void setSignatureKey(Signature::Key* newsignKey = NULL)
 		{ delete signKey; signKey = newsignKey ? new Signature::Key(*newsignKey) : NULL; }
+		void setExchangeType(int et) { exchangeType = et; }
 		
 		void reset();
 
