@@ -32,8 +32,8 @@ BankParameters::~BankParameters() {
 	secretKeys.clear();*/
 }
 
-const GroupRSA* BankParameters::getBankKey(int denomination) const {
-	map<int,GroupRSA*>::const_iterator i = denomToGroup.find(denomination);
+Ptr<const GroupRSA> BankParameters::getBankKey(int denomination) const {
+	map<int,Ptr<GroupRSA> >::const_iterator i = denomToGroup.find(denomination);
 	if (i == denomToGroup.end()) {
 		throw CashException(CashException::CE_UNKNOWN_ERROR,
 				"[BankParameters:getBankKey] Tried to find BankKey for "
@@ -43,8 +43,8 @@ const GroupRSA* BankParameters::getBankKey(int denomination) const {
 	return i->second;
 }
 
-int BankParameters::getCoinDenomination(GroupRSA* group) const {
-	map<GroupRSA*,int>::const_iterator i = groupToDenom.find(group);
+int BankParameters::getCoinDenomination(Ptr<GroupRSA> group) const {
+	map<Ptr<GroupRSA> ,int>::const_iterator i = groupToDenom.find(group);
 	if (i == groupToDenom.end()) {
 		throw CashException(CashException::CE_UNKNOWN_ERROR,
 			"[BankParameters:getCoinDenomination] Tried to find denomination "

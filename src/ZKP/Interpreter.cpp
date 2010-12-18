@@ -139,7 +139,7 @@ void Interpreter::cachePowers() {
 		vector<string> baseNames;
 		vector<ZZ> baseVals;
 		DLRepresentation rep = it->second;
-		const Group* g = env.groups.at(rep.group);
+		Ptr<const Group> g = env.groups.at(rep.group);
 		for (unsigned i = 0; i < rep.bases.size(); i++) {
 			string name = rep.bases[i]->toString();
 			baseNames.push_back(name);

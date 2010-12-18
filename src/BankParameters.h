@@ -33,11 +33,11 @@ class BankParameters {
 		int getType() const { return type; }
 
 		/*! getters */
-		const GroupPrime* getCashGroup() const { return ecashGroup; }
-		const vector<GroupRSA*> getBankKeys() const { return secretKeys; }
+		Ptr<const GroupPrime> getCashGroup() const { return ecashGroup; }
+		const vector<Ptr<GroupRSA> > getBankKeys() const { return secretKeys; }
 		vector<int> getDenominations() const { return coinDenominations; }
-		const GroupRSA* getBankKey(int coinDenomination) const;
-		int getCoinDenomination(GroupRSA* group) const;
+		Ptr<const GroupRSA> getBankKey(int coinDenomination) const;
+		int getCoinDenomination(Ptr<GroupRSA> group) const;
 
 		/*! clear all secrets and set type to public */
 		void makePublic();
@@ -45,13 +45,13 @@ class BankParameters {
 	private:
 		BankParameters() : ecashGroup(0), type(1) {}
 
-		GroupPrime* ecashGroup;
+		Ptr<GroupPrime> ecashGroup;
 		int type;
-		vector<GroupRSA*> secretKeys;
+		vector<Ptr<GroupRSA> > secretKeys;
 		// XXX: do we want this to be hardcoded?
 		const static int stat = 80;
-		map<GroupRSA*,int> groupToDenom;
-		map<int,GroupRSA*> denomToGroup;
+		map<Ptr<GroupRSA>, int> groupToDenom;
+		map<int, Ptr<GroupRSA> > denomToGroup;
 		vector<int> coinDenominations;
 
 		friend class boost::serialization::access;

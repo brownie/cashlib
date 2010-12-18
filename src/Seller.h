@@ -12,16 +12,16 @@ class Seller {
 		/*! constructor takes in various parameters and the arbiter's
 		 * public key */
 		Seller(const int timeoutLength, const int timeoutTolerance, 
-			   const VEPublicKey* pk, const int stat);
+			   Ptr<const VEPublicKey> pk, const int stat);
 
 		/*! constructor for when ctext has already been encrypted:
 		* ctext containing key and encAlg: will be freed by Seller
 		*/
-		Seller(EncBuffer* ctext, const int timeout, const int timeoutTolerance, 
-               const VEPublicKey* pk, const int stat);
+		Seller(Ptr<EncBuffer> ctext, const int timeout, const int timeoutTolerance, 
+               Ptr<const VEPublicKey> pk, const int stat);
 
-		Seller(vector<EncBuffer*> ctext, const int timeout, 
-			   const int timeoutTolerance, const VEPublicKey* pk, 
+		Seller(vector<Ptr<EncBuffer> > ctext, const int timeout, 
+			   const int timeoutTolerance, Ptr<const VEPublicKey> pk, 
 			   const int stat);
 		
 		/*! copy constructor */
@@ -31,15 +31,15 @@ class Seller {
 		~Seller();
 
 		/*! outputs the ciphertext of the file */
-		EncBuffer* encrypt(const Buffer* ptext, const cipher_t& encAlg, 
+		Ptr<EncBuffer> encrypt(Ptr<const Buffer> ptext, const cipher_t& encAlg, 
 						   const string& key = "");
-		vector<EncBuffer*> encrypt(const vector<const Buffer*>& ptext,
+		vector<Ptr<EncBuffer> > encrypt(const vector<Ptr<const Buffer> >& ptext,
 								   const cipher_t& encAlgs);
 		
 		/*! For BT client use only (if encrypt is not called) */
-		void setFiles(const Buffer* ptext, EncBuffer* ctext);
-		void setFiles(const vector<const Buffer*>& ptext, 
-					  const vector<EncBuffer*>& ctext);
+		void setFiles(Ptr<const Buffer> ptext, Ptr<EncBuffer> ctext);
+		void setFiles(const vector<Ptr<const Buffer> >& ptext, 
+					  const vector<Ptr<EncBuffer> >& ctext);
 
 		/*! if the message from the buyer is formed correctly, meaning
 		 * the contract is correctly formed (matches seller's knowledge),
@@ -47,9 +47,9 @@ class Seller {
 		 * by the seller),
 		 * and the verifiable escrow of the endorsement verifies,
 		 * then return the decryption key */
-		vector<string> sell(const BuyMessage* buyerInput, const ZZ& R, 
+		vector<string> sell(Ptr<const BuyMessage> buyerInput, const ZZ& R, 
 							const hash_t& ptHash);
-		vector<string> sell(const BuyMessage* buyerInput, const ZZ& R, 
+		vector<string> sell(Ptr<const BuyMessage> buyerInput, const ZZ& R, 
 							const vector<hash_t>& ptHashes);
 		
 		/*! Endorse the coin previously obtained in this exchange using
@@ -58,14 +58,14 @@ class Seller {
 		bool endorseCoin(const vector<ZZ> &endorsement);
         
         /*! Send the information required for resolution to the Arbiter */
-		pair<vector<string>, BuyMessage*> resolveI();
+		pair<vector<string>, Ptr<BuyMessage> > resolveI();
 		
 		/* Prove knowledge to the Arbiter of the challenged blocks*/
-		MerkleProof* resolveII(vector<unsigned> &challenges);
+		Ptr<MerkleProof> resolveII(vector<unsigned> &challenges);
 		
 		// getters
-		const Coin* getCoin() const { return new Coin(coinPrime); };
-		BuyMessage* getBuyMessage() const;
+		Ptr<Coin> getCoin() const { return Ptr<Coin>(new Coin(coinPrime)); };
+		Ptr<BuyMessage> getBuyMessage() const;
 		
 		// setters
 		void setTimeoutLength(const int newLength) 
@@ -73,29 +73,29 @@ class Seller {
 		void setTimeoutTolerance(const int newtimeoutTolerance) 
 						{timeoutTolerance = newtimeoutTolerance;}
 		void setSecurity(const int newstat) {stat = newstat;}
-		void setVEPublicKey(const VEPublicKey* newpk) {pk = newpk;}
+		void setVEPublicKey(Ptr<const VEPublicKey> newpk) {pk = newpk;}
 		
 		bool canAbortLocally() const {return !inProgress;};
 		void reset();
 				
 	protected:
-		bool check(const BuyMessage* buyerInput, const ZZ& R,
+		bool check(Ptr<const BuyMessage> buyerInput, const ZZ& R,
 				   const vector<hash_t>& ptHashes);
 	
 	private:
 		int timeoutLength;
 		int timeoutTolerance;
 		int stat;
-		const VEPublicKey* pk;
+		Ptr<const VEPublicKey> pk;
 
 		// Seller has encrypted ptext and sent ctext to Buyer
-		vector<const Buffer*> ptext;
+		vector<Ptr<const Buffer> > ptext;
 		// Seller will exchange ctext->key for Buyer's coin
-		vector<EncBuffer*> ctext;
+		vector<Ptr<EncBuffer> > ctext;
 
 		Coin coinPrime;
-		FEContract* contract;
-		VECiphertext* escrow;
+		Ptr<FEContract> contract;
+		Ptr<VECiphertext> escrow;
 		
 		bool inProgress;
 };

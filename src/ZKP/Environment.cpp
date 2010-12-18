@@ -37,7 +37,7 @@ void Environment::clearPrivates() {
 			variables.erase(p.first);
 }
 
-const Group* Environment::getGroup(const string &varName) const { 
+Ptr<const Group> Environment::getGroup(const string &varName) const { 
 	try {
 		return groups.at(varTypes.at(varName).group); 
 	} catch (std::out_of_range& e) {

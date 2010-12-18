@@ -365,7 +365,7 @@ void Ciphertext::AES_counter_crypt(const unsigned char *in, unsigned char *out,
     }
 }
 
-EncBuffer* Buffer::encrypt(const Ciphertext::cipher_t& alg, const string& k) const 
+Ptr<EncBuffer> Buffer::encrypt(const Ciphertext::cipher_t& alg, const string& k) const 
 {
 	string key = (!k.empty()) ? k : Ciphertext::generateKey(alg);
     size_t ctl;

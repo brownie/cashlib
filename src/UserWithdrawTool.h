@@ -12,7 +12,7 @@
 class UserWithdrawTool {
 
 	public:
-		UserWithdrawTool(int stat, int lx, const BankParameters *bp, 
+		UserWithdrawTool(int stat, int lx, Ptr<const BankParameters> bp, 
                          const ZZ &userPK, const ZZ &userSK, 
 						 const hashalg_t &hashAlg, int walletSize, int denom);
 		
@@ -37,13 +37,13 @@ class UserWithdrawTool {
 
 		/*! returns a SigmaProof that the first secret in the commitment 
 		 * C (from the CLBlindRecipient) is the user's secret Key */
-		ProofMessage* initiateSignature(const ZZ &bankContribution);
+		Ptr<ProofMessage> initiateSignature(const ZZ &bankContribution);
 
 		/*! return individual commitments to private messages */
 		vector<ZZ> getIndividualCommitments();
 
 		/*! return randomized proof from signature recipient */
-		ProofMessage* getCLProof() const;
+		Ptr<ProofMessage> getCLProof() const;
 
 		/*! verifies bank's PoKoDLR of 1/e and returns signature if 
 		 * it is valid */
@@ -66,12 +66,12 @@ class UserWithdrawTool {
 
 		/*! returns a SigmaProof that the A_sku commitment in the partial 
 		 * commitment is the user's secret Key */
-		ProofMessage* preSignatureProof();
+		Ptr<ProofMessage> preSignatureProof();
 
 		ZZ s; // stored so we can use it to get wallet
 		int stat, lx;
-		const BankParameters *bankParameters;
-		const GroupPrime *userKeyGroup;
+		Ptr<const BankParameters> bankParameters;
+		Ptr<const GroupPrime> userKeyGroup;
 
 		ZZ userSecretKey;
 		ZZ userPublicKey;
@@ -83,7 +83,7 @@ class UserWithdrawTool {
 		vector<ZZ> partialCommitment;
 		ZZ bankContribution;
 
-		CLBlindRecipient *signatureRecipient;
+		Ptr<CLBlindRecipient> signatureRecipient;
 				
 		// store whether or not bank's PoK of 1/e is valid
 		bool verified;

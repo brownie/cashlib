@@ -237,7 +237,7 @@ double* createParameters() {
 										"and saved");
 
 	// save BankParams from BankTool public params
-	const BankParameters* bankParameters = bankTool.getBankParameters();
+	Ptr<const BankParameters> bankParameters = bankTool.getBankParameters();
 	saveFile(make_nvp("BankParameters", *bankParameters), "bank."+sec+".params");
 	
 	// save a new user
@@ -265,12 +265,12 @@ double* loadParameters() {
 
 	BankTool bankTool(("tool."+sec+".bank").c_str());
 	BankParameters bp(("bank."+sec+".params").c_str());
-	const BankParameters* params = &bp;
+	Ptr<const BankParameters> params = &bp;
 
 	cout << "Number of denominations is " << params->getDenominations().size()
 		 << endl;
 
-	const GroupPrime* cashGrp = params->getCashGroup();
+	Ptr<const GroupPrime> cashGrp = params->getCashGroup();
 	cout << "Number of generators for cash group is " << 
 			cashGrp->getGenerators().size() << endl;
 
@@ -280,7 +280,7 @@ double* loadParameters() {
 	}
 
 	cout << "generators for bank public key for denom 512 are:" << endl;
-	const GroupRSA* bankPK = params->getBankKey(512);
+	Ptr<const GroupRSA> bankPK = params->getBankKey(512);
 	for (unsigned i = 0; i < bankPK->getGenerators().size(); i++) {
 		cout << i+1 << "-th generator is " << bankPK->getGenerator(i) << endl;
 	}
@@ -387,8 +387,8 @@ double* testSophie() {
 double* testClone() {
 	double* timers = new double[MAX_TIMERS];
 	istringstream iss(string("x * a ^ b_i + -2"));
-	ZKPLexer* lexer = new ZKPLexer(iss);
-	ZKPParser* parser = new ZKPParser(*lexer);
+	Ptr<ZKPLexer> lexer = new ZKPLexer(iss);
+	Ptr<ZKPParser> parser = new ZKPParser(*lexer);
 	ASTExprPtr n = parser->expr();
 	
 	Printer print;
@@ -403,8 +403,8 @@ double* testClone() {
 double* testFor() {
 	double* timers = new double[MAX_TIMERS];
 	istringstream iss(string("for(i, 1:3, &&, c_i := (g^x_i) * (h^r_i))"));
-	ZKPLexer* lexer = new ZKPLexer(iss);
-	ZKPParser* parser = new ZKPParser(*lexer);
+	Ptr<ZKPLexer> lexer = new ZKPLexer(iss);
+	Ptr<ZKPParser> parser = new ZKPParser(*lexer);
 	ASTNodePtr n = parser->spec();
 	
 	Printer print;
@@ -431,8 +431,8 @@ double* testConstSub() {
 							"r[1:l], vprime such that: for(i, 1:l, range: "
 							"-(2^l_x - 1) <= x_i < 2^l_x) C =  h^vprime * "
 							"for(i, 1:l, *, c_i * h^(-r_i))"));
-	ZKPLexer* lexer = new ZKPLexer(iss);
-	ZKPParser* parser = new ZKPParser(*lexer);
+	Ptr<ZKPLexer> lexer = new ZKPLexer(iss);
+	Ptr<ZKPParser> parser = new ZKPParser(*lexer);
 	ASTNodePtr n = parser->spec();
 	
 	Printer print;
@@ -475,9 +475,9 @@ double* testProofInteraction() {
 	// load up our parameters
 	BankTool bankTool("tool.80.bank");
 	BankParameters bp("bank.80.params");
-	const GroupPrime* cashG = bp.getCashGroup();
+	Ptr<const GroupPrime> cashG = bp.getCashGroup();
 	// just get PK for an arbitrary denomination
-	const GroupRSA* rangeG = bp.getBankKey(512);
+	Ptr<const GroupRSA> rangeG = bp.getBankKey(512);
 
 	group_map pgrps;
 	variable_map pvars;
@@ -616,7 +616,7 @@ double* testCLProver(){
 	int numPrivates = 3;
 	//create secret key
 	//creating group adds f as a generator
-	GroupRSA* sk = new GroupRSA("first", RSALength, stat);
+	Ptr<GroupRSA> sk = new GroupRSA("first", RSALength, stat);
 	for (int i = 0; i < numPrivates + numPublics; i++) {
 		sk->addNewGenerator();
 	}
@@ -624,7 +624,7 @@ double* testCLProver(){
 	sk->addNewGenerator();
 
 	//create public key from copying secret key and clearing secrets
-	GroupRSA* pk = new GroupRSA(*sk);
+	Ptr<GroupRSA> pk = new GroupRSA(*sk);
 	pk->clearSecrets();
 
 	//create random public messages
@@ -634,8 +634,8 @@ double* testCLProver(){
 		publics.push_back(RandomBits_ZZ(lx-1));
 	
 	//create random private messages and their commitments
-	const BankParameters* bp = new BankParameters("bank.80.params");
-	const GroupPrime* comGroup = bp->getCashGroup();
+	Ptr<const BankParameters> bp = new BankParameters("bank.80.params");
+	Ptr<const GroupPrime> comGroup = bp->getCashGroup();
 	startTimer();
 	vector<pair<ZZ,ZZ> > secretExps;	
 	vector<ZZ> coms;
@@ -660,7 +660,7 @@ double* testCLProver(){
 	CLBlindRecipient recip(pk, comGroup, lx, coms, numPrivates, numPublics);
 	timers[timer++] = printTimer(timer, "Created CL recipient");
 	startTimer();
-	ProofMessage* cVprimeProof = recip.getC(secretExps, hashAlg);
+	Ptr<ProofMessage> cVprimeProof = recip.getC(secretExps, hashAlg);
 	timers[timer++] = printTimer(timer, "Recipient sent proof of knowledge "
 										"of values in commitments");
 	cout << "Recipient proof size: " << saveGZString(*cVprimeProof).size() <<endl;
@@ -673,7 +673,7 @@ double* testCLProver(){
 	
 	startTimer();
 	ZZ C = cVprimeProof->vars.at("C");
-	ProofMessage* partialSigProof = issu.getPartialSignature(C, publics, 
+	Ptr<ProofMessage> partialSigProof = issu.getPartialSignature(C, publics, 
 															 *cVprimeProof,
 															 stat, hashAlg);
 	timers[timer++] = printTimer(timer, "Issuer verified recipient's proof "
@@ -707,7 +707,7 @@ double* testCLProver(){
 	CLSignatureProver prover(pk, comGroup, lx, coms, numPrivates, numPublics);
 	timers[timer++] = printTimer(timer, "Created CL prover");
 	startTimer();
-	ProofMessage* publicProof = prover.getProof(signature, secretExps, 
+	Ptr<ProofMessage> publicProof = prover.getProof(signature, secretExps, 
 												publics, hashAlg);
 	timers[timer++] = printTimer(timer, "Prover sent proof of possession of "
 										"CL signature");
@@ -735,26 +735,26 @@ double* testCLGroups() {
 	hashalg_t hashAlg = Hash::SHA1;
 
 	// want to have a different group for each commitment
-	GroupPrime* group1 = new GroupPrime("cash", modLength, 2*stat, stat);
+	Ptr<GroupPrime> group1 = new GroupPrime("cash", modLength, 2*stat, stat);
 	group1->addNewGenerator();
-	GroupPrime* group2 = new GroupPrime("cash", modLength, 2*stat, stat);
+	Ptr<GroupPrime> group2 = new GroupPrime("cash", modLength, 2*stat, stat);
 	group2->addNewGenerator();
-	GroupPrime* group3 = new GroupPrime("cash", modLength, 2*stat, stat);
+	Ptr<GroupPrime> group3 = new GroupPrime("cash", modLength, 2*stat, stat);
 	group3->addNewGenerator();
-	vector<Group*> grps;
+	vector<Ptr<Group> > grps;
 	grps.push_back(group1);
 	grps.push_back(group2);
 	grps.push_back(group3);
 
 	// also need RSA group for CL signature stuff
-	GroupRSA* pk = new GroupRSA("bank", modLength, stat); // f
+	Ptr<GroupRSA> pk = new GroupRSA("bank", modLength, stat); // f
 	pk->addNewGenerator(); // g_1
 	pk->addNewGenerator(); // g_2
 	pk->addNewGenerator(); // g_3
 	pk->addNewGenerator(); // g_4
 	pk->addNewGenerator(); // h
 
-	GroupRSA* sk = new GroupRSA(*pk);
+	Ptr<GroupRSA> sk = new GroupRSA(*pk);
 	pk->clearSecrets();
 
 	// now set up commitments and such
@@ -800,12 +800,12 @@ double* testCLGroups() {
 	timers[timer++] = printTimer(timer, "CLBlindIssuer created");
 
 	startTimer();
-	ProofMessage* initial = recipient.getC(secretExps, hashAlg);
+	Ptr<ProofMessage> initial = recipient.getC(secretExps, hashAlg);
 	timers[timer++] = printTimer(timer, "Initial proof from recipient created");
 	ZZ C = initial->vars.at("C");
 
 	startTimer();
-	ProofMessage* bankProof = issuer.getPartialSignature(C, publics, *initial, 
+	Ptr<ProofMessage> bankProof = issuer.getPartialSignature(C, publics, *initial, 
 														 stat, hashAlg);
 	timers[timer++] = printTimer(timer, "Issuer's proof created");
 
@@ -830,7 +830,7 @@ double* testCLGroups() {
 	timers[timer++] = printTimer(timer, "CL signature prover created");
 
 	startTimer();
-	ProofMessage* sigProof = prover.getProof(sig, secretExps, publics,
+	Ptr<ProofMessage> sigProof = prover.getProof(sig, secretExps, publics,
 											 hashAlg);
 	timers[timer++] = printTimer(timer, "Proof of knowledge of CL signature "
 										"created");
@@ -859,14 +859,14 @@ double* testVE() {
 
 	// later will just save and load, but for now make keys from scratch
 	VEDecrypter decrypter(m, modLength, stat);
-	VEPublicKey* pk = decrypter.getPK();
+	Ptr<VEPublicKey> pk = decrypter.getPK();
 
 	// set up the prover
 	VEProver prover(pk);
 
 	// need all commitment values and such
 	// XXX: need test where this group can be of any form
-	GroupRSA* rsaGroup = new GroupRSA("bank", modLength, stat); // f_3
+	Ptr<GroupRSA> rsaGroup = new GroupRSA("bank", modLength, stat); // f_3
 	rsaGroup->addNewGenerator(); // gprime
 	rsaGroup->addNewGenerator(); // hprime
 	rsaGroup->addNewGenerator(); // f_1
@@ -918,7 +918,7 @@ double* testVE() {
 										"encryption completed");
 
 	// also try it with a prime-order group
-	GroupPrime* primeGroup = new GroupPrime("bank", modLength, 2*stat, stat);
+	Ptr<GroupPrime> primeGroup = new GroupPrime("bank", modLength, 2*stat, stat);
 	primeGroup->addNewGenerator();
 	primeGroup->addNewGenerator();
 	primeGroup->addNewGenerator();
@@ -1034,14 +1034,14 @@ double* testWithdraw() {
 	
 	// load bank and user from file
 	BankTool bankTool("tool.80.bank");
-	const BankParameters* params = new BankParameters("bank.80.params");
+	Ptr<const BankParameters> params = new BankParameters("bank.80.params");
 	UserTool userTool("tool.80.user", params, "public.80.arbiter",
 					  "public.regular.80.arbiter");
 /*
 	startTimer();
 	BankTool bankTool(stat, lx, modLen, hashAlg, denoms);
 	timers[timer++] = printTimer(timer, "BankTool created");
-	const BankParameters *params = bankTool.getBankParameters();
+	Ptr<const BankParameters> params = bankTool.getBankParameters();
 
 	// this is PK used for verifiable encryption
 	startTimer();
@@ -1067,7 +1067,7 @@ double* testWithdraw() {
 	// step 1: user sends bank the public key and desired wallet size
 	ZZ userPK = userTool.getPublicKey();
 	// also uses tool for withdrawing
-	UserWithdrawTool* uwTool = userTool.getWithdrawTool(walletSize, coinDenom);
+	Ptr<UserWithdrawTool> uwTool = userTool.getWithdrawTool(walletSize, coinDenom);
 	// also sends partial commitment (in partial commitment to s')
 	startTimer();
 	ZZ sPrimeCom = uwTool->createPartialCommitment();
@@ -1075,7 +1075,7 @@ double* testWithdraw() {
 	cout << "Partial commitment size: " <<saveGZString(sPrimeCom).size()<<endl;
 
 	// step 2: now bank needs withdraw tool as well
-	BankWithdrawTool* bwTool = bankTool.getWithdrawTool(userPK, walletSize,
+	Ptr<BankWithdrawTool> bwTool = bankTool.getWithdrawTool(userPK, walletSize,
 														coinDenom);
 	// given commitment to s', computes full commitment to s = s' + r'
 	startTimer();
@@ -1088,8 +1088,8 @@ double* testWithdraw() {
 	// step 3: now, the user sends bank a proof of identity and a proof
 	// from the CL signature protocol
 	startTimer();
-	ProofMessage* idProof = uwTool->initiateSignature(bankPart);
-	ProofMessage* clProof = uwTool->getCLProof();
+	Ptr<ProofMessage> idProof = uwTool->initiateSignature(bankPart);
+	Ptr<ProofMessage> clProof = uwTool->getCLProof();
 	timers[timer++] = printTimer(timer, "User created proof of identity, as "
 										"well as all commitments");
 	cout << "ID proof size: " << saveGZString(*idProof).size() << endl;
@@ -1099,7 +1099,7 @@ double* testWithdraw() {
 	// signature
 	// bank also needs to send a proof of knowledge of 1/e
 	startTimer();
-	ProofMessage* pm = bwTool->sign(idProof, clProof);
+	Ptr<ProofMessage> pm = bwTool->sign(idProof, clProof);
 	timers[timer++] = printTimer(timer, "Bank created PoK of 1/e and partial "
 										"signature");
 	cout << "Bank proof size: " << saveGZString(*pm).size() << endl;
@@ -1159,7 +1159,7 @@ double* testCoin() {
 	startTimer();
 	// load bank and user from file
 	BankTool bankTool("tool.80.bank");
-	const BankParameters* params = new BankParameters("bank.80.params");
+	Ptr<const BankParameters> params = new BankParameters("bank.80.params");
 	UserTool userTool("tool.80.user", params, "public.80.arbiter",
 					  "public.regular.80.arbiter");
 	// also load wallet 
@@ -1257,14 +1257,14 @@ double* testBuy() {
 	hashalg_t hashAlg = Hash::SHA1;
 	cipher_t encAlg = "aes-128-ctr";
 
-	const BankParameters* params = new BankParameters("bank.80.params");
+	Ptr<const BankParameters> params = new BankParameters("bank.80.params");
 	Wallet wallet("wallet.80", params);
 	VEPublicKey vepk("public.80.arbiter");
 
 	ZZ R = RandomBits_ZZ(params->getCashGroup()->getOrderLength());
 
 	// just use random garbage for file
-	Buffer* ptext = new Buffer(string("randomdata01234567890123456789"));
+	Ptr<Buffer> ptext = new Buffer(string("randomdata01234567890123456789"));
 	Hash::hash_t ptHash = ptext->hash(hashAlg, string(), Hash::TYPE_PLAIN);
 
 	// create buyer and seller objects
@@ -1273,13 +1273,13 @@ double* testBuy() {
 
 	// step 1: seller gives ciphertext to buyer
 	startTimer();
-	EncBuffer* ctext = seller.encrypt(ptext, encAlg);
+	Ptr<EncBuffer> ctext = seller.encrypt(ptext, encAlg);
 	// XXX: serializing ciphertexts doesn't really work
 	timers[timer++] = printTimer(timer, "Seller created ciphertext");
 
 	// step 2: buyer creates contract and verifiable escrow 
 	startTimer();
-	BuyMessage* buyMessage = buyer.buy(&wallet, ctext, ptHash, R);
+	Ptr<BuyMessage> buyMessage = buyer.buy(&wallet, ctext, ptHash, R);
 	timers[timer++] = printTimer(timer, "Buyer created buy message");
 
 	cout << "Buy message size: " << saveGZString(*buyMessage).size() << endl;
@@ -1293,7 +1293,7 @@ double* testBuy() {
 	// test saving and loading BuyMessage
 	string bmsg = saveGZString(*buyMessage);
 	saveXML(make_nvp("BuyMessage", *buyMessage), "buym1.xml");
-	BuyMessage* loadedBMsg = new BuyMessage(bmsg, params);
+	Ptr<BuyMessage> loadedBMsg = new BuyMessage(bmsg, params);
 	saveXML(make_nvp("BuyMessage", *loadedBMsg), "buym2.xml");
 
 	cout << "Loaded Buy message size: " << saveGZString(*loadedBMsg).size() << endl;
@@ -1341,7 +1341,7 @@ double* testBarter() {
 	cipher_t encAlg = "aes-128-ctr", signAlg = "DSA";
 	int hashType = Hash::TYPE_PLAIN;
 	
-	const BankParameters* params = new BankParameters("bank.80.params");
+	Ptr<const BankParameters> params = new BankParameters("bank.80.params");
 	Wallet wallet("wallet.80", params);
 	VEPublicKey vepk("public.80.arbiter");
 	VEPublicKey pk("public.regular.80.arbiter");
@@ -1353,14 +1353,14 @@ double* testBarter() {
 	char bufA[1024], bufB[1024];
 	RAND_pseudo_bytes((unsigned char*) bufA, sizeof(bufA));
 	RAND_pseudo_bytes((unsigned char*) bufB, sizeof(bufB));
-	Buffer* aData = new Buffer(bufA, sizeof(bufA));
-	Buffer* bData = new Buffer(bufB, sizeof(bufB));
+	Ptr<Buffer> aData = new Buffer(bufA, sizeof(bufA));
+	Ptr<Buffer> bData = new Buffer(bufB, sizeof(bufB));
 	hash_t aHash = aData->hash(hashAlg, trackerHashKey, hashType);
 	hash_t bHash = bData->hash(hashAlg, trackerHashKey, hashType);
 
 	// want to generate a signing key 
 	startTimer();
-	Signature::Key* signKey = Signature::Key::generateKey(signAlg);
+	Ptr<Signature::Key> signKey = Signature::Key::generateKey(signAlg);
 	timers[timer++] = printTimer(timer, "Signature key generated");
 
 	// create initiator and responder objects
@@ -1369,7 +1369,7 @@ double* testBarter() {
 
 	// step 1: Alice sends Bob a setup message
 	startTimer();
-	FESetupMessage* setupMsg = alice.setup(&wallet, R, signAlg);
+	Ptr<FESetupMessage> setupMsg = alice.setup(&wallet, R, signAlg);
 	timers[timer++] = printTimer(timer, "Alice created setup message");
 	cout << "Setup size: " << saveGZString(*setupMsg).size() << endl;
 
@@ -1380,21 +1380,21 @@ double* testBarter() {
 		cout << "The setup message was valid" << endl;
 	else
 		cout << "Verification of the setup message failed" << endl;
-	EncBuffer* bCipher = bob.startRound(bData, encAlg);
+	Ptr<EncBuffer> bCipher = bob.startRound(bData, encAlg);
 	timers[timer++] = printTimer(timer, "Bob checked setup message and "
 										"sent back his ciphertext");
 	cout << "Bob ciphertext size: " << saveGZString(*bCipher).size() << endl;
 
 	// step 3: Alice sends her ciphertext
 	startTimer();
-	EncBuffer* aCipher = alice.continueRound(aData, encAlg);
+	Ptr<EncBuffer> aCipher = alice.continueRound(aData, encAlg);
 	timers[timer++] = printTimer(timer, "Alice sent back her own ciphertext");
 	cout << "Alice ciphertext size: " << saveGZString(*aCipher).size() << endl;
 
 	// step 4: Alice continues by preparing and sending a contract and
 	// an escrow of her key (and her signature on it)
 	startTimer();
-	FEMessage* message = alice.barter(bCipher, bHash, aHash);
+	Ptr<FEMessage> message = alice.barter(bCipher, bHash, aHash);
 	timers[timer++] = printTimer(timer, "Alice sent the contract for bartering");
 	cout << "Message size: " << saveGZString(*message).size() << endl;
 
@@ -1428,21 +1428,21 @@ double* testBarter() {
 	bob.reset();
 
 	// use new files
-	Buffer* aData2 = new Buffer(string("thisismysuperraddataalice00"));
-	Buffer* bData2 = new Buffer(string("thisismysuperraddatabob0000"));
+	Ptr<Buffer> aData2 = new Buffer(string("thisismysuperraddataalice00"));
+	Ptr<Buffer> bData2 = new Buffer(string("thisismysuperraddatabob0000"));
 	hash_t aHash2 = aData2->hash(hashAlg, trackerHashKey, hashType);
 	hash_t bHash2 = bData2->hash(hashAlg, trackerHashKey, hashType);
 
 	startTimer();
-	EncBuffer* bCipher2 = bob.startRound(bData2, encAlg);
+	Ptr<EncBuffer> bCipher2 = bob.startRound(bData2, encAlg);
 	timers[timer++] = printTimer(timer, "Bob sent his second ciphertext");
 
 	startTimer();
-	EncBuffer* aCipher2 = alice.continueRound(aData2, encAlg);
+	Ptr<EncBuffer> aCipher2 = alice.continueRound(aData2, encAlg);
 	timers[timer++] = printTimer(timer, "Alice sent her second ciphertext");
 
 	startTimer();
-	FEMessage* message2 = alice.barter(bCipher2, bHash2, aHash2);
+	Ptr<FEMessage> message2 = alice.barter(bCipher2, bHash2, aHash2);
 	timers[timer++] = printTimer(timer, "Alice sent her message for the "
 										"second set of files");
 
@@ -1485,7 +1485,7 @@ double* testBuyWithSetup() {
 	string signAlg = "DSA", encAlg = "aes-128-ctr";
 	int hashType = Hash::TYPE_PLAIN;
 
-	const BankParameters* params = new BankParameters("bank.80.params");
+	Ptr<const BankParameters> params = new BankParameters("bank.80.params");
 	Wallet wallet("wallet.80", params);
 	VEPublicKey vepk("public.80.arbiter");
 	VEPublicKey pk("public.regular.80.arbiter");
@@ -1496,12 +1496,12 @@ double* testBuyWithSetup() {
 	// get random files for Alice and Bob
 	char bufB[1024];
 	RAND_pseudo_bytes((unsigned char*) bufB, sizeof(bufB));
-	Buffer* data = new Buffer(bufB, sizeof(bufB));
+	Ptr<Buffer> data = new Buffer(bufB, sizeof(bufB));
 	hash_t hash = data->hash(hashAlg, trackerHashKey, hashType);
 
 	// want to generate a signing key 
 	startTimer();
-	Signature::Key* signKey = Signature::Key::generateKey(signAlg);
+	Ptr<Signature::Key> signKey = Signature::Key::generateKey(signAlg);
 	timers[timer++] = printTimer(timer, "Signature key generated");
 	
 	// create initiator and responder objects
@@ -1510,21 +1510,21 @@ double* testBuyWithSetup() {
 
 	// step 1: Alice sends Bob a setup message
 	startTimer();
-	FESetupMessage* setupMsg = alice.setup(&wallet, R, signAlg);
+	Ptr<FESetupMessage> setupMsg = alice.setup(&wallet, R, signAlg);
 	timers[timer++] = printTimer(timer, "Alice created setup message");
 	cout << "Setup size: " << saveGZString(*setupMsg).size() << endl;
 
 	// step 2: Bob checks setup message and outputs his ciphertext
 	startTimer();
 	bob.setup(setupMsg, R);
-	EncBuffer* ctext = bob.startRound(data, encAlg);
+	Ptr<EncBuffer> ctext = bob.startRound(data, encAlg);
 	timers[timer++] = printTimer(timer, "Bob checked setup message and "
 										"output ciphertext");
 	cout << "Ciphertext size: " << saveGZString(*ctext).size() << endl;
 
 	// step 3: Alice decides to buy
 	startTimer();
-	FEMessage* msg = alice.buy(ctext, hash);
+	Ptr<FEMessage> msg = alice.buy(ctext, hash);
 	timers[timer++] = printTimer(timer, "Alice decided to buy and sent contract");
 	cout << "Message size: " << saveGZString(*msg).size() << endl;
 
@@ -1572,7 +1572,7 @@ double* testBuyResolution()  {
 	VEDecrypter decrypter(&pk, &sk);
 
 	BankTool bankTool("tool.80.bank");
-	const BankParameters* params = new BankParameters("bank.80.params");
+	Ptr<const BankParameters> params = new BankParameters("bank.80.params");
 	Wallet wallet("wallet.80", params);
 
 	string trackerHashKey = vepk.getHashKey();
@@ -1580,7 +1580,7 @@ double* testBuyResolution()  {
 	
 	char buf[1024];
 	RAND_pseudo_bytes((unsigned char*) buf, sizeof(buf));
-	Buffer* ptext = new Buffer(buf, sizeof(buf));
+	Ptr<Buffer> ptext = new Buffer(buf, sizeof(buf));
 	hash_t ptHash = ptext->hash(hashAlg, trackerHashKey, hashType);
 	
 	// now let's create our buyer and seller objects
@@ -1589,12 +1589,12 @@ double* testBuyResolution()  {
 	
 	// step 1: seller gives ciphertext to buyer
 	startTimer();
-	EncBuffer* ctext = seller.encrypt(ptext, encAlg);
+	Ptr<EncBuffer> ctext = seller.encrypt(ptext, encAlg);
 	timers[timer++] = printTimer(timer, "Seller created ciphertext");
 
 	// step 2: buyer creates contract and verifiable escrow 
 	startTimer();
-	BuyMessage* buyMessage = buyer.buy(&wallet, ctext, ptHash, R);
+	Ptr<BuyMessage> buyMessage = buyer.buy(&wallet, ctext, ptHash, R);
 	timers[timer++] = printTimer(timer, "Buyer created buy message");
 
 	// step 3: seller checks contract and escrow, returns key(s) if valid 
@@ -1630,7 +1630,7 @@ double* testBuyResolution()  {
 
 	// step 3: the seller prepares a proof that his keys are valid 
 	startTimer();
-	MerkleProof* proof = seller.resolveII(chal);
+	Ptr<MerkleProof> proof = seller.resolveII(chal);
 	timers[timer++] = printTimer(timer, "The seller sent his proof back to "
 										"the arbiter");
 
@@ -1662,7 +1662,7 @@ double* testBarterResolution() {
 	cipher_t encAlg = "aes-128-ctr", signAlg = "DSA";
 	int hashType = Hash::TYPE_PLAIN;
 	
-	const BankParameters* params = new BankParameters("bank.80.params");
+	Ptr<const BankParameters> params = new BankParameters("bank.80.params");
 	Wallet wallet("wallet.80", params);
 
 	VEPublicKey vepk("public.80.arbiter");
@@ -1680,14 +1680,14 @@ double* testBarterResolution() {
 	char bufA[1024], bufB[1024];
 	RAND_pseudo_bytes((unsigned char*) bufA, sizeof(bufA));
 	RAND_pseudo_bytes((unsigned char*) bufB, sizeof(bufB));
-	Buffer* aData = new Buffer(bufA, sizeof(bufA));
-	Buffer* bData = new Buffer(bufB, sizeof(bufB));
+	Ptr<Buffer> aData = new Buffer(bufA, sizeof(bufA));
+	Ptr<Buffer> bData = new Buffer(bufB, sizeof(bufB));
 	hash_t aHash = aData->hash(hashAlg, trackerHashKey, hashType);
 	hash_t bHash = bData->hash(hashAlg, trackerHashKey, hashType);
 
 	// want to generate a signing key 
 	startTimer();
-	Signature::Key* signKey = Signature::Key::generateKey(signAlg);
+	Ptr<Signature::Key> signKey = Signature::Key::generateKey(signAlg);
 	timers[timer++] = printTimer(timer, "Signature key generated");
 
 	// create initiator and responder objects
@@ -1696,7 +1696,7 @@ double* testBarterResolution() {
 
 	// step 1: Alice sends Bob a setup message
 	startTimer();
-	FESetupMessage* setupMsg = alice.setup(&wallet, R, signAlg);
+	Ptr<FESetupMessage> setupMsg = alice.setup(&wallet, R, signAlg);
 	timers[timer++] = printTimer(timer, "Alice created setup message");
 	
 	// step 2: Bob checks setup message and outputs his file ciphertext
@@ -1706,19 +1706,19 @@ double* testBarterResolution() {
 		cout << "The setup message was valid" << endl;
 	else
 		cout << "Verification of the setup message failed" << endl;
-	EncBuffer* bCipher = bob.startRound(bData, encAlg);
+	Ptr<EncBuffer> bCipher = bob.startRound(bData, encAlg);
 	timers[timer++] = printTimer(timer, "Bob checked setup message and sent "
 										"back his ciphertext");
 
 	// step 3: Alice sends her ciphertext
 	startTimer();
-	EncBuffer* aCipher = alice.continueRound(aData, encAlg);
+	Ptr<EncBuffer> aCipher = alice.continueRound(aData, encAlg);
 	timers[timer++] = printTimer(timer, "Alice sent back her own ciphertext");
 
 	// step 4: Alice continues by preparing and sending a contract and
 	// an escrow of her key (and her signature on it)
 	startTimer();
-	FEMessage* message = alice.barter(bCipher, bHash, aHash);
+	Ptr<FEMessage> message = alice.barter(bCipher, bHash, aHash);
 	timers[timer++] = printTimer(timer, "Alice sent the contract for bartering");
 
 	// step 5: Bob receives Alice's ciphertext and contract and checks 
@@ -1736,7 +1736,7 @@ double* testBarterResolution() {
 
 	// step 1: responder sends request to arbiter
 	startTimer();
-	FEResolutionMessage* req = bob.resolveI();
+	Ptr<FEResolutionMessage> req = bob.resolveI();
 	timers[timer++] = printTimer(timer, "Bob sent resolution request to "
 										"the arbiter");
 
@@ -1747,7 +1747,7 @@ double* testBarterResolution() {
 
 	// step 3: Bob sends proof that his keys are valid
 	startTimer();
-	MerkleProof* proof = bob.resolveII(chal);
+	Ptr<MerkleProof> proof = bob.resolveII(chal);
 	timers[timer++] = printTimer(timer, "Bob sent a proof that his keys "
 										"were valid");
 
@@ -1774,7 +1774,7 @@ double* testBarterResolution() {
 	// step 5: if Alice's key wasn't valid, Bob needs to prove this to
 	// the arbiter
 	startTimer();
-	MerkleProof* badKeyProof = bob.resolveIII(aKey);
+	Ptr<MerkleProof> badKeyProof = bob.resolveIII(aKey);
 
 	// step 6: finally, if Bob's proof (of Alice's bad key) is correct,
 	// the arbiter will give him the endorsement
@@ -1802,8 +1802,8 @@ double* testSerializeAbstract() {
 	double* timers = new double[MAX_TIMERS];
 	// test serializing base and derived pointers
 	istringstream iss(string("g^x"));
-	ZKPLexer* lexer = new ZKPLexer(iss);
-	ZKPParser* parser = new ZKPParser(*lexer);
+	Ptr<ZKPLexer> lexer = new ZKPLexer(iss);
+	Ptr<ZKPParser> parser = new ZKPParser(*lexer);
 	ASTExprPtr n = parser->expr();
 	
 	cout << "type of expr: " << type_to_str(typeid(*n)) << endl;

@@ -108,13 +108,13 @@ class Hash {
 				const alg_t alg, const string& key, size_t& chunksz_out);
 
 		/* Used by FEContract for contract-checking */
-		static hash_t hash(const vector<const Buffer*>& buf, const alg_t& alg,
+		static hash_t hash(const vector<Ptr<const Buffer> >& buf, const alg_t& alg,
 						   const string &key, const int hashType);
-		static hash_t hash(const vector<Buffer*>& buf, const alg_t& alg,
+		static hash_t hash(const vector<Ptr<Buffer> >& buf, const alg_t& alg,
 						   const string &key, const int hashType);
-		static hash_t hash(const vector<const EncBuffer*>& buf, const alg_t& alg,
+		static hash_t hash(const vector<Ptr<const EncBuffer> >& buf, const alg_t& alg,
 						   const string &key, const int hashType);
-		static hash_t hash(const vector<EncBuffer*>& buf, const alg_t& alg,
+		static hash_t hash(const vector<Ptr<EncBuffer> >& buf, const alg_t& alg,
 						   const string &key, const int hashType);
 		static hash_t hash(const vector<hash_t>& hashes, const alg_t& alg,
 						   const string &key, const int hashType);

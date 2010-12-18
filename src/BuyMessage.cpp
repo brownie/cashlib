@@ -2,7 +2,7 @@
 #include "VEVerifier.h"
 #include "Timer.h"
 
-bool BuyMessage::check(const VEPublicKey* pk, const int stat, 
+bool BuyMessage::check(Ptr<const VEPublicKey> pk, const int stat, 
 					   const ZZ& R) const {
 	// check coin
 	if (!coinPrime.verifyCoin() || coinPrime.getR() != R)

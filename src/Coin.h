@@ -13,16 +13,16 @@ class Coin {
 		/*! coin stores the user's secret sk_u, s, and t, as well
 		 * as a CL signature on these values, the index within the 
 		 * wallet, the coin denomination, and the R value for the coin */
-		Coin(const BankParameters* params, int wSize, int index,
+		Coin(Ptr<const BankParameters> params, int wSize, int index,
 			 const ZZ &skIn, const ZZ &sIn, const ZZ &tIn, 
 			 const vector<ZZ> &clSig, int st, int l, const ZZ &rVal, 
 			 int denom, const hashalg_t &hashAlg);
 
-		Coin(const char *fname, const BankParameters *params)
+		Coin(const char *fname, Ptr<const BankParameters> params)
 			: parameters(params)
 			{ loadFile(make_nvp("Coin", *this), fname); }
 
-		Coin(const string& s, const BankParameters *params)
+		Coin(const string& s, Ptr<const BankParameters> params)
 			: parameters(params)
 			{ loadGZString(make_nvp("Coin", *this), s); }
 
@@ -42,7 +42,7 @@ class Coin {
 		bool endorse(const vector<ZZ> &e);
 
 		// getters
-		const GroupPrime* getCashGroup() const 
+		Ptr<const GroupPrime> getCashGroup() const 
 						{ return parameters->getCashGroup(); } 
 		ZZ getWalletSize() const { return walletSize; }
 		ZZ getB() const { return B; }
@@ -60,7 +60,7 @@ class Coin {
 		ZZ getSPrime() const;
 		ZZ getTPrime() const;
 
-		void setParameters(const BankParameters* p) { parameters = p; }
+		void setParameters(Ptr<const BankParameters> p) { parameters = p; }
 
 		// XXX: can write debug later
 		void debug() const;
@@ -69,7 +69,7 @@ class Coin {
 
 	private:
 		int stat, lx, coinDenom;
-		const BankParameters *parameters; // NOT serialized
+		Ptr<const BankParameters> parameters; // NOT serialized
 		int walletSize; // this is W
 		int coinIndex; // this is J
 		ZZ sk_u, s, t; // NOT serialized

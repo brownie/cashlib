@@ -2,7 +2,7 @@
 #include "FESetupMessage.h"
 #include "VEVerifier.h"
 
-bool FESetupMessage::check(const VEPublicKey* pk, const int stat, 
+bool FESetupMessage::check(Ptr<const VEPublicKey> pk, const int stat, 
 						   const ZZ& R) const {
 	// check coin
 	if (!coinPrime.verifyCoin() || coinPrime.getR() != R)

@@ -5,7 +5,7 @@
 void ComputationVisitor::applyASTDeclRandExponents(ASTDeclRandExponentsPtr n) {
 	ASTListDeclPtr exps = n->getExponents();
 	ASTIdentifierLitPtr grpname = n->getGroup();
-	const Group* grp = env.groups.at(grpname->getName());
+	Ptr<const Group> grp = env.groups.at(grpname->getName());
 	
 	ASTDeclIdentifierSubPtr exp;
 	ASTDeclIDRangePtr expRange;

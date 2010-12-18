@@ -4,7 +4,7 @@
 #include <assert.h>
 #include "Timer.h"
 
-CLBlindRecipient::CLBlindRecipient(const GroupRSA* pk, const Group* comGroup,
+CLBlindRecipient::CLBlindRecipient(Ptr<const GroupRSA> pk, Ptr<const Group> comGroup,
 								   int lx, const vector<ZZ> &coms, 
 								   int numPrivates, int numPublics) 
 	: numPrivates(numPrivates), numPublics(numPublics)
@@ -26,7 +26,7 @@ CLBlindRecipient::CLBlindRecipient(const GroupRSA* pk, const Group* comGroup,
 	prover.check("ZKP/examples/cl-obtain-ecash.txt", inputs, g);
 }
 
-CLBlindRecipient::CLBlindRecipient(const GroupRSA* pk, int lx, int numPrivates,
+CLBlindRecipient::CLBlindRecipient(Ptr<const GroupRSA> pk, int lx, int numPrivates,
 								   int numPublics, const gen_group_map &grps,
 								   const vector<CommitmentInfo> &coms) 
 	: numPrivates(numPrivates), numPublics(numPublics)
@@ -58,7 +58,7 @@ CLBlindRecipient::CLBlindRecipient(const GroupRSA* pk, int lx, int numPrivates,
 	prover.check(fname, inputs, g);
 }
 
-ProofMessage* CLBlindRecipient::getC(const vector<SecretValue>& privates,
+Ptr<ProofMessage> CLBlindRecipient::getC(const vector<SecretValue>& privates,
 									 const hashalg_t &hashAlg) {
 	if((int)privates.size() != numPrivates) 
 		throw CashException(CashException::CE_SIZE_ERROR,

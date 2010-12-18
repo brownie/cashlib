@@ -5,7 +5,7 @@
 #include "Timer.h"
 
 bool VEVerifier::verify(const VECiphertext& text, const ZZ& x, 
-                        const Group *grp, const string& label, 
+                        Ptr<const Group> grp, const string& label, 
                         const hashalg_t& hashAlg, int stat) {
 	// set everything up (a lot like the prover side)
 	Environment env;
@@ -25,10 +25,10 @@ bool VEVerifier::verify(const VECiphertext& text, const ZZ& x,
 	// set up all groups
 	env.groups["cashGroup"] = grp;
 	ZZ bigN = pk->getN();
-	env.groups["RSAGroup"] = new GroupRSA("arbiter", bigN, stat);
+	env.groups["RSAGroup"] = make_shared<GroupRSA>("arbiter", bigN, stat);
 	ZZ bigNSquared = power(bigN, 2);
-	env.groups["G"] = new GroupSquareMod("arbiter", bigNSquared, stat);
-	const GroupRSA* second = new GroupRSA(pk->getSecondGroup());
+	env.groups["G"] = make_shared<GroupSquareMod>("arbiter", bigNSquared, stat);
+	Ptr<const GroupRSA> second = make_shared<GroupRSA>(pk->getSecondGroup());
 	env.groups["secondGroup"] = second;
 	input_map inputs;
 	inputs["m"] = text.getCiphertext().size() - 2;

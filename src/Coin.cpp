@@ -7,7 +7,7 @@
 #include "CLSignatureVerifier.h"
 #include "Timer.h"
 
-Coin::Coin(const BankParameters* params, int wSize, int index,
+Coin::Coin(Ptr<const BankParameters> params, int wSize, int index,
 		   const ZZ &skIn, const ZZ &sIn, const ZZ &tIn, 
 		   const vector<ZZ> &clSig, int st, int l, 
 		   const ZZ &rVal, int denom, const hashalg_t &ha) 
@@ -47,8 +47,8 @@ Coin::Coin(const BankParameters* params, int wSize, int index,
 	// now need to do CL stuff
 	// public message is the wallet size W
 	// secret messages are sk_u, s, and t
-	const GroupRSA* pk = parameters->getBankKey(coinDenom);
-	const GroupPrime* comGroup = parameters->getCashGroup();
+	Ptr<const GroupRSA> pk = parameters->getBankKey(coinDenom);
+	Ptr<const GroupPrime> comGroup = parameters->getCashGroup();
 	vector<ZZ> coms;
 	coms.push_back(B);
 	coms.push_back(C);
@@ -62,7 +62,7 @@ Coin::Coin(const BankParameters* params, int wSize, int index,
 	privates.push_back(make_pair(t, env.variables.at("r_D")));
 	vector<ZZ> publics;
 	publics.push_back(walletSize);
-	ProofMessage* pm = clProver.getProof(signature, privates, publics,
+	Ptr<ProofMessage> pm = clProver.getProof(signature, privates, publics,
 										 hashAlg);
 	printTimer("[Coin] got proof for CL");
 	clProof = *pm;
@@ -80,7 +80,7 @@ Coin::Coin(const Coin &o)
 bool Coin::verifyEndorsement(const vector<ZZ> &endorse) {
 	
 	vector<ZZ> bases;
-	const GroupPrime* cashGroup = parameters->getCashGroup();
+	Ptr<const GroupPrime> cashGroup = parameters->getCashGroup();
 	ZZ mod = cashGroup->getModulus();
 	bases.push_back(cashGroup->getGenerator(3)); // h1
 	bases.push_back(cashGroup->getGenerator(4)); // h2
@@ -115,8 +115,8 @@ bool Coin::verifyCoin() const {
 
 	// now do CL stuff		
 	startTimer();
-	const GroupRSA* pk = parameters->getBankKey(coinDenom);
-	const GroupPrime* comGroup = parameters->getCashGroup();
+	Ptr<const GroupRSA> pk = parameters->getBankKey(coinDenom);
+	Ptr<const GroupPrime> comGroup = parameters->getCashGroup();
 
 	vector<ZZ> coms;
 	coms.push_back(B);

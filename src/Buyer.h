@@ -12,7 +12,7 @@ class Buyer {
 	public:
 		/*! constructor takes in various parameters, a wallet, and the
 		 * arbiter's public key */
-		Buyer(int timeoutLength, const VEPublicKey* pk, int stat);
+		Buyer(int timeoutLength, Ptr<const VEPublicKey> pk, int stat);
 
 		/*! copy constructor */
 		Buyer(const Buyer &o);
@@ -23,18 +23,18 @@ class Buyer {
 		/*! buy the ciphertext by sending an unendorsed coin,
 		 * a verifiable escrow of the endorsement, and associated 
 		 * contract */
-		BuyMessage* buy(Wallet* wallet, EncBuffer* ctext, 
+		Ptr<BuyMessage> buy(Ptr<Wallet> wallet, Ptr<EncBuffer> ctext, 
 						const hash_t& ptHash, const ZZ &R);
 		
 		/*! buy multiple files */
-		BuyMessage* buy(Wallet* wallet, const vector<EncBuffer*>& ctext,
+		Ptr<BuyMessage> buy(Ptr<Wallet> wallet, const vector<Ptr<EncBuffer> >& ctext,
 						const vector<hash_t>& ptHash, const ZZ &R);
 
 		/*! assumes setCoin() has been called */
-		BuyMessage* buy(EncBuffer* ctext, const hash_t& ptHash);
+		Ptr<BuyMessage> buy(Ptr<EncBuffer> ctext, const hash_t& ptHash);
 		
 		/*! assumes setCoin() has been called */
-		BuyMessage* buy(const vector<EncBuffer*>& ctext, 
+		Ptr<BuyMessage> buy(const vector<Ptr<EncBuffer> >& ctext, 
 						const vector<hash_t>& ptHash);
 		
 		
@@ -54,7 +54,7 @@ class Buyer {
 		
 		/*! get the plaintext (if stored as string in Buyer) */
 		//string getFile() const { return *ptext; }
-		const vector<Buffer*>& getPtext() const { return ptext; }
+		const vector<Ptr<Buffer> >& getPtext() const { return ptext; }
 
 		/*! get the endorsement (send after key is checked) */
 		const vector<ZZ>& getEndorsement() const { return endorsement; }
@@ -65,7 +65,7 @@ class Buyer {
 		void setCoin(const Coin& coin);
 		void setTimeout() { timeout =time(NULL) + timeoutLength; }
 		void setSecurity(const int newstat) {stat = newstat;}
-		void setVEPublicKey(const VEPublicKey* newpk) {pk = newpk;}
+		void setVEPublicKey(Ptr<const VEPublicKey> newpk) {pk = newpk;}
 		
 		void reset();
 		
@@ -78,15 +78,15 @@ class Buyer {
 		int timeout;
 		int timeoutLength;
 		int stat;
-		const VEPublicKey* pk;
+		Ptr<const VEPublicKey> pk;
 
 		Coin coin;
-		FEContract* contract;
+		Ptr<FEContract> contract;
 
 		// ciphertext to decrypt, received from Seller
-		vector<EncBuffer*> ctext;
+		vector<Ptr<EncBuffer> > ctext;
 		// saves output of decrypt() if Buy protocol is successful
-		vector<Buffer*> ptext;
+		vector<Ptr<Buffer> > ptext;
 		
 		ZZ r;
 		vector<ZZ> endorsement;

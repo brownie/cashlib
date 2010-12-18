@@ -3,7 +3,7 @@
 #include "ZKP/InterpreterProver.h"
 #include "Timer.h"
 
-CLBlindIssuer::CLBlindIssuer(const GroupRSA* sk, const Group* comGroup, 
+CLBlindIssuer::CLBlindIssuer(Ptr<const GroupRSA> sk, Ptr<const Group> comGroup, 
 							 int lx, const vector<ZZ> &coms,
 							 int numPrivates, int numPublics)
 	: numPrivates(numPrivates), numPublics(numPublics)
@@ -23,7 +23,7 @@ CLBlindIssuer::CLBlindIssuer(const GroupRSA* sk, const Group* comGroup,
 	verifier.check("ZKP/examples/cl-obtain-ecash.txt", inputs, g);	
 }
 
-CLBlindIssuer::CLBlindIssuer(const GroupRSA* sk, int lx, int numPrivates,
+CLBlindIssuer::CLBlindIssuer(Ptr<const GroupRSA> sk, int lx, int numPrivates,
 							 int numPublics, const gen_group_map &groups,
 							 const vector<CommitmentInfo> &coms) 
 	: numPrivates(numPrivates), numPublics(numPublics)
@@ -57,7 +57,7 @@ CLBlindIssuer::CLBlindIssuer(const CLBlindIssuer &o)
 {
 }
 
-ProofMessage* CLBlindIssuer::getPartialSignature(const ZZ &C, 
+Ptr<ProofMessage> CLBlindIssuer::getPartialSignature(const ZZ &C, 
 												 const vector<ZZ>& publics, 
 												 const ProofMessage &pm, 
 												 int stat, 
@@ -87,7 +87,7 @@ ProofMessage* CLBlindIssuer::getPartialSignature(const ZZ &C,
 		// map for doing issue program
 		ZZ lx = v.at("l_x");
 		v.clear();
-		const GroupRSA* grp = (GroupRSA*) g.at("pkGroup");
+		Ptr<const GroupRSA> grp = (Ptr<GroupRSA> ) g.at("pkGroup");
 		v["l_x"] = lx;
 		v["stat"] = grp->getStat();
 		v["modSize"] = grp->getModulusLength();

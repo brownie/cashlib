@@ -11,20 +11,20 @@
 class FEResolutionMessage {
 	
 	public:
-		FEResolutionMessage(FEMessage* m, FESetupMessage* s, 
+		FEResolutionMessage(Ptr<FEMessage> m, Ptr<FESetupMessage> s, 
 							const vector<string> &k)
 		   : message(m), setupMessage(s), keys(k) {}
 
 		FEResolutionMessage() : message(0), setupMessage(0) {}
 
 		// getters
-		FEMessage* getMessage() const { return message; }
-		FESetupMessage* getSetupMessage() const { return setupMessage; }
+		Ptr<FEMessage> getMessage() const { return message; }
+		Ptr<FESetupMessage> getSetupMessage() const { return setupMessage; }
 		vector<string> getKeys() const { return keys; }
 
 	private:
-		FEMessage* message;
-		FESetupMessage* setupMessage;
+		Ptr<FEMessage> message;
+		Ptr<FESetupMessage> setupMessage;
 		vector<string> keys;
 
 		friend class boost::serialization::access;

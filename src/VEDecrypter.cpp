@@ -10,12 +10,12 @@ VEDecrypter::VEDecrypter(const int m, const int modLength, const int stat) {
 }
 
 VEDecrypter::VEDecrypter(const int m, const int modLength, const int stat, 
-						 GroupRSA* auxGroup) {
+						 Ptr<GroupRSA> auxGroup) {
 	setup(m, modLength, stat, auxGroup);
 }
 
 void VEDecrypter::setup(const int m, const int modLength, 
-						const int stat, GroupRSA* auxGroup) {
+						const int stat, Ptr<GroupRSA> auxGroup) {
 	GroupRSA group1("arbiter", modLength, stat);
 	ZZ bigN = group1.getModulus();
 	ZZ bigP = group1.getP();
@@ -26,7 +26,7 @@ void VEDecrypter::setup(const int m, const int modLength,
 	while (GCD(f0, bigNsquared) != 1) {
 		f0 = RandomBnd(bigNsquared);
 	}
-	GroupSquareMod* grp = new GroupSquareMod("arbiter", bigNsquared, stat);
+	Ptr<GroupSquareMod> grp = make_shared<GroupSquareMod>("arbiter", bigNsquared, stat);
 	group_map g;
 	variable_map v;
 	g["RSAGroup"] = &group1;
@@ -58,7 +58,7 @@ void VEDecrypter::setup(const int m, const int modLength,
 	xs[m] = env.variables.at("y");
 	xs[m+1] = env.variables.at("z");
 
-	GroupRSA *group2;
+	Ptr<GroupRSA> group2;
 	// if we weren't given a group, make one
 	if (auxGroup == 0) {
 		group2 = createSecondGroup(m, modLength, stat);
@@ -70,19 +70,19 @@ void VEDecrypter::setup(const int m, const int modLength,
 	ZZ n = group2->getModulus();
 	ZZ p = group2->getP();
 	ZZ q = n / p;
-	sk = new VESecretKey(bigP, bigQ, xs, p, q);
+	sk = make_shared<VESecretKey>(bigP, bigQ, xs, p, q);
 	group2->clearSecrets();
 	// XXX obviously this will not stay with hashKey as ""
 	string hashKey = ""; // won't call HMAC
 	hashalg_t hashAlg = Hash::SHA1; // XXX should be input parameter
-	pk = new VEPublicKey(bigN, as, b, d, e, f, *group2, hashAlg, hashKey);
+	pk = make_shared<VEPublicKey>(bigN, as, b, d, e, f, *group2, hashAlg, hashKey);
 }
 
 
-GroupRSA* VEDecrypter::createSecondGroup(const int m, const int modLength, 
+Ptr<GroupRSA> VEDecrypter::createSecondGroup(const int m, const int modLength, 
 										 const int stat) {
 	// now initialize second group
-	GroupRSA *group2 = new GroupRSA("arbiter", modLength, stat);
+	Ptr<GroupRSA> group2 = make_shared<GroupRSA>("arbiter", modLength, stat);
 	for (int i = 0; i < m; i++) {
 		// create m additional generators
 		group2->addNewGenerator();

@@ -28,17 +28,17 @@ public:
 		Key() : _key(0), isPrivate(false) {}
 
         /// private key: can sign & verify
-        static Key* loadPrivateKey(const string& file, const string& passwd) {
-            return new Key(file, passwd, true);
+        static Ptr<Key> loadPrivateKey(const string& file, const string& passwd) {
+            return Ptr<Key>(new Key(file, passwd, true));
         }
         /// public key: can only verify
-        static Key* loadPublicKey(const string& file, const string& passwd=string()) {
-            return new Key(file, passwd, false);
+        static Ptr<Key> loadPublicKey(const string& file, const string& passwd=string()) {
+            return Ptr<Key>(new Key(file, passwd, false));
         }
         // generates public/private keypair
-        static Key* generateDSAKey(int numbits=SIG_NUMBITS);
-        static Key* generateRSAKey(int modlen=SIG_NUMBITS);
-        inline static Key* generateKey(const string& alg) {
+        static Ptr<Key> generateDSAKey(int numbits=SIG_NUMBITS);
+        static Ptr<Key> generateRSAKey(int modlen=SIG_NUMBITS);
+        inline static Ptr<Key> generateKey(const string& alg) {
             if      (alg == "DSA") return generateDSAKey();
             else if (alg == "RSA") return generateRSAKey();
             else throw CashException(CashException::CE_UNKNOWN_ERROR,
@@ -47,9 +47,9 @@ public:
         }
 		
 		// get public key for this key: allocates & returns new Key
-		Key* getPublicKey() const {
+		Ptr<Key> getPublicKey() const {
 			if (!isPrivate){
-				return new Key(*this);
+				return Ptr<Key>(new Key(*this));
 			} else { // XXX convert to public key more efficiently?
 				string d = toDER(false);
 				return fromDER(d, false);
@@ -84,7 +84,7 @@ public:
         inline string privateKeyString() const { return toPEM(true); }
         // binary DER encoding
         string toDER(bool save_private_key=false) const;
-        static Key* fromDER(const string& buf, bool isPrivate=false);
+        static Ptr<Key> fromDER(const string& buf, bool isPrivate=false);
 
         ~Key() { EVP_PKEY_free(_key); }
         EVP_PKEY* _key;

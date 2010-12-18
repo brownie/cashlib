@@ -109,19 +109,19 @@ class Ciphertext {
         operator string() const { return string(buf, len); }
         Buffer& operator=(const string& s) { copyString(s); return *this; }
 
-        // encrypt a Buffer: returns new EncBuffer* containing key, alg
-        //EncBuffer* encrypt(const string& key, const Ciphertext::cipher_t& alg) const;
-        EncBuffer* encrypt(const Ciphertext::cipher_t& alg, const string& key = string()) const;/* {
+        // encrypt a Buffer: returns new Ptr<EncBuffer> containing key, alg
+        //Ptr<EncBuffer> encrypt(const string& key, const Ciphertext::cipher_t& alg) const;
+        Ptr<EncBuffer> encrypt(const Ciphertext::cipher_t& alg, const string& key = string()) const;/* {
             return encrypt((NULL != key) ? key : Ciphertext::generateKey(alg), alg);
         }*/
-        EncBuffer* encrypt(const ZZ& r, const Ciphertext::cipher_t& alg) const {
+        Ptr<EncBuffer> encrypt(const ZZ& r, const Ciphertext::cipher_t& alg) const {
             return encrypt(alg, Ciphertext::generateKey(alg, r));
         }
-        // decrypt a Buffer: returns new Buffer*
-        virtual Buffer* decrypt(const string& key, const Ciphertext::cipher_t& alg) const {
+        // decrypt a Buffer: returns new Ptr<Buffer> 
+        virtual Ptr<Buffer> decrypt(const string& key, const Ciphertext::cipher_t& alg) const {
             size_t ptl;
             char *pt = Ciphertext::decrypt(key.data(), buf, len, alg, &ptl);
-			return new Buffer(pt, ptl, false);
+			return make_shared<Buffer>(pt, ptl, false);
         }
         // hash a Buffer: caches hash computation
         hash_t hash(const hashalg_t& halg, const string& hkey, int htype) {
@@ -173,10 +173,10 @@ class Ciphertext {
             : Buffer(d, l, true), key(k), encAlg(a) {}
         EncBuffer(char* d, size_t l) : Buffer(d, l, true), key(), encAlg() {}
 
-        Buffer* decrypt(const string& key, const Ciphertext::cipher_t& alg) const {
+        Ptr<Buffer> decrypt(const string& key, const Ciphertext::cipher_t& alg) const {
             return Buffer::decrypt(key, alg);
         }
-        Buffer* decrypt() const {
+        Ptr<Buffer> decrypt() const {
             return Buffer::decrypt(key, encAlg);
         }
 		void clear() { Buffer::clear(); key = string(); }

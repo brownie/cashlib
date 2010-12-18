@@ -50,13 +50,13 @@ BankTool::~BankTool() {
 	delete bankParameters;
 }
 
-BankWithdrawTool* BankTool::getWithdrawTool(const ZZ &userPK, int wSize, 
+Ptr<BankWithdrawTool> BankTool::getWithdrawTool(const ZZ &userPK, int wSize, 
 											int coinDenom) const {
 	return new BankWithdrawTool(bankParameters, userPK, stat, lx, wSize, 
 								coinDenom, hashAlg);
 }
 
-bool BankTool::verifyIdentity(ProofMessage* idProof, const ZZ &userPK) const {
+bool BankTool::verifyIdentity(Ptr<ProofMessage> idProof, const ZZ &userPK) const {
 	// check user's PoK of sk_u such that pk_u = g^sk_u
 	InterpreterVerifier verifier;
 	group_map g;

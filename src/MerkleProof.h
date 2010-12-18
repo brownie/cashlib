@@ -15,36 +15,36 @@ class MerkleProof {
 		 * of the ciphertext was formed correctly; fileProof is the proof
 		 * that the Merkle hash of the plaintext was formed correctly 
 		 * the contracts store the hashalg and key */
-		MerkleProof(const vector<EncBuffer*> &ctextBlocks, 
+		MerkleProof(const vector<Ptr<EncBuffer> > &ctextBlocks, 
 					const hash_matrix &ctextProof, 
 					const hash_matrix &fileProof, 
-					MerkleContract* ctContract, MerkleContract* ptContract);
+					Ptr<MerkleContract> ctContract, Ptr<MerkleContract> ptContract);
 		
-		MerkleProof(const vector<EncBuffer*> &ctextBlocks, 
+		MerkleProof(const vector<Ptr<EncBuffer> > &ctextBlocks, 
 					const hash_matrix &ctextProof, const string &plaintext, 
-					MerkleContract* ctContract);
+					Ptr<MerkleContract> ctContract);
 		
-		MerkleProof(const vector<EncBuffer*> &ctextBlocks, 
-					const hash_matrix &ctextProof, MerkleContract* ctContract);
+		MerkleProof(const vector<Ptr<EncBuffer> > &ctextBlocks, 
+					const hash_matrix &ctextProof, Ptr<MerkleContract> ctContract);
 
 		MerkleProof(const MerkleProof &o);
 
 		// getters
-		vector<EncBuffer*> getCTextBlocks() const { return ctextBlocks; }
+		vector<Ptr<EncBuffer> > getCTextBlocks() const { return ctextBlocks; }
 		hash_matrix getCTextProof() const { return ctextProof; }
 		hash_matrix getPTextProof() const { return fileProof; }
 		string getPlaintext() const { return plaintext; }
-		MerkleContract* getPTContract() const { return ptContract; }
-		MerkleContract* getCTContract() const { return ctContract; }
+		Ptr<MerkleContract> getPTContract() const { return ptContract; }
+		Ptr<MerkleContract> getCTContract() const { return ctContract; }
 		bool isEmpty() const { return empty; }
 
 	private:
-		vector<EncBuffer*> ctextBlocks;
+		vector<Ptr<EncBuffer> > ctextBlocks;
 		hash_matrix ctextProof;
    		hash_matrix fileProof;
    		string plaintext;
-   		MerkleContract* ctContract;
-   		MerkleContract* ptContract;
+   		Ptr<MerkleContract> ctContract;
+   		Ptr<MerkleContract> ptContract;
 		bool empty;
 		
 		friend class boost::serialization::access;

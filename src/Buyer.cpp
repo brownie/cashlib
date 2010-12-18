@@ -7,7 +7,7 @@
 
 /*----------------------------------------------------------------------------*/
 // Constructors
-Buyer::Buyer(int timeoutLength, const VEPublicKey* pk, int stat)
+Buyer::Buyer(int timeoutLength, Ptr<const VEPublicKey> pk, int stat)
 	: timeoutLength(timeoutLength), stat(stat), pk(pk), 
 	  contract(NULL), inProgress(false)
 {
@@ -38,13 +38,13 @@ void Buyer::reset() {
 }
 /*----------------------------------------------------------------------------*/
 // Buy
-BuyMessage* Buyer::buy(Wallet* wallet, EncBuffer* ciphertext, 
+Ptr<BuyMessage> Buyer::buy(Ptr<Wallet> wallet, Ptr<EncBuffer> ciphertext, 
 					   const hash_t& ptHash, const ZZ& R) {
-	return buy(wallet, CommonFunctions::vectorize<EncBuffer*>(ciphertext),
+	return buy(wallet, CommonFunctions::vectorize<Ptr<EncBuffer> >(ciphertext),
 			   CommonFunctions::vectorize<hash_t>(ptHash), R);
 }
 
-BuyMessage* Buyer::buy(Wallet* wallet, const vector<EncBuffer*>& ctext,
+Ptr<BuyMessage> Buyer::buy(Ptr<Wallet> wallet, const vector<Ptr<EncBuffer> >& ctext,
 					   const vector<hash_t>& ptHash, const ZZ &R) {
 	startTimer();
 	makeCoin(*wallet, R);
@@ -52,12 +52,12 @@ BuyMessage* Buyer::buy(Wallet* wallet, const vector<EncBuffer*>& ctext,
 	return buy(ctext, ptHash);
 }
 
-BuyMessage* Buyer::buy(EncBuffer* ciphertext, const hash_t& ptHash) {
-	return buy(CommonFunctions::vectorize<EncBuffer*>(ciphertext),
+Ptr<BuyMessage> Buyer::buy(Ptr<EncBuffer> ciphertext, const hash_t& ptHash) {
+	return buy(CommonFunctions::vectorize<Ptr<EncBuffer> >(ciphertext),
 			   CommonFunctions::vectorize<hash_t>(ptHash));
 }
 
-BuyMessage* Buyer::buy(const vector<EncBuffer*>& ct, 
+Ptr<BuyMessage> Buyer::buy(const vector<Ptr<EncBuffer> >& ct, 
 					   const vector<hash_t>& ptHash) {
 	if (inProgress)
 		throw CashException(CashException::CE_FE_ERROR,
@@ -92,7 +92,7 @@ BuyMessage* Buyer::buy(const vector<EncBuffer*>& ct,
 	
 	startTimer();
 	// set up the escrow
-	VECiphertext* escrow = new VECiphertext(makeEscrow());
+	Ptr<VECiphertext> escrow = new VECiphertext(makeEscrow());
 	printTimer("[Buyer::buy] created escrow");
 
 	// set inProgress
@@ -153,7 +153,7 @@ bool Buyer::checkKey(const vector<string>& keys) {
 	for (unsigned i = 0; i < ctext.size(); i++) {
 		// decrypt the ciphertext using key
 		unsigned index = (keys.size() == 1) ? 0 : i;
-		Buffer* plaintext = ctext[i]->decrypt(keys[index], 
+		Ptr<Buffer> plaintext = ctext[i]->decrypt(keys[index], 
 											contract->getEncAlgB());
 		ptext.push_back(plaintext);
 	}

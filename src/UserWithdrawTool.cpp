@@ -3,7 +3,7 @@
 #include "MultiExp.h"
 #include "Timer.h"
 
-UserWithdrawTool::UserWithdrawTool(int st, int l, const BankParameters *bp, 
+UserWithdrawTool::UserWithdrawTool(int st, int l, Ptr<const BankParameters> bp, 
 								   const ZZ &userPK, const ZZ &userSK, 
 								   const hashalg_t &ha, int ws, int denom)
 	: stat(st), lx(l), bankParameters(bp), userSecretKey(userSK), 
@@ -25,7 +25,7 @@ UserWithdrawTool::~UserWithdrawTool() {
 }
 
 ZZ UserWithdrawTool::createPartialCommitment() {
-	const GroupPrime* cashGroup = bankParameters->getCashGroup();
+	Ptr<const GroupPrime> cashGroup = bankParameters->getCashGroup();
 	// pick s' and t : s' and t should be in (Z, *, primeOrder)
 	// ie. 1 <= s', t < primeOrder
 	// where primeOrder is the order of the primeOrder group used for wallet
@@ -77,7 +77,7 @@ ZZ UserWithdrawTool::createPartialCommitment() {
 	return sPrimeCom;
 }
 
-ProofMessage* UserWithdrawTool::initiateSignature(const ZZ &bankPart) {
+Ptr<ProofMessage> UserWithdrawTool::initiateSignature(const ZZ &bankPart) {
 	bankContribution = bankPart;
 	createSignatureRecipient();
 	return preSignatureProof();
@@ -92,7 +92,7 @@ vector<ZZ> UserWithdrawTool::getIndividualCommitments() {
 	return privateComs;
 }
 
-ProofMessage* UserWithdrawTool::getCLProof() const {
+Ptr<ProofMessage> UserWithdrawTool::getCLProof() const {
 	vector<pair<ZZ,ZZ> > secrets;
 	// first sk_u, then s, then t
 	secrets.push_back(make_pair(userSecretKey, partialCommitment[0]));
@@ -101,7 +101,7 @@ ProofMessage* UserWithdrawTool::getCLProof() const {
 	return signatureRecipient->getC(secrets, hashAlg);
 }
 
-ProofMessage* UserWithdrawTool::preSignatureProof() {
+Ptr<ProofMessage> UserWithdrawTool::preSignatureProof() {
 	// need to prove that commitment to sk_u and public key contain
 	// the same value in the exponent
 	InterpreterProver prover;
@@ -114,7 +114,7 @@ ProofMessage* UserWithdrawTool::preSignatureProof() {
 	v["pk_u"] = userPublicKey;
 	v["sk_u"] = userSecretKey;
 	prover.compute(v);
-	return new ProofMessage(prover.getPublicVariables(), 
+	return make_shared<ProofMessage>(prover.getPublicVariables(), 
 							prover.computeProof(hashAlg));
 }
 
@@ -126,7 +126,7 @@ void UserWithdrawTool::createSignatureRecipient() {
 	}
 	
 	// compute s = s' + r'
-	const GroupPrime* cGroup = bankParameters->getCashGroup();
+	Ptr<const GroupPrime> cGroup = bankParameters->getCashGroup();
 	ZZ sPrime = partialCommitment[2];
 	ZZ s = AddMod(sPrime, bankContribution, cGroup->getOrder());
 	this->s = s;
@@ -143,9 +143,9 @@ void UserWithdrawTool::createSignatureRecipient() {
 
 	// 3 private messages: sk_u, s, t
 	// 1 public message: walletSize
-	const GroupRSA* pk = bankParameters->getBankKey(coinDenom);
-	const GroupPrime* comGroup = bankParameters->getCashGroup();								  
-	signatureRecipient = new CLBlindRecipient(pk, comGroup, lx, coms, 3, 1);
+	Ptr<const GroupRSA> pk = bankParameters->getBankKey(coinDenom);
+	Ptr<const GroupPrime> comGroup = bankParameters->getCashGroup();								  
+	signatureRecipient = make_shared<CLBlindRecipient>(pk, comGroup, lx, coms, 3, 1);
 	printTimer("[UserWithdrawTool] created recipient");
 }
  

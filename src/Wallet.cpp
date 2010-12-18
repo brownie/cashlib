@@ -2,7 +2,7 @@
 #include "Wallet.h"
 
 Wallet::Wallet(const ZZ &sk, const ZZ &sIn, const ZZ &tIn, int size,
-			   int d, const BankParameters* bp, int st, int l, 
+			   int d, Ptr<const BankParameters> bp, int st, int l, 
 			   const hashalg_t &alg, const vector<ZZ> &sig)
 	: sk_u(sk), s(sIn), t(tIn), walletSize(size), coinDenom(d), 
 	  numCoinsUsed(0), params(bp), stat(st), lx(l), hashAlg(alg), 
@@ -48,18 +48,15 @@ int Wallet::nextCoinIndex() {
 	return spendOrder[numCoinsUsed++];
 }
 
-Coin Wallet::nextCoin(const ZZ &rValue) {
+Ptr<Coin> Wallet::nextCoin(const ZZ &rValue) {
 	int i = nextCoinIndex();
-	Coin* c = newCoin(rValue, i);
-	Coin ret(*c);
-	delete c;
-	return ret;
+	return newCoin(rValue, i);
 }
 
-Coin* Wallet::newCoin(const ZZ &rValue, int coinIndex) {
-	return new Coin(params, walletSize, coinIndex, 
-					sk_u, s, t, signature, stat, 
-					lx, rValue, coinDenom, hashAlg);
+Ptr<Coin> Wallet::newCoin(const ZZ &rValue, int coinIndex) {
+	return make_shared<Coin>(params, walletSize, coinIndex, 
+                             sk_u, s, t, signature, stat, 
+                             lx, rValue, coinDenom, hashAlg);
 }
 
 void Wallet::newCoin(Coin& coin, const ZZ &rValue, int coinIndex) {

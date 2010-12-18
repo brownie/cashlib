@@ -3,7 +3,7 @@
 #include "CashException.h"
 #include "CLBlindIssuer.h"
 
-BankWithdrawTool::BankWithdrawTool(const BankParameters *bp, const ZZ &userPK, 
+BankWithdrawTool::BankWithdrawTool(Ptr<const BankParameters> bp, const ZZ &userPK, 
 								   int st, int l, int wSize, int denom, 
 								   const hashalg_t &ha)
 	: bankParameters(bp), userPublicKey(userPK), stat(st), lx(l), 
@@ -40,7 +40,7 @@ void BankWithdrawTool::computeFullCommitment(const ZZ &partialCommitment) {
 	fullCommitment = resultA;
 }
 
-ProofMessage* BankWithdrawTool::sign(ProofMessage* id, ProofMessage* cl){
+Ptr<ProofMessage> BankWithdrawTool::sign(Ptr<ProofMessage> id, Ptr<ProofMessage> cl){
 	// first verify ID proof, then create issuer for the CL part
 	InterpreterVerifier verifier;
 	group_map g;
@@ -55,8 +55,8 @@ ProofMessage* BankWithdrawTool::sign(ProofMessage* id, ProofMessage* cl){
 				"[BankWithdrawTool::sign] Proof of ID did not verify");
 	}
 	variable_map clPubs = cl->publics;
-	const GroupRSA* sk = bankParameters->getBankKey(coinDenom);
-	const GroupPrime* comGroup = bankParameters->getCashGroup();
+	Ptr<const GroupRSA> sk = bankParameters->getBankKey(coinDenom);
+	Ptr<const GroupPrime> comGroup = bankParameters->getCashGroup();
 	vector<ZZ> coms;
 	for (int i = 0; i < 3; i++) {
 		string name = "c_"+lexical_cast<string>(i+1);

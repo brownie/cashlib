@@ -8,13 +8,11 @@
 class Bank {
 
 	public:
-		Bank(const GroupPrime* grpPrime, const GroupRSA* secret)
+		Bank(Ptr<const GroupPrime> grpPrime, Ptr<const GroupRSA> secret)
 			: groupPrime(grpPrime), secretKey(secret) {}
 
 		Bank(const Bank &o)
 			: groupPrime(o.groupPrime), secretKey(o.secretKey) {}
-
-		~Bank() { delete groupPrime; delete secretKey; }
 
 		/*! returns a random number from prime-order group */
 		ZZ randomNumber();
@@ -23,8 +21,8 @@ class Bank {
 		ZZ fullCommitment(const ZZ &part, const ZZ &bankPart);
 
 	private:
-		const GroupPrime* groupPrime;
-		const GroupRSA* secretKey;
+		Ptr<const GroupPrime> groupPrime;
+		Ptr<const GroupRSA> secretKey;
 };
 
 #endif /*_BANK_H_*/

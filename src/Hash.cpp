@@ -214,7 +214,7 @@ hash_t HmacFunction::hash(const string& left, const string& right) const
 
 /* used by FEContract, FEInitiator, FEResponder, etc */
 
-hash_t Hash::hash(const vector<const Buffer*>& buf, const hashalg_t& alg,
+hash_t Hash::hash(const vector<Ptr<const Buffer> >& buf, const hashalg_t& alg,
 							const string &key, const int hashType)
 {
 	vector<hash_t> hash;
@@ -225,7 +225,7 @@ hash_t Hash::hash(const vector<const Buffer*>& buf, const hashalg_t& alg,
 	return Hash::hash(hash, alg, key, hashType);
 }
 
-hash_t Hash::hash(const vector<Buffer*>& buf, const hashalg_t& alg,
+hash_t Hash::hash(const vector<Ptr<Buffer> >& buf, const hashalg_t& alg,
 							const string &key, const int hashType)
 {
 	vector<hash_t> hash;
@@ -236,7 +236,7 @@ hash_t Hash::hash(const vector<Buffer*>& buf, const hashalg_t& alg,
 	return Hash::hash(hash, alg, key, hashType);
 }
 
-hash_t Hash::hash(const vector<EncBuffer*>& buf, const hashalg_t& alg,
+hash_t Hash::hash(const vector<Ptr<EncBuffer> >& buf, const hashalg_t& alg,
 							const string &key, const int hashType)
 {
 	vector<hash_t> hash;
@@ -247,7 +247,7 @@ hash_t Hash::hash(const vector<EncBuffer*>& buf, const hashalg_t& alg,
 	return Hash::hash(hash, alg, key, hashType);
 }
 
-hash_t Hash::hash(const vector<const EncBuffer*>& buf, const hashalg_t& alg,
+hash_t Hash::hash(const vector<Ptr<const EncBuffer> >& buf, const hashalg_t& alg,
 							const string &key, const int hashType)
 {
 	vector<hash_t> hash;

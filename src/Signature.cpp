@@ -73,7 +73,7 @@ bool Signature::verify(const Key& key, const string& sig, const string &data,
     return (err == 1); // signature OK
 }
 
-Signature::Key* Signature::Key::generateDSAKey(int numbits) {
+Ptr<Signature::Key> Signature::Key::generateDSAKey(int numbits) {
 	DSA *dsa;
     if (numbits == SIG_NUMBITS)
 		dsa = DSAparams_dup_wrap(DSA_PARAMS);
@@ -90,7 +90,7 @@ Signature::Key* Signature::Key::generateDSAKey(int numbits) {
     return new Key(k, true);
 }
 
-Signature::Key* Signature::Key::generateRSAKey(int modlen) {
+Ptr<Signature::Key> Signature::Key::generateRSAKey(int modlen) {
     RSA *rsa = NULL;
     rsa = RSA_generate_key(modlen, RSA_F4, NULL, NULL);
     if (!RSA_check_key(rsa))
@@ -142,7 +142,7 @@ string Signature::Key::toDER(bool save_private_key) const {
     return ret;
 }
 
-Signature::Key* Signature::Key::fromDER(const string& str, bool isPrivate) {
+Ptr<Signature::Key> Signature::Key::fromDER(const string& str, bool isPrivate) {
     EVP_PKEY *k;
     const unsigned char *buf = (const unsigned char*)str.data();
     if (isPrivate) {

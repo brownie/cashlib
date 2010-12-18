@@ -20,30 +20,30 @@ bool FEContract::checkEncAlgB(const cipher_t& encAlgR) const {
 }
 
 
-bool FEContract::checkAFiles(const vector<const Buffer*>& ptext, 
-							 const vector</*const*/ EncBuffer*>& ctext) const {
+bool FEContract::checkAFiles(const vector<Ptr<const Buffer> >& ptext, 
+							 const vector</*const*/ Ptr<EncBuffer> >& ctext) const {
 	return checkHashes(ptext, ctext, ptHashA, ctHashA);
 }
 
-bool FEContract::checkBFiles(const vector<const Buffer*>& ptext, 
-							 const vector</*const*/ EncBuffer*>& ctext) const {
+bool FEContract::checkBFiles(const vector<Ptr<const Buffer> >& ptext, 
+							 const vector</*const*/ Ptr<EncBuffer> >& ctext) const {
 	return checkHashes(ptext, ctext, ptHashB, ctHashB);
 }
 
-bool FEContract::checkAFile(const Buffer* ptext, 
-							/*const*/ EncBuffer* ctext) const {
-	return checkAFiles(CommonFunctions::vectorize<const Buffer*>(ptext), 
-					   CommonFunctions::vectorize<EncBuffer*>(ctext));
+bool FEContract::checkAFile(Ptr<const Buffer> ptext, 
+							/*const*/ Ptr<EncBuffer> ctext) const {
+	return checkAFiles(CommonFunctions::vectorize<Ptr<const Buffer> >(ptext), 
+					   CommonFunctions::vectorize<Ptr<EncBuffer> >(ctext));
 }
 
-bool FEContract::checkBFile(const Buffer* ptext, 
-							/*const*/ EncBuffer* ctext) const {
-	return checkBFiles(CommonFunctions::vectorize<const Buffer*>(ptext), 
-					   CommonFunctions::vectorize<EncBuffer*>(ctext));
+bool FEContract::checkBFile(Ptr<const Buffer> ptext, 
+							/*const*/ Ptr<EncBuffer> ctext) const {
+	return checkBFiles(CommonFunctions::vectorize<Ptr<const Buffer> >(ptext), 
+					   CommonFunctions::vectorize<Ptr<EncBuffer> >(ctext));
 }
 
-bool FEContract::checkHashes(const vector<const Buffer*>& ptext, 
-							 const vector</*const*/ EncBuffer*>& ctext, 
+bool FEContract::checkHashes(const vector<Ptr<const Buffer> >& ptext, 
+							 const vector</*const*/ Ptr<EncBuffer> >& ctext, 
 							 const hash_t& ptHash, const hash_t& ctHash) const {
 	if (ptext.size() != ctext.size())
 		throw CashException(CashException::CE_FE_ERROR,

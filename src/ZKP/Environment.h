@@ -40,7 +40,7 @@ struct DecompNames {
 std::size_t hash_value(const ZZ& n);
 
 typedef MAP_TYPE<string, ZZ> variable_map;
-typedef MAP_TYPE<string, const Group*> group_map;
+typedef MAP_TYPE<string, Ptr<const Group> > group_map;
 typedef MAP_TYPE<string, string> commitment_map;
 typedef MAP_TYPE<string, DLRepresentation> dlr_map;
 typedef MAP_TYPE<string, vector<DecompNames> > decomp_map;
@@ -131,7 +131,7 @@ class Environment {
 		void clearPrivates();
 
 		/*! gets group object for a given variable */
-		const Group* getGroup(const string &varName) const;
+		Ptr<const Group> getGroup(const string &varName) const;
 
 		/*! gets commitment description for a given committed variable 
 		 * whose value has already been computed */

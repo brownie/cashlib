@@ -8,14 +8,14 @@
 /*----------------------------------------------------------------------------*/
 // Constructors
 Seller::Seller(const int timeoutLength, const int timeoutTolerance, 
-			   const VEPublicKey* pk, const int stat)
+			   Ptr<const VEPublicKey> pk, const int stat)
 	: timeoutLength(timeoutLength), timeoutTolerance(timeoutTolerance), 
 	  stat(stat), pk(pk), contract(NULL), escrow(NULL), inProgress(false)
 {
 }
 
-Seller::Seller(EncBuffer* ct, const int timeoutLength, 
-			   const int timeoutTolerance, const VEPublicKey* pk, 
+Seller::Seller(Ptr<EncBuffer> ct, const int timeoutLength, 
+			   const int timeoutTolerance, Ptr<const VEPublicKey> pk, 
 			   const int stat)
 	: timeoutLength(timeoutLength), timeoutTolerance(timeoutTolerance), 
 	  stat(stat), pk(pk), contract(NULL), escrow(NULL), inProgress(false)
@@ -23,8 +23,8 @@ Seller::Seller(EncBuffer* ct, const int timeoutLength,
 	ctext.push_back(ct);
 }
 
-Seller::Seller(vector<EncBuffer*> ctext, const int timeoutLength, 
-			   const int timeoutTolerance, const VEPublicKey* pk, 
+Seller::Seller(vector<Ptr<EncBuffer> > ctext, const int timeoutLength, 
+			   const int timeoutTolerance, Ptr<const VEPublicKey> pk, 
 			   const int stat)
 	: timeoutLength(timeoutLength), timeoutTolerance(timeoutTolerance), 
 	  stat(stat), pk(pk), ctext(ctext), contract(NULL), escrow(NULL), 
@@ -62,17 +62,17 @@ void Seller::reset() {
 
 /*----------------------------------------------------------------------------*/
 // Encryption
-EncBuffer* Seller::encrypt(const Buffer* pt, const cipher_t& encAlg, 
+Ptr<EncBuffer> Seller::encrypt(Ptr<const Buffer> pt, const cipher_t& encAlg, 
 						   const string& key) {
 	ptext.push_back(pt);
 	// now encrypt each block in fileBlocks using K
-	EncBuffer* ct = pt->encrypt(encAlg, key);
+	Ptr<EncBuffer> ct = pt->encrypt(encAlg, key);
 	ctext.push_back(ct);
 	// return outcome of this encryption
 	return ct;
 }
 
-vector<EncBuffer*> Seller::encrypt(const vector<const Buffer*>& ptext,
+vector<Ptr<EncBuffer> > Seller::encrypt(const vector<Ptr<const Buffer> >& ptext,
 								   const cipher_t& encAlg) {
 	string commonKey = Ciphertext::generateKey(encAlg);
 	for (unsigned i = 0; i < ptext.size(); i++) {
@@ -81,26 +81,26 @@ vector<EncBuffer*> Seller::encrypt(const vector<const Buffer*>& ptext,
 	return ctext;
 }
 
-void Seller::setFiles(const Buffer* ptext, EncBuffer* ctext) {
-	setFiles(CommonFunctions::vectorize<const Buffer*>(ptext),
-			 CommonFunctions::vectorize<EncBuffer*>(ctext));
+void Seller::setFiles(Ptr<const Buffer> ptext, Ptr<EncBuffer> ctext) {
+	setFiles(CommonFunctions::vectorize<Ptr<const Buffer> >(ptext),
+			 CommonFunctions::vectorize<Ptr<EncBuffer> >(ctext));
 }
 
-void Seller::setFiles(const vector<const Buffer*>& pt, 
-					  const vector<EncBuffer*>& ct) {
+void Seller::setFiles(const vector<Ptr<const Buffer> >& pt, 
+					  const vector<Ptr<EncBuffer> >& ct) {
 	ptext = pt;
 	ctext = ct;
 }
 
 /*----------------------------------------------------------------------------*/
 // Selling
-vector<string> Seller::sell(const BuyMessage* buyerInput, const ZZ& R, 
+vector<string> Seller::sell(Ptr<const BuyMessage> buyerInput, const ZZ& R, 
 							const hash_t& ptHash){
 	return sell(buyerInput, R, CommonFunctions::vectorize<hash_t>(ptHash));
 }
 
 
-vector<string> Seller::sell(const BuyMessage* buyerInput, const ZZ& R, 
+vector<string> Seller::sell(Ptr<const BuyMessage> buyerInput, const ZZ& R, 
 							const vector<hash_t>& ptHashes) {
 	if (inProgress)
 		throw CashException(CashException::CE_FE_ERROR,
@@ -126,7 +126,7 @@ vector<string> Seller::sell(const BuyMessage* buyerInput, const ZZ& R,
 	return keys;
 }
 
-bool Seller::check(const BuyMessage* buyerInput, const ZZ& R,
+bool Seller::check(Ptr<const BuyMessage> buyerInput, const ZZ& R,
 				   const vector<hash_t>& ptHashes) {
 	// check message
 	buyerInput->check(pk, stat, R);
@@ -159,16 +159,16 @@ bool Seller::check(const BuyMessage* buyerInput, const ZZ& R,
 // Resolution
 
 //send keys and buy message to the Arbiter so they can begin resolution
-pair<vector<string>, BuyMessage*> Seller::resolveI() {
+pair<vector<string>, Ptr<BuyMessage> > Seller::resolveI() {
 	vector<string> keys(ctext.size());
 	for(unsigned i = 0; i < ctext.size(); i++){
 		keys[i] = ctext[i]->key;
 	}
-	return make_pair<vector<string>, BuyMessage*>(keys, getBuyMessage()); 
+	return make_pair<vector<string>, Ptr<BuyMessage> >(keys, getBuyMessage()); 
 }
 
-MerkleProof* Seller::resolveII(vector<unsigned> &challenges){
-	vector<EncBuffer*> ctextBlocks;
+Ptr<MerkleProof> Seller::resolveII(vector<unsigned> &challenges){
+	vector<Ptr<EncBuffer> > ctextBlocks;
 	// send the required ciphertext blocks
 	for(unsigned i = 0; i < challenges.size(); i++){
 		ctextBlocks.push_back(ctext[challenges[i]]);
@@ -176,13 +176,13 @@ MerkleProof* Seller::resolveII(vector<unsigned> &challenges){
 	
 	//create and send the proofs as well
 	const hash_t& ct = contract->getCTHashB();
-	MerkleContract* ctContract = new MerkleContract(ct.key, ct.alg);
+	Ptr<MerkleContract> ctContract = new MerkleContract(ct.key, ct.alg);
 	MerkleProver ctProver(ctext, *ctContract);
 	vector<vector<hashDirect> > ctProofs = ctProver.generateProofs(challenges);
 
 	if(ct.type == Hash::TYPE_MERKLE){
 		const hash_t& pt = contract->getPTHashB();
-		MerkleContract* ptContract = new MerkleContract(pt.key, pt.alg);
+		Ptr<MerkleContract> ptContract = new MerkleContract(pt.key, pt.alg);
 		MerkleProver ptProver(ptext, *ptContract);
 		vector<vector<hashDirect> > ptProofs = ptProver.generateProofs(challenges);
 		return new MerkleProof(ctextBlocks, ctProofs, ptProofs, 
@@ -192,7 +192,7 @@ MerkleProof* Seller::resolveII(vector<unsigned> &challenges){
 	}
 }
 
-BuyMessage* Seller::getBuyMessage() const {
+Ptr<BuyMessage> Seller::getBuyMessage() const {
 	return new BuyMessage(coinPrime, contract, escrow);
 }
 

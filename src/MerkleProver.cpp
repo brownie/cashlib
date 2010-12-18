@@ -21,7 +21,7 @@ MerkleProver::MerkleProver(const string &str, const MerkleContract &contract)
 	init(str.data(), str.size());
 }
 
-MerkleProver::MerkleProver(const vector<EncBuffer*> &encBuffs, 
+MerkleProver::MerkleProver(const vector<Ptr<EncBuffer> > &encBuffs, 
 						   const MerkleContract &contract) 
 	: contract(contract)
 {
@@ -32,7 +32,7 @@ MerkleProver::MerkleProver(const vector<EncBuffer*> &encBuffs,
 	tree = new MerkleTree(hashBlocks, contract);
 }
 
-MerkleProver::MerkleProver(const vector<const Buffer*>& buffs, 
+MerkleProver::MerkleProver(const vector<Ptr<const Buffer> >& buffs, 
 						   const MerkleContract &contract) 
 	: contract(contract)
 {

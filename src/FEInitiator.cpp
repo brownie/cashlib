@@ -5,9 +5,9 @@
 
 /*----------------------------------------------------------------------------*/
 // Constructors
-FEInitiator::FEInitiator(const long timeoutLength, const VEPublicKey* pk, 
-			 			 const VEPublicKey* regularpk, const int stat, 
-						 const Signature::Key* sk)
+FEInitiator::FEInitiator(const long timeoutLength, Ptr<const VEPublicKey> pk, 
+			 			 Ptr<const VEPublicKey> regularpk, const int stat, 
+						 Ptr<const Signature::Key> sk)
 	: timeoutLength(timeoutLength), stat(stat), verifiablePK(pk), 
 	  regularPK(regularpk), contract(NULL), signKey(NULL), 
 	  exchangeType(TYPE_NONE)
@@ -52,13 +52,13 @@ void FEInitiator::reset() {
 
 /*----------------------------------------------------------------------------*/
 // Setup
-FESetupMessage* FEInitiator::setup(Wallet *wallet, const ZZ &R, 
+Ptr<FESetupMessage> FEInitiator::setup(Ptr<Wallet> wallet, const ZZ &R, 
 								   const string &signAlg) {
 	makeCoin(wallet, R);
 	return setup(signAlg);
 }
 
-FESetupMessage* FEInitiator::setup(const string &signAlg) {
+Ptr<FESetupMessage> FEInitiator::setup(const string &signAlg) {
 #ifdef TIMER
 startTimer();
 #endif
@@ -78,7 +78,7 @@ startTimer();
 	ZZ eCom = coin.getEndorsementCom();
 	// the label needs to be the public key for the signature scheme
 	// create the verifiable escrow
-	VECiphertext* escrow = new VECiphertext(prover.verifiableEncrypt(eCom, 
+	Ptr<VECiphertext> escrow = new VECiphertext(prover.verifiableEncrypt(eCom, 
 											endorsement, coin.getCashGroup(), 
 											signKey->publicKeyString(), 
 											verifiablePK->hashAlg, stat));
@@ -88,7 +88,7 @@ printTimer("Verifiable escrow generation");
 	return new FESetupMessage(coin, escrow, *signKey);
 }
 
-void FEInitiator::makeCoin(Wallet* wallet, const ZZ& R) {
+void FEInitiator::makeCoin(Ptr<Wallet> wallet, const ZZ& R) {
 	// get a coin
 #ifdef TIMER
 startTimer();
@@ -109,12 +109,12 @@ void FEInitiator::setCoin(const Coin& c) {
 
 /*----------------------------------------------------------------------------*/
 // Buy
-FEMessage* FEInitiator::buy(EncBuffer* ctextR, const hash_t& ptHashR) {
-	return buy(CommonFunctions::vectorize<EncBuffer*>(ctextR), 
+Ptr<FEMessage> FEInitiator::buy(Ptr<EncBuffer> ctextR, const hash_t& ptHashR) {
+	return buy(CommonFunctions::vectorize<Ptr<EncBuffer> >(ctextR), 
 			   CommonFunctions::vectorize<hash_t>(ptHashR));
 }
 
-FEMessage* FEInitiator::buy(const vector</*const*/ EncBuffer*>& ctextR,
+Ptr<FEMessage> FEInitiator::buy(const vector</*const*/ Ptr<EncBuffer> >& ctextR,
 							const vector</*const*/ hash_t>& ptHashR) {
 	if (TYPE_NONE != exchangeType)
 		throw CashException(CashException::CE_FE_ERROR,
@@ -194,7 +194,7 @@ bool FEInitiator::decryptCheck(const vector<string>& keysR) {
 	for (unsigned i = 0; i < ctextB.size(); i++) {
 		// decrypt the ciphertext using key
 		unsigned index = (keysR.size() == 1) ? 0 : i;
-		Buffer* ptext = ctextB[i]->decrypt(keysR[index], contract->getEncAlgB());
+		Ptr<Buffer> ptext = ctextB[i]->decrypt(keysR[index], contract->getEncAlgB());
 		ptextB.push_back(ptext);
 	}
 	
@@ -211,13 +211,13 @@ bool FEInitiator::decryptCheck(const vector<string>& keysR) {
 
 /*----------------------------------------------------------------------------*/
 // Continue Round
-EncBuffer* FEInitiator::continueRound(const Buffer* ptextI, 
+Ptr<EncBuffer> FEInitiator::continueRound(Ptr<const Buffer> ptextI, 
 									  const cipher_t& encAlgI) {
-	return continueRound(CommonFunctions::vectorize<const Buffer*>(ptextI), 
+	return continueRound(CommonFunctions::vectorize<Ptr<const Buffer> >(ptextI), 
 						 encAlgI)[0];
 }
 
-vector<EncBuffer*> FEInitiator::continueRound(const vector<const Buffer*>& ptextI,
+vector<Ptr<EncBuffer> > FEInitiator::continueRound(const vector<Ptr<const Buffer> >& ptextI,
 											  const cipher_t& encAlgI) {
 	if (TYPE_NONE != exchangeType)
 		throw CashException(CashException::CE_FE_ERROR,
@@ -234,27 +234,27 @@ vector<EncBuffer*> FEInitiator::continueRound(const vector<const Buffer*>& ptext
 /*----------------------------------------------------------------------------*/
 // Encrypt
 
-vector<EncBuffer*> FEInitiator::encrypt(const vector<const Buffer*>& ptextI, 
+vector<Ptr<EncBuffer> > FEInitiator::encrypt(const vector<Ptr<const Buffer> >& ptextI, 
 										const cipher_t& encAlgI) const {
 	if (ptextI.empty())
 		throw CashException(CashException::CE_FE_ERROR,
 			"[FEInitiator::encrypt] No initiator plaintext given");
 	
 	string key = Ciphertext::generateKey(encAlgI);
-	vector<EncBuffer*> ctexts;
+	vector<Ptr<EncBuffer> > ctexts;
 	for (unsigned i = 0; i < ptextI.size(); i++) {
 		ctexts.push_back(ptextI[i]->encrypt(encAlgI, key));
 	}
 	return ctexts;
 }
 
-void FEInitiator::setInitiatorFiles(const Buffer *ptextI, EncBuffer* ctextI) {
-	setInitiatorFiles(CommonFunctions::vectorize<const Buffer*>(ptextI),
-					  CommonFunctions::vectorize<EncBuffer*>(ctextI));
+void FEInitiator::setInitiatorFiles(Ptr<const Buffer> ptextI, Ptr<EncBuffer> ctextI) {
+	setInitiatorFiles(CommonFunctions::vectorize<Ptr<const Buffer> >(ptextI),
+					  CommonFunctions::vectorize<Ptr<EncBuffer> >(ctextI));
 }
 
-void FEInitiator::setInitiatorFiles(const vector<const Buffer*>& ptextI,
-									const vector<EncBuffer*>& ctextI) {
+void FEInitiator::setInitiatorFiles(const vector<Ptr<const Buffer> >& ptextI,
+									const vector<Ptr<EncBuffer> >& ctextI) {
 	// store values
 	ptextA = ptextI;
 	ctextA = ctextI;
@@ -262,14 +262,14 @@ void FEInitiator::setInitiatorFiles(const vector<const Buffer*>& ptextI,
 
 /*----------------------------------------------------------------------------*/
 // Barter
-FEMessage* FEInitiator::barter(EncBuffer* ctextR, const hash_t& ptHashR, 
+Ptr<FEMessage> FEInitiator::barter(Ptr<EncBuffer> ctextR, const hash_t& ptHashR, 
 							   const hash_t& ptHashI) {
-	return barter(CommonFunctions::vectorize<EncBuffer*>(ctextR),
+	return barter(CommonFunctions::vectorize<Ptr<EncBuffer> >(ctextR),
 				  CommonFunctions::vectorize<hash_t>(ptHashR),
 				  CommonFunctions::vectorize<hash_t>(ptHashI));
 }
 
-FEMessage* FEInitiator::barter(const vector<EncBuffer*>& ctextR, 
+Ptr<FEMessage> FEInitiator::barter(const vector<Ptr<EncBuffer> >& ctextR, 
 							   const vector<hash_t>& ptHashR,
 							   const vector<hash_t>& ptHashI) {
 	if (ctextR.empty())

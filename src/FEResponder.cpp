@@ -6,7 +6,7 @@
 /*----------------------------------------------------------------------------*/
 // Constructors
 FEResponder::FEResponder(const int timeoutLength, const int timeoutTolerance, 
-			 			 const VEPublicKey* pk, const VEPublicKey* regularpk, 
+			 			 Ptr<const VEPublicKey> pk, Ptr<const VEPublicKey> regularpk, 
 			 			 const int stat)
 	: timeoutLength(timeoutLength), timeoutTolerance(timeoutTolerance), 
 	  stat(stat), verifiablePK(pk), regularPK(regularpk), contract(NULL), 
@@ -56,7 +56,7 @@ void FEResponder::reset() {
 
 /*----------------------------------------------------------------------------*/
 // Setup
-bool FEResponder::setup(const FESetupMessage *msg, const ZZ& R) {
+bool FEResponder::setup(Ptr<const FESetupMessage> msg, const ZZ& R) {
 	// check escrow
 	msg->check(verifiablePK, stat, R);
 	
@@ -69,36 +69,36 @@ bool FEResponder::setup(const FESetupMessage *msg, const ZZ& R) {
 }
 /*----------------------------------------------------------------------------*/
 // Start Round
-EncBuffer* FEResponder::startRound(const Buffer* ptextR, 
+Ptr<EncBuffer> FEResponder::startRound(Ptr<const Buffer> ptextR, 
 								   const cipher_t& encAlgR) {
-	return startRound(CommonFunctions::vectorize<const Buffer*>(ptextR), 
+	return startRound(CommonFunctions::vectorize<Ptr<const Buffer> >(ptextR), 
 					  encAlgR)[0];
 }
 
-vector<EncBuffer*> FEResponder::startRound(const vector<const Buffer*>& ptextR,
+vector<Ptr<EncBuffer> > FEResponder::startRound(const vector<Ptr<const Buffer> >& ptextR,
 										  const cipher_t& encAlgR) {
 	setResponderFiles(ptextR, encrypt(ptextR,encAlgR));
 	return ctextB;
 }
 /*----------------------------------------------------------------------------*/
 // Set Responder Files
-void FEResponder::setResponderFiles(const Buffer *ptextR, EncBuffer* ctextR) {
-	setResponderFiles(CommonFunctions::vectorize<const Buffer*>(ptextR),
-					  CommonFunctions::vectorize<EncBuffer*>(ctextR));
+void FEResponder::setResponderFiles(Ptr<const Buffer> ptextR, Ptr<EncBuffer> ctextR) {
+	setResponderFiles(CommonFunctions::vectorize<Ptr<const Buffer> >(ptextR),
+					  CommonFunctions::vectorize<Ptr<EncBuffer> >(ctextR));
 }
 
-void FEResponder::setResponderFiles(const vector<const Buffer*>& ptextR,
-									const vector<EncBuffer*>& ctextR) {
+void FEResponder::setResponderFiles(const vector<Ptr<const Buffer> >& ptextR,
+									const vector<Ptr<EncBuffer> >& ctextR) {
 	// store values
 	ptextB = ptextR;
 	ctextB = ctextR;
 }
 /*----------------------------------------------------------------------------*/
 // Encryption
-vector<EncBuffer*> FEResponder::encrypt(const vector<const Buffer*>& ptextR, 
+vector<Ptr<EncBuffer> > FEResponder::encrypt(const vector<Ptr<const Buffer> >& ptextR, 
 										const cipher_t& encAlgR) const {
 	string key = Ciphertext::generateKey(encAlgR);
-	vector<EncBuffer*> ctexts;
+	vector<Ptr<EncBuffer> > ctexts;
 	for (unsigned i = 0; i < ptextR.size(); i++) {
 		ctexts.push_back(ptextR[i]->encrypt(encAlgR, key));
 	}
@@ -175,15 +175,15 @@ bool FEResponder::endorseCoin(const vector<ZZ>& endorsement) {
 /*----------------------------------------------------------------------------*/
 // Give Key
 vector<string> FEResponder::giveKeys(const FEMessage& signedEscrow, 
-									 EncBuffer* ctI, const hash_t& ptI,
+									 Ptr<EncBuffer> ctI, const hash_t& ptI,
 									 const hash_t& ptR) {
-	return giveKeys(signedEscrow, CommonFunctions::vectorize<EncBuffer*>(ctI),
+	return giveKeys(signedEscrow, CommonFunctions::vectorize<Ptr<EncBuffer> >(ctI),
 					CommonFunctions::vectorize<hash_t>(ptI),
 					CommonFunctions::vectorize<hash_t>(ptR));
 }
 
 vector<string> FEResponder::giveKeys(const FEMessage& signedEscrow,
-									 const vector<EncBuffer*>& ctextI,
+									 const vector<Ptr<EncBuffer> >& ctextI,
 									 const vector<hash_t>& ptHashIs,
 									 const vector<hash_t>& ptHashRs) {
 	if (TYPE_NONE != exchangeType)
@@ -232,7 +232,7 @@ bool FEResponder::checkKey(const vector<string>& keysI) {
 
 	for (unsigned i = 0; i < ctextA.size(); i++) {
 		unsigned index = (keysI.size() == 1) ? 0 : i;
-		Buffer* ptext = ctextA[i]->decrypt(keysI[index], contract->getEncAlgA());
+		Ptr<Buffer> ptext = ctextA[i]->decrypt(keysI[index], contract->getEncAlgA());
 		ptextA.push_back(ptext);
 	}
 	const hash_t& pt = contract->getPTHashA();
@@ -242,12 +242,12 @@ bool FEResponder::checkKey(const vector<string>& keysI) {
 /*----------------------------------------------------------------------------*/
 // Resolutions
 
-FEResolutionMessage* FEResponder::resolveI(){
+Ptr<FEResolutionMessage> FEResponder::resolveI(){
 	return new FEResolutionMessage(getMessage(), getSetupMessage(), getKeys());
 }
 
-MerkleProof* FEResponder::resolveII(vector<unsigned> &challenges){
-	vector<EncBuffer*> ctextBlocks;
+Ptr<MerkleProof> FEResponder::resolveII(vector<unsigned> &challenges){
+	vector<Ptr<EncBuffer> > ctextBlocks;
 	//prove the ciphertext blocks
 	for(unsigned i = 0; i < challenges.size(); i++){
 		ctextBlocks.push_back(ctextB[challenges[i]]);
@@ -272,7 +272,7 @@ MerkleProof* FEResponder::resolveII(vector<unsigned> &challenges){
 	}
 }
 
-MerkleProof* FEResponder::resolveIII(vector<string> &keys){
+Ptr<MerkleProof> FEResponder::resolveIII(vector<string> &keys){
 	if(checkKey(keys)){
 		// XXX: not really sure what I should be returning if they do check
 		// out as additional communication with the Arbiter is not needed
@@ -286,7 +286,7 @@ bool FEResponder::resolveIV(vector<ZZ> &endorsement){
 	return endorseCoin(endorsement);
 }
 
-MerkleProof* FEResponder::proveIncorrectKeys(const vector<string> &keys) {
+Ptr<MerkleProof> FEResponder::proveIncorrectKeys(const vector<string> &keys) {
 	// make sure we are in barter
 	if (exchangeType != TYPE_BARTER) {
 		throw CashException(CashException::CE_FE_ERROR,
@@ -298,7 +298,7 @@ MerkleProof* FEResponder::proveIncorrectKeys(const vector<string> &keys) {
 	// if the key is wrong, this will be wrong with high probability
 	vector<unsigned> challenges;
 	challenges.push_back(0);
-	vector<EncBuffer*> ctextBlock;
+	vector<Ptr<EncBuffer> > ctextBlock;
 	ctextBlock.push_back(ctextA[0]);
 	const hash_t& ct = contract->getCTHashA();
 	MerkleContract ctContract(ct.key, ct.alg);
@@ -318,7 +318,7 @@ MerkleProof* FEResponder::proveIncorrectKeys(const vector<string> &keys) {
 	}
 }
 
-FESetupMessage* FEResponder::getSetupMessage() const {
+Ptr<FESetupMessage> FEResponder::getSetupMessage() const {
 	return new FESetupMessage(coinPrime, escrow, *initiatorSignPK);
 }
 

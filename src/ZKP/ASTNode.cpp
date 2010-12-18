@@ -130,9 +130,9 @@ ZZ ASTAdd::eval(Environment &env) {
 		return lhs->eval(env) + rhs->eval(env);
 	}
 	else {
-		const Group* lGroup = env.groups.at(leftInfo.group);
-		const Group* rGroup = env.groups.at(rightInfo.group);
-		const Group* retGroup = (lGroup != 0 ? lGroup : rGroup);
+		Ptr<const Group> lGroup = env.groups.at(leftInfo.group);
+		Ptr<const Group> rGroup = env.groups.at(rightInfo.group);
+		Ptr<const Group> retGroup = (lGroup != 0 ? lGroup : rGroup);
 		assert(retGroup);
 		ZZ mod = retGroup->getModulus();
 		return AddMod(lhs->eval(env), rhs->eval(env), mod);
@@ -151,9 +151,9 @@ ZZ ASTSub::eval(Environment &env) {
 		return lhs->eval(env) - rhs->eval(env);
 	} 
 	else {
-		const Group* lGroup = env.groups.at(leftInfo.group);
-		const Group* rGroup = env.groups.at(rightInfo.group);
-		const Group* retGroup = (lGroup != 0 ? lGroup : rGroup);
+		Ptr<const Group> lGroup = env.groups.at(leftInfo.group);
+		Ptr<const Group> rGroup = env.groups.at(rightInfo.group);
+		Ptr<const Group> retGroup = (lGroup != 0 ? lGroup : rGroup);
 		assert(retGroup);
 		ZZ mod = retGroup->getModulus();
 		return SubMod(lhs->eval(env), rhs->eval(env), mod);
@@ -172,9 +172,9 @@ ZZ ASTMul::eval(Environment &env) {
 		return lhs->eval(env) * rhs->eval(env);
 	}
 	else {
-		const Group* lGroup = env.groups.at(leftInfo.group);
-		const Group* rGroup = env.groups.at(rightInfo.group);
-		const Group* retGroup = (lGroup != 0 ? lGroup : rGroup);
+		Ptr<const Group> lGroup = env.groups.at(leftInfo.group);
+		Ptr<const Group> rGroup = env.groups.at(rightInfo.group);
+		Ptr<const Group> retGroup = (lGroup != 0 ? lGroup : rGroup);
 		assert(retGroup);
 		ZZ mod = retGroup->getModulus();
 		return MulMod(lhs->eval(env), rhs->eval(env), mod);
@@ -187,9 +187,9 @@ ZZ ASTDiv::eval(Environment &env) {
 	VarInfo rightInfo = p.second;
 	// XXX: this will cause a problem if we ever try to use
 	// it during constant propagation/substitution
-	const Group* lGroup = env.groups.at(leftInfo.group);
-	const Group* rGroup = env.groups.at(rightInfo.group);
-	const Group* retGroup = (lGroup != 0 ? lGroup : rGroup);
+	Ptr<const Group> lGroup = env.groups.at(leftInfo.group);
+	Ptr<const Group> rGroup = env.groups.at(rightInfo.group);
+	Ptr<const Group> retGroup = (lGroup != 0 ? lGroup : rGroup);
 	// integers can just be divided
 	if ((lGroup == 0 && rGroup == 0) 
 		|| (leftInfo.type == VarInfo::MODULUS 
@@ -227,7 +227,7 @@ ZZ ASTPow::eval(Environment &env) {
 		info = lhs->getExprType(env);
 	else
 		info = env.exprTypes.at(lhs->toString());
-	const Group* lGroup = env.groups.at(info.group);
+	Ptr<const Group> lGroup = env.groups.at(info.group);
 	// if base is an exponent or integer, do it over integers
 	if (lGroup == 0 || info.type == VarInfo::EXPONENT) {
 		return power(lhs->eval(env), to_int(rhs->eval(env)));

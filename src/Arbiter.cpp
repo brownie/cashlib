@@ -22,11 +22,11 @@ vector<unsigned> Arbiter::sellerResolveI(const ResolutionPair &keyMessagePair){
 	// first, store the keys
 	keys = keyMessagePair.first;
 	// now, unwrap and check the buyMessage, then store everything
-	BuyMessage* buyMessage = keyMessagePair.second;
+	Ptr<BuyMessage> buyMessage = keyMessagePair.second;
 	Coin coinPrime = buyMessage->getCoinPrime();
-	VECiphertext escrow = *buyMessage->getEscrow();
+	Ptr<VECiphertext> escrow = buyMessage->getEscrow();
 	// want to store the contract as well (for stage II)
-	contract = *buyMessage->getContract();
+	contract = buyMessage->getContract();
 	// check the timeout to make sure it hasn't passed
 	if(contract.checkTimeout(timeoutTolerance)) {
 		endorsement = verifiableDecrypter->decrypt(escrow.getCiphertext(), 
@@ -54,7 +54,7 @@ vector<unsigned> Arbiter::sellerResolveI(const ResolutionPair &keyMessagePair){
 	}
 }
 
-vector<ZZ> Arbiter::sellerResolveII(const MerkleProof* proof){
+vector<ZZ> Arbiter::sellerResolveII(Ptr<const MerkleProof> proof){
 	// check the proof against the keys provided in Stage I
 	if(verifyKeys(proof)){
 		if(updateDB){
@@ -71,11 +71,11 @@ vector<ZZ> Arbiter::sellerResolveII(const MerkleProof* proof){
 	}
 }
 
-bool Arbiter::verifyKeys(const MerkleProof* proof) {
+bool Arbiter::verifyKeys(Ptr<const MerkleProof> proof) {
 	// the arbiter needs to check the encrypted blocks decrypt correctly
 	bool validDecryption = true;
-	vector<EncBuffer*> cTextBlocks = proof->getCTextBlocks();
-	vector<Buffer*> decryptedBlocks(cTextBlocks.size());
+	vector<Ptr<EncBuffer> > cTextBlocks = proof->getCTextBlocks();
+	vector<Ptr<Buffer> > decryptedBlocks(cTextBlocks.size());
 	vector<hash_t> hashedBlocks(cTextBlocks.size());
 	unsigned i = 0;
 	// it checks the decryption in the following three steps:
@@ -104,10 +104,10 @@ bool Arbiter::verifyKeys(const MerkleProof* proof) {
 	}
 }
 
-bool Arbiter::verifyDecryption(const MerkleProof* proof){
+bool Arbiter::verifyDecryption(Ptr<const MerkleProof> proof){
 	bool validDecryption = true;
-	vector<EncBuffer*> cTextBlocks = proof->getCTextBlocks();
-	vector<Buffer*> decryptedBlocks(cTextBlocks.size());
+	vector<Ptr<EncBuffer> > cTextBlocks = proof->getCTextBlocks();
+	vector<Ptr<Buffer> > decryptedBlocks(cTextBlocks.size());
 	vector<hash_t> hashedBlocks(cTextBlocks.size());
 	unsigned i = 0;
 	do{
@@ -123,15 +123,15 @@ bool Arbiter::verifyDecryption(const MerkleProof* proof){
 	return (validDecryption && ctVerifier->verifyProofs(ctProof));
 }
 
-vector<unsigned> Arbiter::responderResolveI(const FEResolutionMessage* req) {
+vector<unsigned> Arbiter::responderResolveI(Ptr<const FEResolutionMessage> req) {
 	return responderResolveI(req->getKeys(), req->getMessage(),
 							 req->getSetupMessage());
 }
 
 // this method sets up the resolve for a failed barter
 vector<unsigned> Arbiter::responderResolveI(const vector<string> &ks,		
-											const FEMessage* msg, 
-											const FESetupMessage* setup) {
+											Ptr<const FEMessage> msg, 
+											Ptr<const FESetupMessage> setup) {
 	// stores keys and message
 	keys = ks;
 	message = msg;
@@ -139,12 +139,12 @@ vector<unsigned> Arbiter::responderResolveI(const vector<string> &ks,
 	// this is the regular encryption
 	vector<ZZ> sigEscrow = message->getEscrow();
 	// this is the verifiable encryption
-	VECiphertext vEscrow = *setup->getEscrow();
+	VECiphertext vEscrow = setup->getEscrow();
 	contract = message->getContract();
-	const Signature::Key* sigPK = setup->getPK();
+	Ptr<const Signature::Key> sigPK = setup->getPK();
 	
 	// verify that the signature given in BarterMessage is correct
-	bool sigCorrect = Signature::verify(*sigPK, message->getSignature(), 
+	bool sigCorrect = Signature::verify(sigPK, message->getSignature(), 
 										CommonFunctions::vecToString(sigEscrow), 
 										hashAlg);	
 	if (!sigCorrect){
@@ -183,7 +183,7 @@ vector<unsigned> Arbiter::responderResolveI(const vector<string> &ks,
 	}
 }
 	
-vector<string> Arbiter::responderResolveII(const MerkleProof* proof){
+vector<string> Arbiter::responderResolveII(Ptr<const MerkleProof> proof){
 	if(verifyKeys(proof)){
 		// decrypt the signature escrow
 		vector<ZZ> m = message->getEscrow();
@@ -202,7 +202,7 @@ vector<string> Arbiter::responderResolveII(const MerkleProof* proof){
 	}
 }
 
-vector<ZZ> Arbiter::responderResolveIII(const MerkleProof* proof){
+vector<ZZ> Arbiter::responderResolveIII(Ptr<const MerkleProof> proof){
 	if (!verifyDecryption(proof)){
 		return endorsement;
 	} else {

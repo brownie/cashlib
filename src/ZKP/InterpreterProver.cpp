@@ -85,7 +85,7 @@ void InterpreterProver::decompose() {
 
 void InterpreterProver::formRandomExponents() {
 	for (unsigned i = 0; i < env.randoms.size(); i++) {
-		const Group* grp = env.getGroup(env.randoms[i]);
+		Ptr<const Group> grp = env.getGroup(env.randoms[i]);
 		ZZ val = grp->randomExponent();
 		env.variables[env.randoms[i]] = val;
 	}
@@ -122,7 +122,7 @@ void InterpreterProver::computeIntermediateValues() {
 variable_map InterpreterProver::makeRandomizedExponents() {
 	variable_map ret;
 	// find a group which is type RSA, if none found just use first group
-	const Group* groupForRandomness = env.groups.begin()->second;
+	Ptr<const Group> groupForRandomness = env.groups.begin()->second;
 	for (group_map::iterator it = env.groups.begin();
 							 it != env.groups.end(); ++it) {
 		// remember that 0 is in the map to indicate 'no group'

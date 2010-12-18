@@ -16,35 +16,33 @@ class BuyMessage {
 		/*! coinPrime represents the unendorsed coin, contract represents
 		 * the label for the verifiable encryption, and escrow represents
 		 * the verifiable escrow on the coin's endorsement */
-		BuyMessage(const Coin &coinPrime, FEContract* contract, 
-				   VECiphertext* escrow)
+		BuyMessage(const Coin &coinPrime, Ptr<FEContract> contract, 
+				   Ptr<VECiphertext> escrow)
 			: coinPrime(coinPrime), contract(contract), escrow(escrow) {}
 
 		/*! copy constructor */
 		BuyMessage(const BuyMessage &o) 
 			: coinPrime(o.coinPrime), contract(o.contract), escrow(o.escrow) {}
 
-		~BuyMessage() { /*delete contract;*/ delete escrow; }
-
-		BuyMessage(const string& s, const BankParameters *params) {
+		BuyMessage(const string& s, Ptr<const BankParameters> params) {
 			// need to set params for Coin contained in message
 			loadGZString(make_nvp("BuyMessage", *this), s); 
 			coinPrime.setParameters(params);
 		}
 
 		/*! check contents (verify coin and escrow) */
-		bool check(const VEPublicKey* pk, const int stat, const ZZ& R) const;
+		bool check(Ptr<const VEPublicKey> pk, const int stat, const ZZ& R) const;
 
 		// getters
 		Coin getCoinPrime() const { return coinPrime; }
-		FEContract* getContract() const { return contract; }
-		VECiphertext* getEscrow() const { return escrow; }
+		Ptr<FEContract> getContract() const { return contract; }
+		Ptr<VECiphertext> getEscrow() const { return escrow; }
 
 	private:
 		// XXX these should all be shared_ptr?
 		Coin coinPrime;
-		FEContract* contract;
-		VECiphertext* escrow;
+		Ptr<FEContract> contract;
+		Ptr<VECiphertext> escrow;
 
 		friend class boost::serialization::access;
 		template <class Archive> 

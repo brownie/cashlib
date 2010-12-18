@@ -19,7 +19,7 @@ class FEResponder {
 		/*! constructor takes in various parameters and the public key of
 		 * the arbiter */
 		FEResponder(const int timeoutLength, const int timeoutTolerance, 
-					const VEPublicKey* pk, const VEPublicKey* repk, 
+					Ptr<const VEPublicKey> pk, Ptr<const VEPublicKey> repk, 
 					const int stat);
 		
 		/*! copy constructor */
@@ -29,18 +29,18 @@ class FEResponder {
 		~FEResponder();
 
 		/*! check a setup message received from FEInitiator */
-		bool setup(const FESetupMessage* setup, const ZZ& R);
+		bool setup(Ptr<const FESetupMessage> setup, const ZZ& R);
 			
 		/*! encrypt and start the next round (including first round) */
-		EncBuffer* startRound(const Buffer* ptextR, const cipher_t& encAlgR);
-		vector<EncBuffer*> startRound(const vector<const Buffer*>& ptextR,
+		Ptr<EncBuffer> startRound(Ptr<const Buffer> ptextR, const cipher_t& encAlgR);
+		vector<Ptr<EncBuffer> > startRound(const vector<Ptr<const Buffer> >& ptextR,
 									  const cipher_t& encAlgR);
 		
 		/*! set responder files (only for BT client use) */
-		void setResponderFiles(const Buffer* ptextR, EncBuffer* ctextR);
+		void setResponderFiles(Ptr<const Buffer> ptextR, Ptr<EncBuffer> ctextR);
 		
-		void setResponderFiles(const vector<const Buffer*>& ptextR,
-								const vector<EncBuffer*>& ctextR);
+		void setResponderFiles(const vector<Ptr<const Buffer> >& ptextR,
+								const vector<Ptr<EncBuffer> >& ctextR);
 		
 		// the following should be used for sell only
 		/*! if the contract is formed correctly and the signature on the
@@ -59,11 +59,11 @@ class FEResponder {
 		/*! if the contract is correctly and the signature on the escrow
 		 * verifies, return the decryption key */
 		vector<string> giveKeys(const FEMessage& signedEscrow,
-								EncBuffer* ctextI, const hash_t& ptHashI,
+								Ptr<EncBuffer> ctextI, const hash_t& ptHashI,
 								const hash_t& ptHashR);
 
 		vector<string> giveKeys(const FEMessage& signedEscrow,
-								const vector<EncBuffer*>& ctextI,
+								const vector<Ptr<EncBuffer> >& ctextI,
 								const vector<hash_t>& ptHashI,
 								const vector<hash_t>& ptHashR);
 		
@@ -73,15 +73,15 @@ class FEResponder {
 		bool checkKey(const vector<string>& keysI);
 	
 		/*! Send a request to the arbiter to resolve*/
-		FEResolutionMessage* resolveI();
+		Ptr<FEResolutionMessage> resolveI();
 
 		/*! Send proofs that you know the plaintext of the blocks 
 		 * indicated by the challengs to the Arbiter */
-		MerkleProof* resolveII(vector<unsigned> &challenges);
+		Ptr<MerkleProof> resolveII(vector<unsigned> &challenges);
 
 		/*! Check that the keys sent by the Arbiter enable you to decrypt 
 		 * the Initiator's ciphertext.  If they don't, send a proof of this */
-		MerkleProof* resolveIII(vector<string> &keys);
+		Ptr<MerkleProof> resolveIII(vector<string> &keys);
 
 		/*! If the proof of the initiator's keys not decrypting the 
 		 * ciphertext correctly is valid
@@ -90,11 +90,11 @@ class FEResponder {
 		bool resolveIV(vector<ZZ> &endorsement);
 		
 		// getters
-		const vector<Buffer*>& getPtextA() const { return ptextA; }
+		const vector<Ptr<Buffer> >& getPtextA() const { return ptextA; }
 		const Coin& getCoinPrime() const { return coinPrime; }
 		// these are only needed for testing
-		FESetupMessage* getSetupMessage() const;
-		FEMessage* getMessage() const { return message; }
+		Ptr<FESetupMessage> getSetupMessage() const;
+		Ptr<FEMessage> getMessage() const { return message; }
 		
 		bool canAbortLocally() {return TYPE_NONE == exchangeType;}
 		
@@ -103,15 +103,15 @@ class FEResponder {
 		void setTimeoutTolerance(const int newtimeoutTolerance) 
 							{timeoutTolerance = newtimeoutTolerance;}
 		void setSecurity(const int newstat) {stat = newstat;}
-		void setVerifiablePublicKey(const VEPublicKey* newpk) 
+		void setVerifiablePublicKey(Ptr<const VEPublicKey> newpk) 
 							{verifiablePK = newpk;}
-		void setRegularPublicKey(const VEPublicKey* newpk) {regularPK = newpk;}
+		void setRegularPublicKey(Ptr<const VEPublicKey> newpk) {regularPK = newpk;}
 		
 		void reset();
 
 	protected:
-		vector<EncBuffer*> encrypt(const vector<const Buffer*>& ptextR, 
-								   const cipher_t& encAlgR) const;
+		vector<Ptr<EncBuffer> > encrypt(const vector<Ptr<const Buffer> >& ptextR, 
+                                        const cipher_t& encAlgR) const;
 				
 		bool check(const FEMessage& message, const string& label,
 				   const vector<hash_t>& ptHashR);
@@ -119,28 +119,28 @@ class FEResponder {
 		vector<string> getKeys() const;
 		
 		/*! Prove the initiator's keys are not correct for the ciphertext */
-		MerkleProof* proveIncorrectKeys(const vector<string> &keys);
+		Ptr<MerkleProof> proveIncorrectKeys(const vector<string> &keys);
 		
 	private:
 		int timeoutLength;
 		int timeoutTolerance;
 		int timeout;
 		int stat;
-		const VEPublicKey* verifiablePK;
-		const VEPublicKey* regularPK;
+		Ptr<const VEPublicKey> verifiablePK;
+		Ptr<const VEPublicKey> regularPK;
 
-		vector<const Buffer*> ptextB;
-		vector<EncBuffer*> ctextB;
-		vector</*const*/EncBuffer*> ctextA;
-		vector<Buffer*> ptextA;
+		vector<Ptr<const Buffer> > ptextB;
+		vector<Ptr<EncBuffer> > ctextB;
+		vector<Ptr<EncBuffer> > ctextA; // const?
+		vector<Ptr<Buffer> > ptextA;
 
 		Coin coinPrime;
-		FEContract* contract;
-		VECiphertext* escrow;
-		Signature::Key* initiatorSignPK;
+		Ptr<FEContract> contract;
+		Ptr<VECiphertext> escrow;
+		Ptr<Signature::Key> initiatorSignPK;
 		// 0 is buy, 1 is barter
 		int exchangeType;
-		FEMessage* message;
+		Ptr<FEMessage> message;
 };
 
 #endif /*_FERESPONDER_H_*/

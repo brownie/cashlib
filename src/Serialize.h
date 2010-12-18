@@ -44,6 +44,8 @@ namespace bsz = boost::serialization;
 namespace bar = boost::archive;
 namespace bio = boost::iostreams;
 
+#define Ptr boost::shared_ptr
+
 // save and load to string or file
 //   Ar = boost::archive::xml_archive is more portable
 //   Ar = boost::archive::binary_archive is more compact
