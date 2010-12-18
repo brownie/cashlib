@@ -51,10 +51,13 @@ Seller::~Seller() {
 void Seller::reset() {
 	inProgress = false;
 	//delete escrow;
+#ifdef DELETE_BUFFERS
 	for (unsigned i = 0; i < ctext.size(); i++) {
 		delete ctext[i];
 	}
-	//delete contract;
+#endif
+	ctext.clear();
+	//delete contract; // XXX memory
 }
 
 /*----------------------------------------------------------------------------*/
@@ -132,6 +135,12 @@ bool Seller::check(const BuyMessage* buyerInput, const ZZ& R,
 	contract = buyerInput->getContract();
 	contract->checkTimeout(timeoutTolerance);
 	contract->checkEncAlgB(ctext[0]->encAlg);
+#ifdef DOUBLE_CHECK
+	hash_t ptHashReal = Hash::hash(ptext, contract->getPTHashB().alg, 
+								   contract->getPTHashB().key, 
+								   contract->getPTHashB().type);
+	assert(ptHashReal == contract->getPTHashB());
+#endif
 	hash_t ptHash = Hash::hash(ptHashes, contract->getPTHashB().alg, 
 							   contract->getPTHashB().key, 
 							   contract->getPTHashB().type);

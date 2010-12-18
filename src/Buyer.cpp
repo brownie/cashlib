@@ -27,9 +27,12 @@ Buyer::~Buyer() {
 
 void Buyer::reset() {
 	inProgress = false;
+#ifdef DELETE_BUFFERS
 	for (unsigned i = 0; i < ptext.size(); i++) {
 		delete ptext[i];
     }
+#endif
+	ptext.clear();
 	delete contract;
 	contract = NULL;
 }

@@ -41,6 +41,7 @@ class BuyMessage {
 		VECiphertext* getEscrow() const { return escrow; }
 
 	private:
+		// XXX these should all be shared_ptr?
 		Coin coinPrime;
 		FEContract* contract;
 		VECiphertext* escrow;

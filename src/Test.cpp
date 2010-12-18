@@ -1127,6 +1127,8 @@ double* testWithdraw() {
 	*/
 	saveFile(make_nvp("Wallet", wallet), ("wallet."+statName).c_str());
 
+	delete idProof; delete clProof; delete pm;
+
 	// XXX: having some seg fault issues here...
 	delete uwTool;
 	delete bwTool;
@@ -1287,10 +1289,24 @@ double* testBuy() {
 		 << endl;
 	cout << " Escrow size: " << saveGZString(buyMessage->getEscrow()).size() 
 		 << endl;
+	
+	// test saving and loading BuyMessage
+	string bmsg = saveGZString(*buyMessage);
+	saveXML(make_nvp("BuyMessage", *buyMessage), "buym1.xml");
+	BuyMessage* loadedBMsg = new BuyMessage(bmsg, params);
+	saveXML(make_nvp("BuyMessage", *loadedBMsg), "buym2.xml");
+
+	cout << "Loaded Buy message size: " << saveGZString(*loadedBMsg).size() << endl;
+	cout << " Coin size: " << saveGZString(loadedBMsg->getCoinPrime()).size()
+		 << endl;
+	cout << " Contract size: " << saveGZString(loadedBMsg->getContract()).size()
+		 << endl;
+	cout << " Escrow size: " << saveGZString(loadedBMsg->getEscrow()).size() 
+		 << endl;
 
 	// step 3: seller checks contract and escrow, returns key(s) if valid 
 	startTimer();
-	vector<string> key = seller.sell(buyMessage, R, ptHash);
+	vector<string> key = seller.sell(loadedBMsg, R, ptHash);
 	timers[timer++] = printTimer(timer, "Seller checked the buy message and "
 										"sent decryption key");
 
@@ -1312,7 +1328,7 @@ double* testBuy() {
 		cout << "Buy protocol failed" << endl;
 
 	delete ptext;
-	delete buyMessage;
+	delete buyMessage; delete loadedBMsg;
 	return timers;
 }
 

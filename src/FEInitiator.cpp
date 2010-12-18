@@ -34,10 +34,12 @@ FEInitiator::~FEInitiator() {
 
 void FEInitiator::reset() {
 	exchangeType = TYPE_NONE;
+#ifdef DELETE_BUFFERS
 	for (unsigned i = 0; i < ptextB.size(); i++)
 		delete ptextB[i];
 	for (unsigned i = 0; i < ctextA.size(); i++)
 		delete ctextA[i];
+#endif
 	ctextA.clear();
 	ctextB.clear();
 	ptextA.clear();
@@ -45,6 +47,7 @@ void FEInitiator::reset() {
 	
 	delete contract;
 	contract = NULL;
+	// XXX MEMORY delete message
 }
 
 /*----------------------------------------------------------------------------*/

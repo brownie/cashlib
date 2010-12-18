@@ -36,20 +36,22 @@ FEResponder::~FEResponder() {
 
 void FEResponder::reset() {
 	exchangeType = TYPE_NONE;
-	
+
+#ifdef DELETE_BUFFERS
 	for (unsigned i = 0; i < ptextA.size(); i++) {
 		delete ptextA[i];
 	}
 	for (unsigned i = 0; i < ctextB.size(); i++) {
 		delete ctextB[i];
 	}
+#endif
 	ctextB.clear();
 	ctextA.clear();
 	ptextB.clear();
 	ptextA.clear();
 	
 	delete contract;
-	delete message;
+	//	delete message; // XXX causes segfault
 }
 
 /*----------------------------------------------------------------------------*/
