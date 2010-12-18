@@ -110,7 +110,7 @@ vector<ZZ> VEDecrypter::decrypt(const vector<ZZ> &ciphertext,
 	ZZ z = sk->getZ();
 	string hkey = pk->getHashKey();
 	
-	ZZ h = CommonFunctions::ZZFromBytes(Hash::hash(hashvec, label, hashAlg, hkey));
+	ZZ h = ZZFromBytes(Hash::hash(hashvec, label, hashAlg, hkey));
 	ZZ v2 = PowerMod(v, 2, bigNsquared);
 	ZZ vyz = PowerMod(v2, y + z*h, bigNsquared);
 	

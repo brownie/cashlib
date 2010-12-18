@@ -197,7 +197,18 @@ inline void BytesFromZZ(unsigned char *p, const ZZ& a, long n) {
 	mpz_export(p, &cnt, -1, 1, -1, 0, MPZ(a));	// like NTL, GMP does not export the sign of ZZs
 }
 
+// Convert binary string to NTL integer
+inline ZZ ZZFromBytes(const string &str) {
+	return ZZFromBytes((const unsigned char *)str.data(), str.size());
 }
+ 
+inline string ZZToBytes(const ZZ& n) {
+	unsigned char buf[NumBytes(n)];
+	BytesFromZZ((unsigned char *)&buf, n, sizeof(buf));
+	return string((char *)&buf, sizeof(buf));
+}
+
+} // namespace NTL
 
 BOOST_SERIALIZATION_SPLIT_FREE(NTL::ZZ)
 

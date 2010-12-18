@@ -38,7 +38,7 @@ ZZ Hash::hash(const vector<ZZ> &vec, const alg_t alg)
 ZZ Hash::hash(const ZZ &z, const alg_t alg, const string& key)
 {
     // hash the value's binary representation
-    return hash(CommonFunctions::ZZToBytes(z), alg, key, Hash::TYPE_PLAIN);
+    return hash(ZZToBytes(z), alg, key, Hash::TYPE_PLAIN);
 }
 
 hash_t Hash::hash(const string& data, const alg_t alg, const string &key, const int hashType)

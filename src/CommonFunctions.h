@@ -13,17 +13,6 @@ class CommonFunctions {
 	public:
 		static bool isTTP(const string &name);
 
-		// Convert binary string to NTL integer
-		static ZZ ZZFromBytes(const string &str) {
-		    return NTL::ZZFromBytes((const unsigned char *)str.data(), str.size());
-		}
-		
-		static string ZZToBytes(const ZZ& n) {
-			unsigned char buf[NTL::NumBytes(n)];
-			NTL::BytesFromZZ((unsigned char *)&buf, n, sizeof(buf));
-			return string((char *)&buf, sizeof(buf));
-		}
-		
 		static string vecToBytes(const vector<ZZ>& vec) {
 			size_t sz = 0;
 			for (unsigned i=0; i < vec.size(); i++)

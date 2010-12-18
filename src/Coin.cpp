@@ -144,6 +144,6 @@ ZZ Coin::getTPrime() const {
 }
 
 hash_t Coin::hash() const {
-    return Hash::hash(CommonFunctions::ZZToBytes(S), Hash::SHA1, string(), 
+    return Hash::hash(ZZToBytes(S), Hash::SHA1, string(), 
 					  Hash::TYPE_PLAIN);
 }

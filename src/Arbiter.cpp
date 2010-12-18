@@ -191,7 +191,7 @@ vector<string> Arbiter::responderResolveII(const MerkleProof* proof){
 		vector<ZZ> initiatorVals = regularDecrypter->decrypt(m, label, hashAlg); 
 		vector<string> initiatorKeys(initiatorVals.size());
 		for(unsigned i = 0; i < initiatorVals.size(); i++){
-			initiatorKeys[i] = CommonFunctions::ZZToBytes(initiatorVals[i]);
+			initiatorKeys[i] = ZZToBytes(initiatorVals[i]);
 		}
 		// store keys (in case we go to Stage III)
 		keys = initiatorKeys;

@@ -40,7 +40,7 @@ struct MultiExpCacher {
 
 	ZZ exp(const vector<ZZ>& bases, const vector<ZZ>& exponents, const ZZ& mod) {
 		hash_t h = Hash::hash(saveString(bases) +
-							  CommonFunctions::ZZToBytes(mod), 
+							  ZZToBytes(mod), 
 							  Hash::SHA1, string(), Hash::TYPE_PLAIN);
 		//cout << "[MultiExpCacher::exp] multi-exp bases length " << bases.length() 
 		//	 << " hash " << base64_encode(h.c_str(), h.size()) << endl;

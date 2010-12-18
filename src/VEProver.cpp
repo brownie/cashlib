@@ -62,7 +62,7 @@ vector<ZZ> VEProver::encrypt(const vector<ZZ> &messages, const string &label,
 		}
 	}
 	string hashKey = pk->getHashKey();
-	ZZ hash = CommonFunctions::ZZFromBytes(Hash::hash(ciphertext, label,
+	ZZ hash = ZZFromBytes(Hash::hash(ciphertext, label,
 													  hashAlg, hashKey));
 	e.variables["hash"] = hash;
 	ZZ eHash = PowerMod(eVal, hash, bigNSquared);
