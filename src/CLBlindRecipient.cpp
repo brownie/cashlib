@@ -84,7 +84,7 @@ Ptr<ProofMessage> CLBlindRecipient::getC(const vector<SecretValue>& privates,
 	variable_map pVars = prover.getEnvironment().variables;
 	vals["C"] = pVars.at("C");
 	vals["vprime"] = pVars.at("vprime");
-	return new ProofMessage(vals, publics, proof);
+	return new_ptr<ProofMessage>(vals, publics, proof);
 }
 
 bool CLBlindRecipient::verifySig(const ProofMessage &pm, int stat){

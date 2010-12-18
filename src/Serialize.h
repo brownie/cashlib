@@ -24,6 +24,7 @@
 #include <strstream>
 #include <sstream>
 #include <fstream>
+#include "new_ptr.hpp"
 #include "Serialize_map.h"
 
 /* NVP stands for "name-value pair" and is used for naming variables
@@ -43,8 +44,6 @@ using boost::serialization::make_nvp;
 namespace bsz = boost::serialization;
 namespace bar = boost::archive;
 namespace bio = boost::iostreams;
-
-#define Ptr boost::shared_ptr
 
 // save and load to string or file
 //   Ar = boost::archive::xml_archive is more portable

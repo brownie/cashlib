@@ -19,10 +19,10 @@ FEResponder::FEResponder(const FEResponder& o)
 	: timeoutLength(o.timeoutLength), timeoutTolerance(o.timeoutTolerance), 
 	  stat(o.stat), verifiablePK(o.verifiablePK), regularPK(o.regularPK),
 	  ptextB(o.ptextB), ctextB(o.ctextB), ctextA(o.ctextA), ptextA(o.ptextA), 
-	  contract(o.contract ? new FEContract(*o.contract) : NULL),
-	  escrow(o.escrow ? new VECiphertext(*o.escrow) : NULL),
-	  initiatorSignPK(o.initiatorSignPK ? new Signature::Key(*o.initiatorSignPK) : NULL),
-	  message(o.message ? new FEMessage(*o.message) : NULL)
+	  contract(o.contract ? new_ptr<FEContract>(*o.contract) : NULL),
+	  escrow(o.escrow ? new_ptr<VECiphertext>(*o.escrow) : NULL),
+	  initiatorSignPK(o.initiatorSignPK ? new_ptr<Signature::Key>(*o.initiatorSignPK) : NULL),
+	  message(o.message ? new_ptr<FEMessage>(*o.message) : NULL)
 {
 }
 
@@ -63,7 +63,7 @@ bool FEResponder::setup(Ptr<const FESetupMessage> msg, const ZZ& R) {
 	// set parameters from FESetupMessage
 	coinPrime = msg->getCoinPrime();
 	escrow = msg->getEscrow();
-	initiatorSignPK = new Signature::Key(*msg->getPK());
+	initiatorSignPK = new_ptr<Signature::Key>(*msg->getPK());
 	
 	return true;
 }
@@ -129,8 +129,8 @@ vector<string> FEResponder::sell(const FEMessage& message,
 bool FEResponder::check(const FEMessage& msg, const string& label, 
 						const vector<hash_t>& ptHashRs) {
 	// save message
-	message = new FEMessage(msg);
-	contract = new FEContract(msg.getContract());
+	message = new_ptr<FEMessage>(msg);
+	contract = new_ptr<FEContract>(msg.getContract());
 	string sig = msg.getSignature();
 	
 	// check contract
@@ -243,7 +243,7 @@ bool FEResponder::checkKey(const vector<string>& keysI) {
 // Resolutions
 
 Ptr<FEResolutionMessage> FEResponder::resolveI(){
-	return new FEResolutionMessage(getMessage(), getSetupMessage(), getKeys());
+	return new_ptr<FEResolutionMessage>(getMessage(), getSetupMessage(), getKeys());
 }
 
 Ptr<MerkleProof> FEResponder::resolveII(vector<unsigned> &challenges){
@@ -263,12 +263,12 @@ Ptr<MerkleProof> FEResponder::resolveII(vector<unsigned> &challenges){
 			MerkleContract ptContract(pt.key, pt.alg);
 			MerkleProver ptProver = MerkleProver(ptextB, ptContract);
 			hash_matrix ptProofs = ptProver.generateProofs(challenges);
-			return new MerkleProof(ctextBlocks, ctProofs, ptProofs, 
-								   new MerkleContract(ctContract), 
-								   new MerkleContract(ptContract));
+			return new_ptr<MerkleProof>(ctextBlocks, ctProofs, ptProofs, 
+								   new_ptr<MerkleContract>(ctContract), 
+								   new_ptr<MerkleContract>(ptContract));
 	} else {
-		return new MerkleProof(ctextBlocks, ctProofs, ptextB[0]->str(), 
-							   new MerkleContract(ctContract));
+		return new_ptr<MerkleProof>(ctextBlocks, ctProofs, ptextB[0]->str(), 
+							   new_ptr<MerkleContract>(ctContract));
 	}
 }
 
@@ -276,7 +276,7 @@ Ptr<MerkleProof> FEResponder::resolveIII(vector<string> &keys){
 	if(checkKey(keys)){
 		// XXX: not really sure what I should be returning if they do check
 		// out as additional communication with the Arbiter is not needed
-		return new MerkleProof;
+		return new_ptr<MerkleProof>;
 	} else{
 		return proveIncorrectKeys(keys);
 	}
@@ -309,16 +309,16 @@ Ptr<MerkleProof> FEResponder::proveIncorrectKeys(const vector<string> &keys) {
 			MerkleContract ptContract(pt.key, pt.alg);
 			MerkleProver ptProver = MerkleProver(ptextB, ptContract);
 			hash_matrix ptProofs = ptProver.generateProofs(challenges);
-			return new MerkleProof(ctextBlock, ctProofs, ptProofs, 
-								   new MerkleContract(ctContract), 
-								   new MerkleContract(ptContract));
+			return new_ptr<MerkleProof>(ctextBlock, ctProofs, ptProofs, 
+								   new_ptr<MerkleContract>(ctContract), 
+								   new_ptr<MerkleContract>(ptContract));
 	} else {
-		return new MerkleProof(ctextBlock, ctProofs, ptextB[0]->str(), 
-							   new MerkleContract(ctContract));
+		return new_ptr<MerkleProof>(ctextBlock, ctProofs, ptextB[0]->str(), 
+							   new_ptr<MerkleContract>(ctContract));
 	}
 }
 
 Ptr<FESetupMessage> FEResponder::getSetupMessage() const {
-	return new FESetupMessage(coinPrime, escrow, *initiatorSignPK);
+	return new_ptr<FESetupMessage>(coinPrime, escrow, *initiatorSignPK);
 }
 

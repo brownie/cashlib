@@ -36,8 +36,8 @@ Seller::Seller(const Seller& o)
 	: timeoutLength(o.timeoutLength), timeoutTolerance(o.timeoutTolerance), 
 	  stat(o.stat), pk(o.pk), ptext(o.ptext), ctext(o.ctext),
 	  coinPrime(o.coinPrime), 
-	  contract(o.contract ? new FEContract(*o.contract) : NULL),
-	  escrow(o.escrow ? new VECiphertext(*o.escrow) : NULL),
+	  contract(o.contract ? new_ptr<FEContract>(*o.contract) : NULL),
+	  escrow(o.escrow ? new_ptr<VECiphertext>(*o.escrow) : NULL),
 	  inProgress(o.inProgress)
 {
 }
@@ -176,24 +176,24 @@ Ptr<MerkleProof> Seller::resolveII(vector<unsigned> &challenges){
 	
 	//create and send the proofs as well
 	const hash_t& ct = contract->getCTHashB();
-	Ptr<MerkleContract> ctContract = new MerkleContract(ct.key, ct.alg);
+	Ptr<MerkleContract> ctContract = new_ptr<MerkleContract>(ct.key, ct.alg);
 	MerkleProver ctProver(ctext, *ctContract);
 	vector<vector<hashDirect> > ctProofs = ctProver.generateProofs(challenges);
 
 	if(ct.type == Hash::TYPE_MERKLE){
 		const hash_t& pt = contract->getPTHashB();
-		Ptr<MerkleContract> ptContract = new MerkleContract(pt.key, pt.alg);
+		Ptr<MerkleContract> ptContract = new_ptr<MerkleContract>(pt.key, pt.alg);
 		MerkleProver ptProver(ptext, *ptContract);
 		vector<vector<hashDirect> > ptProofs = ptProver.generateProofs(challenges);
-		return new MerkleProof(ctextBlocks, ctProofs, ptProofs, 
+		return new_ptr<MerkleProof>(ctextBlocks, ctProofs, ptProofs, 
 							   ctContract, ptContract);
 	} else {
-		return new MerkleProof(ctextBlocks, ctProofs, ptext[0]->str(), ctContract);
+		return new_ptr<MerkleProof>(ctextBlocks, ctProofs, ptext[0]->str(), ctContract);
 	}
 }
 
 Ptr<BuyMessage> Seller::getBuyMessage() const {
-	return new BuyMessage(coinPrime, contract, escrow);
+	return new_ptr<BuyMessage>(coinPrime, contract, escrow);
 }
 
 bool Seller::endorseCoin(const vector<ZZ> &endorsement) {

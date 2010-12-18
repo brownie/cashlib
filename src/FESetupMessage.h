@@ -24,7 +24,7 @@ class FESetupMessage {
 		/*! copy constructor */
 		FESetupMessage(const FESetupMessage &o)
 			: coinPrime(o.coinPrime), escrow(o.escrow),
-			  signPK(new Signature::Key(*o.signPK)) {}
+			  signPK(new_ptr<Signature::Key>(*o.signPK)) {}
 		
 		/*! destructor */
         ~FESetupMessage() { delete signPK; }

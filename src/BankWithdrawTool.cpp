@@ -21,7 +21,7 @@ BankWithdrawTool::BankWithdrawTool(Ptr<const BankParameters> bp, const ZZ &userP
 }
 
 BankWithdrawTool::BankWithdrawTool(const BankWithdrawTool &o)
-	: bankParameters(new BankParameters(*o.bankParameters)), 
+	: bankParameters(new_ptr<BankParameters>(*o.bankParameters)), 
 	  userPublicKey(o.userPublicKey), stat(o.stat), lx(o.lx),
 	  walletSize(o.walletSize), coinDenom(o.coinDenom),
 	  bankContribution(o.bankContribution), hashAlg(o.hashAlg)

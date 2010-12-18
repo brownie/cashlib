@@ -4,10 +4,10 @@ BankParameters::BankParameters(vector<GroupRSA> &secrets, GroupPrime &ecashGrp,
 							   vector<int> &denoms)
 	: coinDenominations(denoms)
 {
-	ecashGroup = new GroupPrime(ecashGrp);
+	ecashGroup = new_ptr<GroupPrime>(ecashGrp);
 	type = BankParameters::TYPE_SECRET;
 	for (unsigned i = 0; i < secrets.size(); i++) {
-		secretKeys.push_back(new GroupRSA(secrets[i]));
+		secretKeys.push_back(new_ptr<GroupRSA>(secrets[i]));
 	}
 
 	// set up maps that associate a given key with a denomination
@@ -18,7 +18,7 @@ BankParameters::BankParameters(vector<GroupRSA> &secrets, GroupPrime &ecashGrp,
 }
 
 BankParameters::BankParameters(const BankParameters &o)
-	: ecashGroup(new GroupPrime(*o.ecashGroup)), type(o.type), 
+	: ecashGroup(new_ptr<GroupPrime>(*o.ecashGroup)), type(o.type), 
 	  secretKeys(o.secretKeys), groupToDenom(o.groupToDenom), 
 	  denomToGroup(o.denomToGroup), coinDenominations(o.coinDenominations) 
 {

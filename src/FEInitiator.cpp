@@ -13,13 +13,13 @@ FEInitiator::FEInitiator(const long timeoutLength, Ptr<const VEPublicKey> pk,
 	  exchangeType(TYPE_NONE)
 {
 	if (NULL != sk)
-		signKey = new Signature::Key(*sk);
+		signKey = new_ptr<Signature::Key>(*sk);
 }
 
 FEInitiator::FEInitiator(const FEInitiator &o)
 	: timeoutLength(o.timeoutLength), stat(o.stat), 
 	  verifiablePK(o.verifiablePK), regularPK(o.regularPK), coin(o.coin), 
-	  contract(o.contract), signKey(new Signature::Key(*o.signKey)), 
+	  contract(o.contract), signKey(new_ptr<Signature::Key>(*o.signKey)), 
 	  ptextA(o.ptextA), ctextA(o.ctextA), ctextB(o.ctextB), ptextB(o.ptextB),
 	  r(o.r), endorsement(o.endorsement), exchangeType(o.exchangeType)
 {
@@ -78,14 +78,14 @@ startTimer();
 	ZZ eCom = coin.getEndorsementCom();
 	// the label needs to be the public key for the signature scheme
 	// create the verifiable escrow
-	Ptr<VECiphertext> escrow = new VECiphertext(prover.verifiableEncrypt(eCom, 
+	Ptr<VECiphertext> escrow = new_ptr<VECiphertext>(prover.verifiableEncrypt(eCom, 
 											endorsement, coin.getCashGroup(), 
 											signKey->publicKeyString(), 
 											verifiablePK->hashAlg, stat));
 #ifdef TIMER
 printTimer("Verifiable escrow generation");
 #endif
-	return new FESetupMessage(coin, escrow, *signKey);
+	return new_ptr<FESetupMessage>(coin, escrow, *signKey);
 }
 
 void FEInitiator::makeCoin(Ptr<Wallet> wallet, const ZZ& R) {
@@ -154,7 +154,7 @@ Ptr<FEMessage> FEInitiator::buy(const vector</*const*/ Ptr<EncBuffer> >& ctextR,
 	contract->setCTHashBlocksB(ctextR.size());
 	
 	string signature = signContract();
-	return new FEMessage(signature, *contract);
+	return new_ptr<FEMessage>(signature, *contract);
 }
 
 void FEInitiator::createContract() {
@@ -163,7 +163,7 @@ void FEInitiator::createContract() {
 	ZZ id = Hash::hash(r, verifiablePK->hashAlg, verifiablePK->hashKey);
 	
 	long timeout = time(NULL) + timeoutLength;
-	contract = new FEContract(timeout, id);
+	contract = new_ptr<FEContract>(timeout, id);
 }
 
 string FEInitiator::signContract() const {
@@ -327,7 +327,7 @@ Ptr<FEMessage> FEInitiator::barter(const vector<Ptr<EncBuffer> >& ctextR,
 	string sig = Signature::sign(*signKey, escrowStr, regularPK->hashAlg);
 
 	// now output the escrow, signature, and contract (label)
-	return new FEMessage(escrow, sig, *contract);
+	return new_ptr<FEMessage>(escrow, sig, *contract);
 }
 
 /*----------------------------------------------------------------------------*/

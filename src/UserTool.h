@@ -37,28 +37,26 @@ class UserTool {
 		Ptr<const BankParameters> getBankParameters() const { return bankParameters; }
 
 		Ptr<UserWithdrawTool> getWithdrawTool(int walletSize, int coinDenom) const {
-			return Ptr<UserWithdrawTool>(
-                new UserWithdrawTool(stat, lx, bankParameters, 
-                                     userPublicKey, userSecretKey, 
-                                     hashAlg, walletSize, coinDenom)
-                );
+			return new_ptr<UserWithdrawTool>(stat, lx, bankParameters, 
+                                                 userPublicKey, userSecretKey, 
+                                                 hashAlg, walletSize, coinDenom);
         }
 
 		/* Factory functions for user */
 		Ptr<Buyer> getBuyer(time_t timeout) const 
-            { return Ptr<Buyer>(new Buyer(timeout, &vepk, stat)); }
+            { return new_ptr<Buyer>(timeout, &vepk, stat); }
 
 		Ptr<Seller> getSeller(time_t timeout, int timeoutTolerance) const 
-            { return Ptr<Seller>(new Seller(timeout, timeoutTolerance, &vepk, stat)); }
+            { return new_ptr<Seller>(timeout, timeoutTolerance, &vepk, stat); }
 		
 		Ptr<Seller> getSeller(Ptr<EncBuffer> ctext, int t, int timeoutTolerance) const
-            { return Ptr<Seller>(new Seller(ctext, t, timeoutTolerance, &vepk, stat)); }
+            { return new_ptr<Seller>(ctext, t, timeoutTolerance, &vepk, stat); }
 
 		Ptr<FEInitiator> getFEInitiator(time_t timeout) const 
-            { return Ptr<FEInitiator>(new FEInitiator(timeout, &vepk, &pk, stat)); }
+            { return new_ptr<FEInitiator>(timeout, &vepk, &pk, stat); }
 
 		Ptr<FEResponder> getFEResponder(time_t t, int tolerance) const 
-            { return Ptr<FEReponder>(new FEResponder(t, tolerance, &vepk, &pk, stat)); }
+            { return new_ptr<FEReponder>(t, tolerance, &vepk, &pk, stat); }
 
 	private:
 		int stat, lx;

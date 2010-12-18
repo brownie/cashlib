@@ -11,9 +11,9 @@ vector<ZZ> VEProver::encrypt(const vector<ZZ> &messages, const string &label,
 	Environment e;
 	// first create and give in our group
 	ZZ bigN = pk->getN();
-	e.groups["RSAGroup"] = make_shared<GroupRSA>("arbiter", bigN, stat);
+	e.groups["RSAGroup"] = new_ptr<GroupRSA>("arbiter", bigN, stat);
 	ZZ bigNSquared = power(bigN, 2);
-	e.groups["G"] = make_shared<GroupSquareMod>("arbiter", bigNSquared, stat);
+	e.groups["G"] = new_ptr<GroupSquareMod>("arbiter", bigNSquared, stat);
 	// now add in elements
 	e.variables["f"] = pk->getF();
 	e.variables["b"] = pk->getB();
@@ -89,7 +89,7 @@ VECiphertext VEProver::verifiableEncrypt(const ZZ &commitment,
 
 	// now need some more group information
 	env.groups["cashGroup"] = grp;
-	Ptr<const GroupRSA> second = make_shared<GroupRSA>(pk->getSecondGroup());
+	Ptr<const GroupRSA> second = new_ptr<GroupRSA>(pk->getSecondGroup());
 	env.groups["secondGroup"] = second;
 
 	env.variables["X"] = commitment;

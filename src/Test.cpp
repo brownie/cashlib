@@ -387,8 +387,8 @@ double* testSophie() {
 double* testClone() {
 	double* timers = new double[MAX_TIMERS];
 	istringstream iss(string("x * a ^ b_i + -2"));
-	Ptr<ZKPLexer> lexer = new ZKPLexer(iss);
-	Ptr<ZKPParser> parser = new ZKPParser(*lexer);
+	Ptr<ZKPLexer> lexer = new_ptr<ZKPLexer>(iss);
+	Ptr<ZKPParser> parser = new_ptr<ZKPParser>(*lexer);
 	ASTExprPtr n = parser->expr();
 	
 	Printer print;
@@ -403,8 +403,8 @@ double* testClone() {
 double* testFor() {
 	double* timers = new double[MAX_TIMERS];
 	istringstream iss(string("for(i, 1:3, &&, c_i := (g^x_i) * (h^r_i))"));
-	Ptr<ZKPLexer> lexer = new ZKPLexer(iss);
-	Ptr<ZKPParser> parser = new ZKPParser(*lexer);
+	Ptr<ZKPLexer> lexer = new_ptr<ZKPLexer>(iss);
+	Ptr<ZKPParser> parser = new_ptr<ZKPParser>(*lexer);
 	ASTNodePtr n = parser->spec();
 	
 	Printer print;
@@ -431,8 +431,8 @@ double* testConstSub() {
 							"r[1:l], vprime such that: for(i, 1:l, range: "
 							"-(2^l_x - 1) <= x_i < 2^l_x) C =  h^vprime * "
 							"for(i, 1:l, *, c_i * h^(-r_i))"));
-	Ptr<ZKPLexer> lexer = new ZKPLexer(iss);
-	Ptr<ZKPParser> parser = new ZKPParser(*lexer);
+	Ptr<ZKPLexer> lexer = new_ptr<ZKPLexer>(iss);
+	Ptr<ZKPParser> parser = new_ptr<ZKPParser>(*lexer);
 	ASTNodePtr n = parser->spec();
 	
 	Printer print;
@@ -616,7 +616,7 @@ double* testCLProver(){
 	int numPrivates = 3;
 	//create secret key
 	//creating group adds f as a generator
-	Ptr<GroupRSA> sk = new GroupRSA("first", RSALength, stat);
+	Ptr<GroupRSA> sk = new_ptr<GroupRSA>("first", RSALength, stat);
 	for (int i = 0; i < numPrivates + numPublics; i++) {
 		sk->addNewGenerator();
 	}
@@ -624,7 +624,7 @@ double* testCLProver(){
 	sk->addNewGenerator();
 
 	//create public key from copying secret key and clearing secrets
-	Ptr<GroupRSA> pk = new GroupRSA(*sk);
+	Ptr<GroupRSA> pk = new_ptr<GroupRSA>(*sk);
 	pk->clearSecrets();
 
 	//create random public messages
@@ -634,7 +634,7 @@ double* testCLProver(){
 		publics.push_back(RandomBits_ZZ(lx-1));
 	
 	//create random private messages and their commitments
-	Ptr<const BankParameters> bp = new BankParameters("bank.80.params");
+	Ptr<const BankParameters> bp = new_ptr<BankParameters>("bank.80.params");
 	Ptr<const GroupPrime> comGroup = bp->getCashGroup();
 	startTimer();
 	vector<pair<ZZ,ZZ> > secretExps;	
@@ -735,11 +735,11 @@ double* testCLGroups() {
 	hashalg_t hashAlg = Hash::SHA1;
 
 	// want to have a different group for each commitment
-	Ptr<GroupPrime> group1 = new GroupPrime("cash", modLength, 2*stat, stat);
+	Ptr<GroupPrime> group1 = new_ptr<GroupPrime>("cash", modLength, 2*stat, stat);
 	group1->addNewGenerator();
-	Ptr<GroupPrime> group2 = new GroupPrime("cash", modLength, 2*stat, stat);
+	Ptr<GroupPrime> group2 = new_ptr<GroupPrime>("cash", modLength, 2*stat, stat);
 	group2->addNewGenerator();
-	Ptr<GroupPrime> group3 = new GroupPrime("cash", modLength, 2*stat, stat);
+	Ptr<GroupPrime> group3 = new_ptr<GroupPrime>("cash", modLength, 2*stat, stat);
 	group3->addNewGenerator();
 	vector<Ptr<Group> > grps;
 	grps.push_back(group1);
@@ -747,14 +747,14 @@ double* testCLGroups() {
 	grps.push_back(group3);
 
 	// also need RSA group for CL signature stuff
-	Ptr<GroupRSA> pk = new GroupRSA("bank", modLength, stat); // f
+	Ptr<GroupRSA> pk = new_ptr<GroupRSA>("bank", modLength, stat); // f
 	pk->addNewGenerator(); // g_1
 	pk->addNewGenerator(); // g_2
 	pk->addNewGenerator(); // g_3
 	pk->addNewGenerator(); // g_4
 	pk->addNewGenerator(); // h
 
-	Ptr<GroupRSA> sk = new GroupRSA(*pk);
+	Ptr<GroupRSA> sk = new_ptr<GroupRSA>(*pk);
 	pk->clearSecrets();
 
 	// now set up commitments and such
@@ -866,7 +866,7 @@ double* testVE() {
 
 	// need all commitment values and such
 	// XXX: need test where this group can be of any form
-	Ptr<GroupRSA> rsaGroup = new GroupRSA("bank", modLength, stat); // f_3
+	Ptr<GroupRSA> rsaGroup = new_ptr<GroupRSA>("bank", modLength, stat); // f_3
 	rsaGroup->addNewGenerator(); // gprime
 	rsaGroup->addNewGenerator(); // hprime
 	rsaGroup->addNewGenerator(); // f_1
@@ -918,7 +918,7 @@ double* testVE() {
 										"encryption completed");
 
 	// also try it with a prime-order group
-	Ptr<GroupPrime> primeGroup = new GroupPrime("bank", modLength, 2*stat, stat);
+	Ptr<GroupPrime> primeGroup = new_ptr<GroupPrime>("bank", modLength, 2*stat, stat);
 	primeGroup->addNewGenerator();
 	primeGroup->addNewGenerator();
 	primeGroup->addNewGenerator();
@@ -1034,7 +1034,7 @@ double* testWithdraw() {
 	
 	// load bank and user from file
 	BankTool bankTool("tool.80.bank");
-	Ptr<const BankParameters> params = new BankParameters("bank.80.params");
+	Ptr<const BankParameters> params = new_ptr<BankParameters>("bank.80.params");
 	UserTool userTool("tool.80.user", params, "public.80.arbiter",
 					  "public.regular.80.arbiter");
 /*
@@ -1159,7 +1159,7 @@ double* testCoin() {
 	startTimer();
 	// load bank and user from file
 	BankTool bankTool("tool.80.bank");
-	Ptr<const BankParameters> params = new BankParameters("bank.80.params");
+	Ptr<const BankParameters> params = new_ptr<BankParameters>("bank.80.params");
 	UserTool userTool("tool.80.user", params, "public.80.arbiter",
 					  "public.regular.80.arbiter");
 	// also load wallet 
@@ -1257,14 +1257,14 @@ double* testBuy() {
 	hashalg_t hashAlg = Hash::SHA1;
 	cipher_t encAlg = "aes-128-ctr";
 
-	Ptr<const BankParameters> params = new BankParameters("bank.80.params");
+	Ptr<const BankParameters> params = new_ptr<BankParameters>("bank.80.params");
 	Wallet wallet("wallet.80", params);
 	VEPublicKey vepk("public.80.arbiter");
 
 	ZZ R = RandomBits_ZZ(params->getCashGroup()->getOrderLength());
 
 	// just use random garbage for file
-	Ptr<Buffer> ptext = new Buffer(string("randomdata01234567890123456789"));
+	Ptr<Buffer> ptext = new_ptr<Buffer>(string("randomdata01234567890123456789"));
 	Hash::hash_t ptHash = ptext->hash(hashAlg, string(), Hash::TYPE_PLAIN);
 
 	// create buyer and seller objects
@@ -1293,7 +1293,7 @@ double* testBuy() {
 	// test saving and loading BuyMessage
 	string bmsg = saveGZString(*buyMessage);
 	saveXML(make_nvp("BuyMessage", *buyMessage), "buym1.xml");
-	Ptr<BuyMessage> loadedBMsg = new BuyMessage(bmsg, params);
+	Ptr<BuyMessage> loadedBMsg = new_ptr<BuyMessage>(bmsg, params);
 	saveXML(make_nvp("BuyMessage", *loadedBMsg), "buym2.xml");
 
 	cout << "Loaded Buy message size: " << saveGZString(*loadedBMsg).size() << endl;
@@ -1341,7 +1341,7 @@ double* testBarter() {
 	cipher_t encAlg = "aes-128-ctr", signAlg = "DSA";
 	int hashType = Hash::TYPE_PLAIN;
 	
-	Ptr<const BankParameters> params = new BankParameters("bank.80.params");
+	Ptr<const BankParameters> params = new_ptr<BankParameters>("bank.80.params");
 	Wallet wallet("wallet.80", params);
 	VEPublicKey vepk("public.80.arbiter");
 	VEPublicKey pk("public.regular.80.arbiter");
@@ -1353,8 +1353,8 @@ double* testBarter() {
 	char bufA[1024], bufB[1024];
 	RAND_pseudo_bytes((unsigned char*) bufA, sizeof(bufA));
 	RAND_pseudo_bytes((unsigned char*) bufB, sizeof(bufB));
-	Ptr<Buffer> aData = new Buffer(bufA, sizeof(bufA));
-	Ptr<Buffer> bData = new Buffer(bufB, sizeof(bufB));
+	Ptr<Buffer> aData = new_ptr<Buffer>(bufA, sizeof(bufA));
+	Ptr<Buffer> bData = new_ptr<Buffer>(bufB, sizeof(bufB));
 	hash_t aHash = aData->hash(hashAlg, trackerHashKey, hashType);
 	hash_t bHash = bData->hash(hashAlg, trackerHashKey, hashType);
 
@@ -1428,8 +1428,8 @@ double* testBarter() {
 	bob.reset();
 
 	// use new files
-	Ptr<Buffer> aData2 = new Buffer(string("thisismysuperraddataalice00"));
-	Ptr<Buffer> bData2 = new Buffer(string("thisismysuperraddatabob0000"));
+	Ptr<Buffer> aData2 = new_ptr<Buffer>(string("thisismysuperraddataalice00"));
+	Ptr<Buffer> bData2 = new_ptr<Buffer>(string("thisismysuperraddatabob0000"));
 	hash_t aHash2 = aData2->hash(hashAlg, trackerHashKey, hashType);
 	hash_t bHash2 = bData2->hash(hashAlg, trackerHashKey, hashType);
 
@@ -1485,7 +1485,7 @@ double* testBuyWithSetup() {
 	string signAlg = "DSA", encAlg = "aes-128-ctr";
 	int hashType = Hash::TYPE_PLAIN;
 
-	Ptr<const BankParameters> params = new BankParameters("bank.80.params");
+	Ptr<const BankParameters> params = new_ptr<BankParameters>("bank.80.params");
 	Wallet wallet("wallet.80", params);
 	VEPublicKey vepk("public.80.arbiter");
 	VEPublicKey pk("public.regular.80.arbiter");
@@ -1496,7 +1496,7 @@ double* testBuyWithSetup() {
 	// get random files for Alice and Bob
 	char bufB[1024];
 	RAND_pseudo_bytes((unsigned char*) bufB, sizeof(bufB));
-	Ptr<Buffer> data = new Buffer(bufB, sizeof(bufB));
+	Ptr<Buffer> data = new_ptr<Buffer>(bufB, sizeof(bufB));
 	hash_t hash = data->hash(hashAlg, trackerHashKey, hashType);
 
 	// want to generate a signing key 
@@ -1572,7 +1572,7 @@ double* testBuyResolution()  {
 	VEDecrypter decrypter(&pk, &sk);
 
 	BankTool bankTool("tool.80.bank");
-	Ptr<const BankParameters> params = new BankParameters("bank.80.params");
+	Ptr<const BankParameters> params = new_ptr<BankParameters>("bank.80.params");
 	Wallet wallet("wallet.80", params);
 
 	string trackerHashKey = vepk.getHashKey();
@@ -1580,7 +1580,7 @@ double* testBuyResolution()  {
 	
 	char buf[1024];
 	RAND_pseudo_bytes((unsigned char*) buf, sizeof(buf));
-	Ptr<Buffer> ptext = new Buffer(buf, sizeof(buf));
+	Ptr<Buffer> ptext = new_ptr<Buffer>(buf, sizeof(buf));
 	hash_t ptHash = ptext->hash(hashAlg, trackerHashKey, hashType);
 	
 	// now let's create our buyer and seller objects
@@ -1662,7 +1662,7 @@ double* testBarterResolution() {
 	cipher_t encAlg = "aes-128-ctr", signAlg = "DSA";
 	int hashType = Hash::TYPE_PLAIN;
 	
-	Ptr<const BankParameters> params = new BankParameters("bank.80.params");
+	Ptr<const BankParameters> params = new_ptr<BankParameters>("bank.80.params");
 	Wallet wallet("wallet.80", params);
 
 	VEPublicKey vepk("public.80.arbiter");
@@ -1680,8 +1680,8 @@ double* testBarterResolution() {
 	char bufA[1024], bufB[1024];
 	RAND_pseudo_bytes((unsigned char*) bufA, sizeof(bufA));
 	RAND_pseudo_bytes((unsigned char*) bufB, sizeof(bufB));
-	Ptr<Buffer> aData = new Buffer(bufA, sizeof(bufA));
-	Ptr<Buffer> bData = new Buffer(bufB, sizeof(bufB));
+	Ptr<Buffer> aData = new_ptr<Buffer>(bufA, sizeof(bufA));
+	Ptr<Buffer> bData = new_ptr<Buffer>(bufB, sizeof(bufB));
 	hash_t aHash = aData->hash(hashAlg, trackerHashKey, hashType);
 	hash_t bHash = bData->hash(hashAlg, trackerHashKey, hashType);
 
@@ -1802,8 +1802,8 @@ double* testSerializeAbstract() {
 	double* timers = new double[MAX_TIMERS];
 	// test serializing base and derived pointers
 	istringstream iss(string("g^x"));
-	Ptr<ZKPLexer> lexer = new ZKPLexer(iss);
-	Ptr<ZKPParser> parser = new ZKPParser(*lexer);
+	Ptr<ZKPLexer> lexer = new_ptr<ZKPLexer>(iss);
+	Ptr<ZKPParser> parser = new_ptr<ZKPParser>(*lexer);
 	ASTExprPtr n = parser->expr();
 	
 	cout << "type of expr: " << type_to_str(typeid(*n)) << endl;

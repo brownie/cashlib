@@ -114,7 +114,7 @@ Ptr<ProofMessage> UserWithdrawTool::preSignatureProof() {
 	v["pk_u"] = userPublicKey;
 	v["sk_u"] = userSecretKey;
 	prover.compute(v);
-	return make_shared<ProofMessage>(prover.getPublicVariables(), 
+	return new_ptr<ProofMessage>(prover.getPublicVariables(), 
 							prover.computeProof(hashAlg));
 }
 
@@ -145,7 +145,7 @@ void UserWithdrawTool::createSignatureRecipient() {
 	// 1 public message: walletSize
 	Ptr<const GroupRSA> pk = bankParameters->getBankKey(coinDenom);
 	Ptr<const GroupPrime> comGroup = bankParameters->getCashGroup();								  
-	signatureRecipient = make_shared<CLBlindRecipient>(pk, comGroup, lx, coms, 3, 1);
+	signatureRecipient = new_ptr<CLBlindRecipient>(pk, comGroup, lx, coms, 3, 1);
 	printTimer("[UserWithdrawTool] created recipient");
 }
  

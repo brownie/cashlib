@@ -1,8 +1,6 @@
 #include "Arbiter.h"
 #include "VECiphertext.h"
 
-using boost::shared_ptr;
-
 vector<string> Arbiter::initiatorResolve(const ZZ &r){
 	return buyerResolve(r);
 }
@@ -37,12 +35,14 @@ vector<unsigned> Arbiter::sellerResolveI(const ResolutionPair &keyMessagePair){
 			// return a set of challenges
 			hash_t ptHash = contract.getPTHashB();
 			hash_t ctHash = contract.getCTHashB();
-			ptVerifier = shared_ptr<MerkleVerifier>(new MerkleVerifier(ptHash, 
-										contract.getNumPTHashBlocksB(), 
-										MerkleContract(ptHash.key,ptHash.alg)));
-			ctVerifier = shared_ptr<MerkleVerifier>(new MerkleVerifier(ctHash, 
-										contract.getNumCTHashBlocksB(), 
-										MerkleContract(ctHash.key,ctHash.alg)));
+			ptVerifier = new_ptr<MerkleVerifier>(
+                ptHash, 
+                contract.getNumPTHashBlocksB(), 
+                MerkleContract(ptHash.key,ptHash.alg));
+			ctVerifier = new_ptr<MerkleVerifier>(
+                ctHash, 
+                contract.getNumCTHashBlocksB(), 
+                MerkleContract(ctHash.key,ctHash.alg));
 			return ptVerifier->getChallenges();
 		} else {
 			throw CashException(CashException::CE_FE_ERROR,
@@ -169,12 +169,14 @@ vector<unsigned> Arbiter::responderResolveI(const vector<string> &ks,
 		// set up merkle verifiers and return challenges
 		hash_t ptHash = contract.getPTHashB();
 		hash_t ctHash = contract.getCTHashB();
-		ptVerifier = boost::shared_ptr<MerkleVerifier>(new MerkleVerifier(ptHash, 
-										contract.getNumPTHashBlocksB(), 
-										MerkleContract(ptHash.key,ptHash.alg)));
-		ctVerifier = boost::shared_ptr<MerkleVerifier>(new MerkleVerifier(ctHash, 
-										contract.getNumCTHashBlocksB(), 
-										MerkleContract(ctHash.key,ctHash.alg)));
+		ptVerifier = new_ptr<MerkleVerifier>(
+            ptHash, 
+            contract.getNumPTHashBlocksB(), 
+            MerkleContract(ptHash.key,ptHash.alg));
+		ctVerifier = new_ptr<MerkleVerifier>(
+            ctHash, 
+            contract.getNumCTHashBlocksB(), 
+            MerkleContract(ctHash.key,ctHash.alg));
 		// XXX: right now this is only returning 0 every time!!
 		return ptVerifier->getChallenges();
 	} else {

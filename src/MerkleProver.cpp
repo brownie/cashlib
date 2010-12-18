@@ -4,7 +4,7 @@ MerkleProver::MerkleProver(const vector<hash_t> &hashBlocks,
 						   const MerkleContract &contract) 
 	: contract(contract)
 {
-	tree = new MerkleTree(hashBlocks, contract);
+	tree = new_ptr<MerkleTree>(hashBlocks, contract);
 }
 
 MerkleProver::MerkleProver(const char* buff, int buffSize, 
@@ -29,7 +29,7 @@ MerkleProver::MerkleProver(const vector<Ptr<EncBuffer> > &encBuffs,
 	for(unsigned x=0; x<encBuffs.size(); x++){
 		hashBlocks[x] = contract.hash(encBuffs[x]);
 	}
-	tree = new MerkleTree(hashBlocks, contract);
+	tree = new_ptr<MerkleTree>(hashBlocks, contract);
 }
 
 MerkleProver::MerkleProver(const vector<Ptr<const Buffer> >& buffs, 
@@ -40,7 +40,7 @@ MerkleProver::MerkleProver(const vector<Ptr<const Buffer> >& buffs,
 	for(unsigned x=0; x<buffs.size(); x++){
 		hashBlocks[x] = contract.hash(buffs[x]);
 	}
-	tree = new MerkleTree(hashBlocks, contract);
+	tree = new_ptr<MerkleTree>(hashBlocks, contract);
 }
 hash_matrix MerkleProver::generateProofs(const vector<unsigned> &challenges){
 	hash_matrix toReturn;
@@ -97,7 +97,7 @@ hash_t MerkleProver::computeSubTree(unsigned index, vector<hash_t> &m_tree){
 
 
 void MerkleProver::init(const char* buff, int buffSize){
-	tree = new MerkleTree(buff, buffSize, contract);
+	tree = new_ptr<MerkleTree>(buff, buffSize, contract);
 }
 
 

@@ -24,9 +24,9 @@ BankTool::BankTool(int st, int l, int modLen, const hashalg_t &ha,
 		cashGroup.addNewGenerator();
 	}
 	
-	bankParameters = new BankParameters(secretKeys, cashGroup, coinDenoms);
+	bankParameters = new_ptr<BankParameters>(secretKeys, cashGroup, coinDenoms);
 		
-	publicBankParameters = new BankParameters(secretKeys, cashGroup, 
+	publicBankParameters = new_ptr<BankParameters>(secretKeys, cashGroup, 
 													coinDenoms);
 	publicBankParameters->makePublic();
 }
@@ -35,8 +35,8 @@ BankTool::BankTool(int st, int l, const hashalg_t &ha,
 				   BankParameters bp)
 	: stat(st), lx(l), hashAlg(ha)
 {
-	bankParameters = new BankParameters(bp);
-	publicBankParameters = new BankParameters(bp);
+	bankParameters = new_ptr<BankParameters>(bp);
+	publicBankParameters = new_ptr<BankParameters>(bp);
 	publicBankParameters->makePublic();
 }
 
@@ -52,7 +52,7 @@ BankTool::~BankTool() {
 
 Ptr<BankWithdrawTool> BankTool::getWithdrawTool(const ZZ &userPK, int wSize, 
 											int coinDenom) const {
-	return new BankWithdrawTool(bankParameters, userPK, stat, lx, wSize, 
+	return new_ptr<BankWithdrawTool>(bankParameters, userPK, stat, lx, wSize, 
 								coinDenom, hashAlg);
 }
 

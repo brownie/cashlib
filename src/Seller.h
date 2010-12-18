@@ -64,7 +64,7 @@ class Seller {
 		Ptr<MerkleProof> resolveII(vector<unsigned> &challenges);
 		
 		// getters
-		Ptr<Coin> getCoin() const { return Ptr<Coin>(new Coin(coinPrime)); };
+		Ptr<Coin> getCoin() const { return new_ptr<Coin>(coinPrime); };
 		Ptr<BuyMessage> getBuyMessage() const;
 		
 		// setters

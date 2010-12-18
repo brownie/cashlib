@@ -15,7 +15,7 @@ Buyer::Buyer(int timeoutLength, Ptr<const VEPublicKey> pk, int stat)
 
 Buyer::Buyer(const Buyer& o)
 	: timeoutLength(o.timeoutLength), stat(o.stat), pk(o.pk),
-	  contract(o.contract? new FEContract(*o.contract) : NULL),
+	  contract(o.contract? new_ptr<FEContract>(*o.contract) : NULL),
 	  r(o.r), endorsement(o.endorsement), inProgress(o.inProgress)
 {
 }
@@ -92,13 +92,13 @@ Ptr<BuyMessage> Buyer::buy(const vector<Ptr<EncBuffer> >& ct,
 	
 	startTimer();
 	// set up the escrow
-	Ptr<VECiphertext> escrow = new VECiphertext(makeEscrow());
+	Ptr<VECiphertext> escrow = new_ptr<VECiphertext>(makeEscrow());
 	printTimer("[Buyer::buy] created escrow");
 
 	// set inProgress
 	inProgress = true;
 	
-	return new BuyMessage(coin, contract, escrow);
+	return new_ptr<BuyMessage>(coin, contract, escrow);
 }
 
 void Buyer::createContract() {
@@ -107,7 +107,7 @@ void Buyer::createContract() {
 	ZZ id = Hash::hash(r, pk->hashAlg, pk->hashKey);
 	// prepare timeout
 	setTimeout();
-	contract = new FEContract(timeout, id);
+	contract = new_ptr<FEContract>(timeout, id);
 }
 
 VECiphertext Buyer::makeEscrow() {

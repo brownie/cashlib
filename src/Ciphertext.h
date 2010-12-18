@@ -121,7 +121,7 @@ class Ciphertext {
         virtual Ptr<Buffer> decrypt(const string& key, const Ciphertext::cipher_t& alg) const {
             size_t ptl;
             char *pt = Ciphertext::decrypt(key.data(), buf, len, alg, &ptl);
-			return make_shared<Buffer>(pt, ptl, false);
+			return new_ptr<Buffer>(pt, ptl, false);
         }
         // hash a Buffer: caches hash computation
         hash_t hash(const hashalg_t& halg, const string& hkey, int htype) {

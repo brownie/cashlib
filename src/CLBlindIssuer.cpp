@@ -106,7 +106,7 @@ Ptr<ProofMessage> CLBlindIssuer::getPartialSignature(const ZZ &C,
 		variable_map p = prover.getPublicVariables();
 		SigmaProof  pr = prover.computeProof(hashAlg);
 		printTimer("[CLBlindIssuer] computed issuer proof");
-		return new ProofMessage(partialSig, p, pr);
+		return new_ptr<ProofMessage>(partialSig, p, pr);
 	} else {
 		 throw CashException(CashException::CE_PARSE_ERROR,
                 "[CLBlindIssuer::getPartialSignature] Proof did not verify");

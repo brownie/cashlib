@@ -25,10 +25,10 @@ bool VEVerifier::verify(const VECiphertext& text, const ZZ& x,
 	// set up all groups
 	env.groups["cashGroup"] = grp;
 	ZZ bigN = pk->getN();
-	env.groups["RSAGroup"] = make_shared<GroupRSA>("arbiter", bigN, stat);
+	env.groups["RSAGroup"] = new_ptr<GroupRSA>("arbiter", bigN, stat);
 	ZZ bigNSquared = power(bigN, 2);
-	env.groups["G"] = make_shared<GroupSquareMod>("arbiter", bigNSquared, stat);
-	Ptr<const GroupRSA> second = make_shared<GroupRSA>(pk->getSecondGroup());
+	env.groups["G"] = new_ptr<GroupSquareMod>("arbiter", bigNSquared, stat);
+	Ptr<const GroupRSA> second = new_ptr<GroupRSA>(pk->getSecondGroup());
 	env.groups["secondGroup"] = second;
 	input_map inputs;
 	inputs["m"] = text.getCiphertext().size() - 2;

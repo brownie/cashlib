@@ -87,7 +87,7 @@ Ptr<Signature::Key> Signature::Key::generateDSAKey(int numbits) {
                             "[Signature::Key::generateDSAKey] DSA gen key");
     EVP_PKEY *k = EVP_PKEY_new();
     EVP_PKEY_assign_DSA(k, dsa); // dsa now owned by k: don't need to free it
-    return new Key(k, true);
+    return new_ptr<Key>(k, true);
 }
 
 Ptr<Signature::Key> Signature::Key::generateRSAKey(int modlen) {
@@ -98,7 +98,7 @@ Ptr<Signature::Key> Signature::Key::generateRSAKey(int modlen) {
                             "[Signature::Key::generateRSAKey] RSA gen params");
     EVP_PKEY *k = EVP_PKEY_new();
     EVP_PKEY_assign_RSA(k, rsa); // rsa now owned by k: don't need to free it
-    return new Key(k, true);
+    return new_ptr<Key>(k, true);
 }
 
 void BIO_free_to_string(BIO *bio, string &out) {
@@ -153,7 +153,7 @@ Ptr<Signature::Key> Signature::Key::fromDER(const string& str, bool isPrivate) {
     if (!k)
          throw CashException(CashException::CE_OPENSSL_ERROR,
                              "[Signature::Key::fromDER] can't load d2i");
-    return new Key(k, isPrivate);
+    return new_ptr<Key>(k, isPrivate);
 }
 
 Signature::Key::Key(const string& file, const string& passwd, bool isPrivate)

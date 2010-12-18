@@ -70,7 +70,7 @@ class Arbiter {
 		Ptr<const VEDecrypter> regularDecrypter;
 		hashalg_t hashAlg;
 		int timeoutTolerance;
-		boost::shared_ptr<MerkleVerifier> ptVerifier, ctVerifier;
+		Ptr<MerkleVerifier> ptVerifier, ctVerifier;
 		vector<ZZ> endorsement;	
 		vector<string> keys;
 		FEContract contract;

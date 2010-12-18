@@ -85,7 +85,7 @@ Ptr<ProofMessage> CLSignatureProver::getProof(const vector<ZZ>& sig,
 	startTimer();
 	prover.compute(v);
 	printTimer("CL prover computed all values");
-	return new ProofMessage(prover.getPublicVariables(), 
+	return new_ptr<ProofMessage>(prover.getPublicVariables(), 
 							prover.computeProof(hashAlg));
 }
 

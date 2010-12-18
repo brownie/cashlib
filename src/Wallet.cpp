@@ -54,7 +54,7 @@ Ptr<Coin> Wallet::nextCoin(const ZZ &rValue) {
 }
 
 Ptr<Coin> Wallet::newCoin(const ZZ &rValue, int coinIndex) {
-	return make_shared<Coin>(params, walletSize, coinIndex, 
+	return new_ptr<Coin>(params, walletSize, coinIndex, 
                              sk_u, s, t, signature, stat, 
                              lx, rValue, coinDenom, hashAlg);
 }

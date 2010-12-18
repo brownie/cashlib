@@ -29,11 +29,11 @@ public:
 
         /// private key: can sign & verify
         static Ptr<Key> loadPrivateKey(const string& file, const string& passwd) {
-            return Ptr<Key>(new Key(file, passwd, true));
+            return new_ptr<Key>(file, passwd, true);
         }
         /// public key: can only verify
         static Ptr<Key> loadPublicKey(const string& file, const string& passwd=string()) {
-            return Ptr<Key>(new Key(file, passwd, false));
+            return new_ptr<Key>(file, passwd, false);
         }
         // generates public/private keypair
         static Ptr<Key> generateDSAKey(int numbits=SIG_NUMBITS);
@@ -49,7 +49,7 @@ public:
 		// get public key for this key: allocates & returns new Key
 		Ptr<Key> getPublicKey() const {
 			if (!isPrivate){
-				return Ptr<Key>(new Key(*this));
+				return new_ptr<Key>(*this);
 			} else { // XXX convert to public key more efficiently?
 				string d = toDER(false);
 				return fromDER(d, false);
