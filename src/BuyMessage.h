@@ -16,8 +16,8 @@ class BuyMessage {
 		/*! coinPrime represents the unendorsed coin, contract represents
 		 * the label for the verifiable encryption, and escrow represents
 		 * the verifiable escrow on the coin's endorsement */
-		BuyMessage(const Coin &coinPrime, const FEContract* contract, 
-				   const VECiphertext* escrow)
+		BuyMessage(const Coin &coinPrime, FEContract* contract, 
+				   VECiphertext* escrow)
 			: coinPrime(coinPrime), contract(contract), escrow(escrow) {}
 
 		/*! copy constructor */
@@ -34,13 +34,13 @@ class BuyMessage {
 
 		// getters
 		Coin getCoinPrime() const { return coinPrime; }
-		const FEContract* getContract() const { return contract; }
-		const VECiphertext* getEscrow() const { return escrow; }
+		FEContract* getContract() const { return contract; }
+		VECiphertext* getEscrow() const { return escrow; }
 
 	private:
 		Coin coinPrime;
-		const FEContract* contract;
-		const VECiphertext* escrow;
+		FEContract* contract;
+		VECiphertext* escrow;
 
 		friend class boost::serialization::access;
 		template <class Archive> 

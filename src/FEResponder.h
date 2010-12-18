@@ -136,7 +136,7 @@ class FEResponder {
 
 		Coin coinPrime;
 		FEContract* contract;
-		const VECiphertext* escrow;
+		VECiphertext* escrow;
 		Signature::Key* initiatorSignPK;
 		// 0 is buy, 1 is barter
 		int exchangeType;

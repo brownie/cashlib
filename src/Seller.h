@@ -94,8 +94,8 @@ class Seller {
 		vector<EncBuffer*> ctext;
 
 		Coin coinPrime;
-		const FEContract* contract;
-		const VECiphertext* escrow;
+		FEContract* contract;
+		VECiphertext* escrow;
 		
 		bool inProgress;
 };
