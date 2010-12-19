@@ -26,9 +26,6 @@ class FESetupMessage {
 			: coinPrime(o.coinPrime), escrow(o.escrow),
 			  signPK(new_ptr<Signature::Key>(*o.signPK)) {}
 		
-		/*! destructor */
-        ~FESetupMessage() { delete signPK; }
-
 		FESetupMessage(const string& s, Ptr<const BankParameters> params) {
 			// need to set params for Coin contained in message
 			loadGZString(make_nvp("FESetupMessage", *this), s); 

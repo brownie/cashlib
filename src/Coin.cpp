@@ -126,7 +126,7 @@ bool Coin::verifyCoin() const {
 	startTimer();
 	CLSignatureVerifier clVerifier(pk, comGroup, lx, coms, 3, 1);
 	printTimer("[Coin] Verifier checked CL part");
-	bool clVerified = clVerifier.verify(&clProof, stat);
+	bool clVerified = clVerifier.verify(clProof, stat);
 	printTimer("[Coin] Verified CL possession");
 	return (ecashVerified && clVerified);
 }

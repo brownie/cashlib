@@ -15,7 +15,7 @@ class FEResolutionMessage {
 							const vector<string> &k)
 		   : message(m), setupMessage(s), keys(k) {}
 
-		FEResolutionMessage() : message(0), setupMessage(0) {}
+		FEResolutionMessage() : message(), setupMessage() {}
 
 		// getters
 		Ptr<FEMessage> getMessage() const { return message; }

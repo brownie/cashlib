@@ -7,47 +7,25 @@
 // Constructors
 FEInitiator::FEInitiator(const long timeoutLength, Ptr<const VEPublicKey> pk, 
 			 			 Ptr<const VEPublicKey> regularpk, const int stat, 
-						 Ptr<const Signature::Key> sk)
+						 Ptr<Signature::Key> sk)
 	: timeoutLength(timeoutLength), stat(stat), verifiablePK(pk), 
-	  regularPK(regularpk), contract(NULL), signKey(NULL), 
+	  regularPK(regularpk), contract(), signKey(sk), 
 	  exchangeType(TYPE_NONE)
-{
-	if (NULL != sk)
-		signKey = new_ptr<Signature::Key>(*sk);
-}
-
-FEInitiator::FEInitiator(const FEInitiator &o)
-	: timeoutLength(o.timeoutLength), stat(o.stat), 
-	  verifiablePK(o.verifiablePK), regularPK(o.regularPK), coin(o.coin), 
-	  contract(o.contract), signKey(new_ptr<Signature::Key>(*o.signKey)), 
-	  ptextA(o.ptextA), ctextA(o.ctextA), ctextB(o.ctextB), ptextB(o.ptextB),
-	  r(o.r), endorsement(o.endorsement), exchangeType(o.exchangeType)
-{
-}
+{}
 
 /*----------------------------------------------------------------------------*/
 // Destructor
 FEInitiator::~FEInitiator() {
 	reset();
-	delete signKey;
 }
 
 void FEInitiator::reset() {
 	exchangeType = TYPE_NONE;
-#ifdef DELETE_BUFFERS
-	for (unsigned i = 0; i < ptextB.size(); i++)
-		delete ptextB[i];
-	for (unsigned i = 0; i < ctextA.size(); i++)
-		delete ctextA[i];
-#endif
 	ctextA.clear();
 	ctextB.clear();
 	ptextA.clear();
 	ptextB.clear();
-	
-	delete contract;
-	contract = NULL;
-	// XXX MEMORY delete message
+	contract.reset();
 }
 
 /*----------------------------------------------------------------------------*/
@@ -63,7 +41,7 @@ Ptr<FESetupMessage> FEInitiator::setup(const string &signAlg) {
 startTimer();
 #endif
 	// generate signature key
-	if (signKey == NULL)
+    if (signKey.get() == NULL)
 		signKey = Signature::Key::generateKey(signAlg);
 #ifdef TIMER
 printTimer("Signature key generation");
@@ -93,11 +71,11 @@ void FEInitiator::makeCoin(Ptr<Wallet> wallet, const ZZ& R) {
 #ifdef TIMER
 startTimer();
 #endif
-	Coin coin = wallet->nextCoin(R);
+    Ptr<Coin> coin = wallet->nextCoin(R);
 #ifdef TIMER
 printTimer("Coin generation");
 #endif
-	setCoin(coin);
+	setCoin(*coin);
 }
 
 void FEInitiator::setCoin(const Coin& c) {	
@@ -143,7 +121,7 @@ Ptr<FEMessage> FEInitiator::buy(const vector</*const*/ Ptr<EncBuffer> >& ctextR,
 									 Hash::TYPE_MERKLE);
 	
 	// create contract
-	if (NULL == contract)
+	if (NULL == contract.get())
 		createContract();
 	
 	// set up the contract
@@ -154,7 +132,7 @@ Ptr<FEMessage> FEInitiator::buy(const vector</*const*/ Ptr<EncBuffer> >& ctextR,
 	contract->setCTHashBlocksB(ctextR.size());
 	
 	string signature = signContract();
-	return new_ptr<FEMessage>(signature, *contract);
+	return new_ptr<FEMessage>(signature, contract);
 }
 
 void FEInitiator::createContract() {
@@ -327,7 +305,7 @@ Ptr<FEMessage> FEInitiator::barter(const vector<Ptr<EncBuffer> >& ctextR,
 	string sig = Signature::sign(*signKey, escrowStr, regularPK->hashAlg);
 
 	// now output the escrow, signature, and contract (label)
-	return new_ptr<FEMessage>(escrow, sig, *contract);
+	return new_ptr<FEMessage>(escrow, sig, contract);
 }
 
 /*----------------------------------------------------------------------------*/

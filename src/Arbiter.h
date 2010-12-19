@@ -73,7 +73,7 @@ class Arbiter {
 		Ptr<MerkleVerifier> ptVerifier, ctVerifier;
 		vector<ZZ> endorsement;	
 		vector<string> keys;
-		FEContract contract;
+		Ptr<FEContract> contract;
 		Ptr<const FEMessage> message;
 };
 

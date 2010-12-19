@@ -10,7 +10,7 @@
 Seller::Seller(const int timeoutLength, const int timeoutTolerance, 
 			   Ptr<const VEPublicKey> pk, const int stat)
 	: timeoutLength(timeoutLength), timeoutTolerance(timeoutTolerance), 
-	  stat(stat), pk(pk), contract(NULL), escrow(NULL), inProgress(false)
+	  stat(stat), pk(pk), contract(), escrow(), inProgress(false)
 {
 }
 
@@ -18,7 +18,7 @@ Seller::Seller(Ptr<EncBuffer> ct, const int timeoutLength,
 			   const int timeoutTolerance, Ptr<const VEPublicKey> pk, 
 			   const int stat)
 	: timeoutLength(timeoutLength), timeoutTolerance(timeoutTolerance), 
-	  stat(stat), pk(pk), contract(NULL), escrow(NULL), inProgress(false)
+	  stat(stat), pk(pk), contract(), escrow(), inProgress(false)
 {
 	ctext.push_back(ct);
 }
@@ -27,18 +27,8 @@ Seller::Seller(vector<Ptr<EncBuffer> > ctext, const int timeoutLength,
 			   const int timeoutTolerance, Ptr<const VEPublicKey> pk, 
 			   const int stat)
 	: timeoutLength(timeoutLength), timeoutTolerance(timeoutTolerance), 
-	  stat(stat), pk(pk), ctext(ctext), contract(NULL), escrow(NULL), 
+	  stat(stat), pk(pk), ctext(ctext), contract(), escrow(), 
 	  inProgress(false)
-{
-}
-
-Seller::Seller(const Seller& o)
-	: timeoutLength(o.timeoutLength), timeoutTolerance(o.timeoutTolerance), 
-	  stat(o.stat), pk(o.pk), ptext(o.ptext), ctext(o.ctext),
-	  coinPrime(o.coinPrime), 
-	  contract(o.contract ? new_ptr<FEContract>(*o.contract) : NULL),
-	  escrow(o.escrow ? new_ptr<VECiphertext>(*o.escrow) : NULL),
-	  inProgress(o.inProgress)
 {
 }
 
@@ -50,14 +40,9 @@ Seller::~Seller() {
 
 void Seller::reset() {
 	inProgress = false;
-	//delete escrow;
-#ifdef DELETE_BUFFERS
-	for (unsigned i = 0; i < ctext.size(); i++) {
-		delete ctext[i];
-	}
-#endif
 	ctext.clear();
-	//delete contract; // XXX memory
+	escrow.reset();
+	contract.reset();
 }
 
 /*----------------------------------------------------------------------------*/

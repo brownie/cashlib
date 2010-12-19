@@ -14,18 +14,13 @@ class BankParameters {
 	public:
 		/*! this class stores the bank's public keys, the group used
 		 * for e-cash, and a list of possible coin denominations */
-		BankParameters(vector<GroupRSA> &secretKey, GroupPrime &ecash, 
-					   vector<int> &denoms);
+		BankParameters(const vector<Ptr<GroupRSA> >& secretKey, 
+                       Ptr<GroupPrime> ecash, 
+					   const vector<int>& denoms);
 
 		/*! constructor to load from file */
 		BankParameters(const char* fname) 
 			{	loadFile(make_nvp("BankParameters", *this), fname); }
-
-		/*! copy constructor */
-		BankParameters(const BankParameters &original);
-
-		/*! destructor */
-		~BankParameters();
 
 		/*! determines whether RSA groups have had secrets cleared or not */
 		static const int TYPE_SECRET = 1;
@@ -43,7 +38,7 @@ class BankParameters {
 		void makePublic();
 
 	private:
-		BankParameters() : ecashGroup(0), type(1) {}
+		BankParameters() : type(1) {}
 
 		Ptr<GroupPrime> ecashGroup;
 		int type;

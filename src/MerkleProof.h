@@ -8,7 +8,7 @@
 
 class MerkleProof {
 	public:
-		MerkleProof() : ctContract(0), ptContract(0) {empty=true;}
+		MerkleProof() : ctContract(), ptContract() {empty=true;}
 		
 		/*! ctextBlocks represent the blocks of the ciphertext that we are
 		 * proving are correct; ctextProof is the proof that the Merkle hash

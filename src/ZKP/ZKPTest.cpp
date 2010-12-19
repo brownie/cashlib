@@ -119,8 +119,8 @@ int main(int argc, char** argv) {
 	ifstream ifs(vm["input-file"].as<string>().c_str());
 
 	try { 
-		Ptr<ZKPLexer> lexer = new_ptr<ZKPLexer>(ifs);
-		Ptr<ZKPParser> parser = new_ptr<ZKPParser>(*lexer);
+		Ptr<ZKPLexer> lexer( new ZKPLexer(ifs) );
+		Ptr<ZKPParser> parser( new ZKPParser(*lexer) );
 		ASTSpecPtr n = parser->spec();
 		
 		if (n) {

@@ -9,7 +9,7 @@ MerkleProver::MerkleProver(const vector<hash_t> &hashBlocks,
 
 MerkleProver::MerkleProver(const char* buff, int buffSize, 
 						   const MerkleContract& contract) 
-	: contract(contract), tree(0) 
+	: contract(contract), tree() 
 {
 	init(buff, buffSize);
 }

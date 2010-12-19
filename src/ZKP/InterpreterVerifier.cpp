@@ -9,7 +9,7 @@ void InterpreterVerifier::compute(variable_map &v, const variable_map &p,
 	if (!g.empty()) {
 		env.groups = g;
 		env.variables = v;
-		env.groups[Environment::NO_GROUP] = 0;
+		env.groups[Environment::NO_GROUP] = Ptr<Group>();
 		// run BindGroupValues
 		BindGroupValues binder(env);
 		binder.apply(tree);

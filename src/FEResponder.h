@@ -22,9 +22,6 @@ class FEResponder {
 					Ptr<const VEPublicKey> pk, Ptr<const VEPublicKey> repk, 
 					const int stat);
 		
-		/*! copy constructor */
-		FEResponder(const FEResponder &o);
-		
 		/*! destructor */
 		~FEResponder();
 

@@ -11,7 +11,7 @@ vector<ZZ> VEProver::encrypt(const vector<ZZ> &messages, const string &label,
 	Environment e;
 	// first create and give in our group
 	ZZ bigN = pk->getN();
-	e.groups["RSAGroup"] = new_ptr<GroupRSA>("arbiter", bigN, stat);
+	e.groups["RSAGroup"] = new_ptr<GroupRSA>(string("arbiter"), bigN, stat);
 	ZZ bigNSquared = power(bigN, 2);
 	e.groups["G"] = new_ptr<GroupSquareMod>("arbiter", bigNSquared, stat);
 	// now add in elements

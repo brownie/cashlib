@@ -9,49 +9,29 @@ FEResponder::FEResponder(const int timeoutLength, const int timeoutTolerance,
 			 			 Ptr<const VEPublicKey> pk, Ptr<const VEPublicKey> regularpk, 
 			 			 const int stat)
 	: timeoutLength(timeoutLength), timeoutTolerance(timeoutTolerance), 
-	  stat(stat), verifiablePK(pk), regularPK(regularpk), contract(NULL), 
-	  escrow(NULL), initiatorSignPK(NULL), exchangeType(TYPE_NONE),
-	  message(NULL)
+	  stat(stat), verifiablePK(pk), regularPK(regularpk), contract(), 
+	  escrow(), initiatorSignPK(), exchangeType(TYPE_NONE),
+	  message()
 {
 }
 	
-FEResponder::FEResponder(const FEResponder& o)
-	: timeoutLength(o.timeoutLength), timeoutTolerance(o.timeoutTolerance), 
-	  stat(o.stat), verifiablePK(o.verifiablePK), regularPK(o.regularPK),
-	  ptextB(o.ptextB), ctextB(o.ctextB), ctextA(o.ctextA), ptextA(o.ptextA), 
-	  contract(o.contract ? new_ptr<FEContract>(*o.contract) : NULL),
-	  escrow(o.escrow ? new_ptr<VECiphertext>(*o.escrow) : NULL),
-	  initiatorSignPK(o.initiatorSignPK ? new_ptr<Signature::Key>(*o.initiatorSignPK) : NULL),
-	  message(o.message ? new_ptr<FEMessage>(*o.message) : NULL)
-{
-}
-
 /*----------------------------------------------------------------------------*/
 // Destructor
 FEResponder::~FEResponder() {
 	reset();
-	delete escrow;
-	delete initiatorSignPK;
 }
 
 void FEResponder::reset() {
 	exchangeType = TYPE_NONE;
 
-#ifdef DELETE_BUFFERS
-	for (unsigned i = 0; i < ptextA.size(); i++) {
-		delete ptextA[i];
-	}
-	for (unsigned i = 0; i < ctextB.size(); i++) {
-		delete ctextB[i];
-	}
-#endif
 	ctextB.clear();
 	ctextA.clear();
 	ptextB.clear();
 	ptextA.clear();
 	
-	delete contract;
-	//	delete message; // XXX causes segfault
+	contract.reset();
+	escrow.reset();
+	message.reset();
 }
 
 /*----------------------------------------------------------------------------*/
@@ -121,8 +101,8 @@ vector<string> FEResponder::sell(const FEMessage& message,
 	exchangeType = TYPE_BUY;
 	
 	// check contract and signature
-	FEContract contract = message.getContract();
-	check(message, saveString(contract), ptHashR);
+	Ptr<FEContract> contract = message.getContract();
+	check(message, saveString(*contract), ptHashR);
 	return getKeys();
 }
 
@@ -130,7 +110,7 @@ bool FEResponder::check(const FEMessage& msg, const string& label,
 						const vector<hash_t>& ptHashRs) {
 	// save message
 	message = new_ptr<FEMessage>(msg);
-	contract = new_ptr<FEContract>(msg.getContract());
+	contract = msg.getContract();
 	string sig = msg.getSignature();
 	
 	// check contract
@@ -276,7 +256,7 @@ Ptr<MerkleProof> FEResponder::resolveIII(vector<string> &keys){
 	if(checkKey(keys)){
 		// XXX: not really sure what I should be returning if they do check
 		// out as additional communication with the Arbiter is not needed
-		return new_ptr<MerkleProof>;
+		return new_ptr<MerkleProof>();
 	} else{
 		return proveIncorrectKeys(keys);
 	}

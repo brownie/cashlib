@@ -26,22 +26,22 @@ vector<unsigned> Arbiter::sellerResolveI(const ResolutionPair &keyMessagePair){
 	// want to store the contract as well (for stage II)
 	contract = buyMessage->getContract();
 	// check the timeout to make sure it hasn't passed
-	if(contract.checkTimeout(timeoutTolerance)) {
-		endorsement = verifiableDecrypter->decrypt(escrow.getCiphertext(), 
-												   saveString(contract), hashAlg);
+	if(contract->checkTimeout(timeoutTolerance)) {
+		endorsement = verifiableDecrypter->decrypt(escrow->getCiphertext(), 
+												   saveString(*contract), hashAlg);
 		// make sure the endorsement on the coin is valid
 		if(coinPrime.verifyEndorsement(endorsement)){
 			// construct verifiers based on the data in the contract and 
 			// return a set of challenges
-			hash_t ptHash = contract.getPTHashB();
-			hash_t ctHash = contract.getCTHashB();
+			hash_t ptHash = contract->getPTHashB();
+			hash_t ctHash = contract->getCTHashB();
 			ptVerifier = new_ptr<MerkleVerifier>(
                 ptHash, 
-                contract.getNumPTHashBlocksB(), 
+                contract->getNumPTHashBlocksB(), 
                 MerkleContract(ptHash.key,ptHash.alg));
 			ctVerifier = new_ptr<MerkleVerifier>(
                 ctHash, 
-                contract.getNumCTHashBlocksB(), 
+                contract->getNumCTHashBlocksB(), 
                 MerkleContract(ctHash.key,ctHash.alg));
 			return ptVerifier->getChallenges();
 		} else {
@@ -59,7 +59,7 @@ vector<ZZ> Arbiter::sellerResolveII(Ptr<const MerkleProof> proof){
 	if(verifyKeys(proof)){
 		if(updateDB){
 			vector<ZZ> rVec;
-			rVec.push_back(contract.getID());
+			rVec.push_back(contract->getID());
 			// store the keys (for the buyer later)
 			updateDB(Hash::hash(rVec,hashAlg), keys); 
 		}
@@ -83,7 +83,7 @@ bool Arbiter::verifyKeys(Ptr<const MerkleProof> proof) {
 		// 1. decrypt the blocks
 		unsigned index = (keys.size() == 1) ? 0 : i;
 		decryptedBlocks[i] = cTextBlocks[i]->decrypt(keys[index], 
-													 contract.getEncAlgB());
+													 contract->getEncAlgB());
 		// 2. hash them
 		hashedBlocks[i] = proof->getPTContract()->hash(decryptedBlocks[i]);
 		// 3. check if they match the public plaintext hashes
@@ -92,7 +92,7 @@ bool Arbiter::verifyKeys(Ptr<const MerkleProof> proof) {
 	} while(validDecryption && i < cTextBlocks.size());
 
 	// now finish verifying using the MerkleVerifiers
-	if(contract.getPTHashB().type == Hash::TYPE_MERKLE){
+	if(contract->getPTHashB().type == Hash::TYPE_MERKLE){
 		return (validDecryption && 
 				ctVerifier->verifyProofs(proof->getCTextProof()) && 
 				ptVerifier->verifyProofs(proof->getPTextProof()));
@@ -100,7 +100,7 @@ bool Arbiter::verifyKeys(Ptr<const MerkleProof> proof) {
 		hash_t ptHash = proof->getPTContract()->hash(proof->getPlaintext());
 		return (validDecryption && 
 				ctVerifier->verifyProofs(proof->getCTextProof()) && 
-				(ptHash == message->getContract().getPTHashB()));
+				(ptHash == message->getContract()->getPTHashB()));
 	}
 }
 
@@ -113,7 +113,7 @@ bool Arbiter::verifyDecryption(Ptr<const MerkleProof> proof){
 	do{
 		unsigned index = (keys.size() == 1) ? 0 : i;
 		decryptedBlocks[i] = cTextBlocks[i]->decrypt(keys[index], 
-													 contract.getEncAlgA());
+													 contract->getEncAlgA());
 		hashedBlocks[i] = proof->getCTContract()->hash(decryptedBlocks[i]);
 		validDecryption = hashedBlocks[i] == proof->getPTextProof()[i][0].node;
 		i++;
@@ -139,12 +139,12 @@ vector<unsigned> Arbiter::responderResolveI(const vector<string> &ks,
 	// this is the regular encryption
 	vector<ZZ> sigEscrow = message->getEscrow();
 	// this is the verifiable encryption
-	VECiphertext vEscrow = setup->getEscrow();
+	Ptr<VECiphertext> vEscrow = setup->getEscrow();
 	contract = message->getContract();
 	Ptr<const Signature::Key> sigPK = setup->getPK();
 	
 	// verify that the signature given in BarterMessage is correct
-	bool sigCorrect = Signature::verify(sigPK, message->getSignature(), 
+	bool sigCorrect = Signature::verify(*sigPK, message->getSignature(), 
 										CommonFunctions::vecToString(sigEscrow), 
 										hashAlg);	
 	if (!sigCorrect){
@@ -153,12 +153,12 @@ vector<unsigned> Arbiter::responderResolveI(const vector<string> &ks,
 	}
 
 	// also need to make sure the contract hasn't expired
-	if (!contract.checkTimeout(timeoutTolerance)){
+	if (!contract->checkTimeout(timeoutTolerance)){
 		throw CashException(CashException::CE_FE_ERROR, 
 			"[Arbiter::responderResolveI] contract has expired");
 	}
 
-	vector<ZZ> end = verifiableDecrypter->decrypt(vEscrow.getCiphertext(),
+	vector<ZZ> end = verifiableDecrypter->decrypt(vEscrow->getCiphertext(),
 												  sigPK->publicKeyString(), 
 												  hashAlg);
 	// now verify the endorsement (and store it if it's valid)
@@ -167,15 +167,15 @@ vector<unsigned> Arbiter::responderResolveI(const vector<string> &ks,
 		endorsement = end;
 														
 		// set up merkle verifiers and return challenges
-		hash_t ptHash = contract.getPTHashB();
-		hash_t ctHash = contract.getCTHashB();
+		hash_t ptHash = contract->getPTHashB();
+		hash_t ctHash = contract->getCTHashB();
 		ptVerifier = new_ptr<MerkleVerifier>(
             ptHash, 
-            contract.getNumPTHashBlocksB(), 
+            contract->getNumPTHashBlocksB(), 
             MerkleContract(ptHash.key,ptHash.alg));
 		ctVerifier = new_ptr<MerkleVerifier>(
             ctHash, 
-            contract.getNumCTHashBlocksB(), 
+            contract->getNumCTHashBlocksB(), 
             MerkleContract(ctHash.key,ctHash.alg));
 		// XXX: right now this is only returning 0 every time!!
 		return ptVerifier->getChallenges();
@@ -189,7 +189,7 @@ vector<string> Arbiter::responderResolveII(Ptr<const MerkleProof> proof){
 	if(verifyKeys(proof)){
 		// decrypt the signature escrow
 		vector<ZZ> m = message->getEscrow();
-		string label = saveString(contract);
+		string label = saveString(*contract);
 		vector<ZZ> initiatorVals = regularDecrypter->decrypt(m, label, hashAlg); 
 		vector<string> initiatorKeys(initiatorVals.size());
 		for(unsigned i = 0; i < initiatorVals.size(); i++){

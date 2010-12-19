@@ -14,13 +14,9 @@ class BankTool {
 		BankTool(int st, int l, const hashalg_t &ha,
 				 BankParameters bp);
 
-		BankTool(const BankTool &original);
-
 		BankTool(const char *fname) 
-			: bankParameters(0), publicBankParameters(0) 
+			: bankParameters(), publicBankParameters() 
 			{ loadFile(make_nvp("BankTool", *this), fname); }
-
-		~BankTool();
 
 		// getters
 		Ptr<const BankParameters> getBankParameters() const

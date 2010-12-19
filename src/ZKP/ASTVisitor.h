@@ -2,6 +2,7 @@
 #define _ASTVISITOR_H_
 
 #include <boost/shared_ptr.hpp>
+#include "new_ptr.hpp"
 
 class ASTNode;
 class ASTIdentifierLit;

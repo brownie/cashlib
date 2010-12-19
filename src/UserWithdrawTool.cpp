@@ -8,20 +8,8 @@ UserWithdrawTool::UserWithdrawTool(int st, int l, Ptr<const BankParameters> bp,
 								   const hashalg_t &ha, int ws, int denom)
 	: stat(st), lx(l), bankParameters(bp), userSecretKey(userSK), 
 	  userPublicKey(userPK), hashAlg(ha), walletSize(ws), coinDenom(denom),
-	  signatureRecipient(0), verified(false)
+	  verified(false)
 {
-}
-
-UserWithdrawTool::UserWithdrawTool(const UserWithdrawTool &o)
-	: stat(o.stat), lx(o.lx), bankParameters(o.bankParameters),
-	  userSecretKey(o.userSecretKey), userPublicKey(o.userPublicKey),
-	  hashAlg(o.hashAlg), walletSize(o.walletSize),
-	  coinDenom(o.coinDenom), verified(o.verified)
-{
-}
-
-UserWithdrawTool::~UserWithdrawTool() {
-	delete signatureRecipient;
 }
 
 ZZ UserWithdrawTool::createPartialCommitment() {

@@ -49,11 +49,10 @@ CLSignatureVerifier::CLSignatureVerifier(Ptr<const GroupRSA> pk, int lx,
 	verifier.check(fname, inputs);
 }	
 
-bool CLSignatureVerifier::verify(Ptr<const ProofMessage> pm, int stat) {
-	SigmaProof proof = pm->proof;
-	variable_map publics1 = pm->proof.getCommitments();
-	variable_map publics2 = pm->publics;
+bool CLSignatureVerifier::verify(const ProofMessage& pm, int stat) {
+	variable_map publics1 = pm.proof.getCommitments();
+	variable_map publics2 = pm.publics;
 	verifier.compute(v, publics1, publics2, g);
-	return verifier.verify(proof, stat);
+	return verifier.verify(pm.proof, stat);
 }
 

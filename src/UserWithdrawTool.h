@@ -16,10 +16,6 @@ class UserWithdrawTool {
                          const ZZ &userPK, const ZZ &userSK, 
 						 const hashalg_t &hashAlg, int walletSize, int denom);
 		
-		UserWithdrawTool(const UserWithdrawTool &original);
-		
-		~UserWithdrawTool();
-
 		/*! stores the vector 
 		 * (r_sku, A_sku, s', r_s', A_s', t, r_t, A_t) where : 
 		 * r_sku = randomness in opening of commitment to user secret key

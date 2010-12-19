@@ -49,8 +49,8 @@ void Interpreter::check(const string &programName, input_map inputs,
 	
 		ASTSpecPtr n;
 		try {
-			shared_ptr<ZKPLexer> lexer(new ZKPLexer(stream));
-			shared_ptr<ZKPParser> parser(new ZKPParser(*lexer));
+			Ptr<ZKPLexer> lexer(new ZKPLexer(stream));
+			Ptr<ZKPParser> parser(new ZKPParser(*lexer));
 			n = parser->spec();
 			tree = n;
 		} catch(antlr::ANTLRException& e) {
@@ -112,7 +112,7 @@ void Interpreter::check(const string &programName, input_map inputs,
 			// powers for bases that are used multiple times
 			if (!groups.empty()) {
 				env.groups = groups;
-				env.groups[Environment::NO_GROUP] = 0;
+				env.groups[Environment::NO_GROUP] = Ptr<Group>();
 				BindGroupValues binder(env);
 				binder.apply(n);
 				//cachePowers();

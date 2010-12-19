@@ -33,6 +33,11 @@ class MerkleContract {
 		hash_t hash(T* buff) const {
 			return hash(buff->data(), buff->size());
 		}
+
+		template <class T>
+		hash_t hash(Ptr<T> buff) const {
+			return hash(buff->data(), buff->size());
+		}
 	
 		hash_t hash(const string& str) const {
 			return hash(str.data(), str.size());

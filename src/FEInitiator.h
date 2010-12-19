@@ -21,10 +21,7 @@ class FEInitiator {
 		 * and the public key of the arbiter */
 		FEInitiator(const long timeoutLength, Ptr<const VEPublicKey> pk, 
 					Ptr<const VEPublicKey> regularpk, const int stat, 
-					Ptr<const Signature::Key> signKey = NULL);
-
-		/*! copy constructor */
-		FEInitiator(const FEInitiator &o);
+					Ptr<Signature::Key> signKey = Ptr<Signature::Key>());
 
 		/*! destructor */
 		~FEInitiator();
@@ -97,8 +94,8 @@ class FEInitiator {
 		void setVerifiablePublicKey(Ptr<const VEPublicKey> newpk) 
 								{verifiablePK = newpk;}
 		void setRegularPublicKey(Ptr<const VEPublicKey> newpk) {regularPK = newpk;}
-		void setSignatureKey(Ptr<Signature::Key> newsignKey = Ptr<Signature::Key>())
-                                { signKey = newsignKey; }
+		void setSignatureKey(Ptr<Signature::Key> sk=Ptr<Signature::Key>())
+                                { signKey = sk; }
 		void setExchangeType(int et) { exchangeType = et; }
 		
 		void reset();

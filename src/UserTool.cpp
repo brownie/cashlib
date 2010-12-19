@@ -1,10 +1,14 @@
 #include "UserTool.h"
 
-UserTool::UserTool(int st, int l, Ptr<const BankParameters> bp,
-				   const VEPublicKey &vPK, const VEPublicKey &rPK, 
+UserTool::UserTool(int st, int l, 
+                   Ptr<const BankParameters> bp,
+				   Ptr<const VEPublicKey> vPK, 
+                   Ptr<const VEPublicKey> rPK, 
 				   const hashalg_t &ha)
-	: stat(st), lx(l), bankParameters(new_ptr<BankParameters>(*bp)),
-	  vepk(vPK), pk(rPK), hashAlg(ha)
+	: stat(st), lx(l), 
+      bankParameters(bp),
+	  vepk(vPK), pk(rPK), 
+      hashAlg(ha)
 {
 	Ptr<const GroupPrime> cashGroup = bankParameters->getCashGroup(); 
 	userSecretKey = cashGroup->randomExponent();

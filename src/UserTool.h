@@ -11,28 +11,22 @@
 class UserTool {
 	
 	public:
-		UserTool(int st, int l, Ptr<const BankParameters> bp, 
-				 const VEPublicKey &arbiterVPK, const VEPublicKey &arbiterPK, 
+		UserTool(int st, int l,
+                 Ptr<const BankParameters> bp, 
+				 Ptr<const VEPublicKey> arbiterVPK, 
+                 Ptr<const VEPublicKey> arbiterPK, 
 				 const hashalg_t &ha);
 
-		UserTool(const UserTool &o)
-			: stat(o.stat), lx(o.lx), 
-			bankParameters(o.bankParameters),
-			vepk(o.vepk), pk(o.pk), userSecretKey(o.userSecretKey), 
-			userPublicKey(o.userPublicKey), hashAlg(o.hashAlg), 
-			idProof(o.idProof) {}
-
-		UserTool(const char *fname, Ptr<const BankParameters> bp,
+		UserTool(const char *fname, 
+                 Ptr<const BankParameters> bp,
 				 const char *fnameVEPK, const char *fnamePK)
-			: bankParameters(bp), vepk(fnameVEPK), pk(fnamePK)
-			{ loadFile(make_nvp("UserTool", *this), fname); }
+			: bankParameters(bp), 
+              vepk(new_ptr<VEPublicKey>(fnameVEPK)), 
+                pk(new_ptr<VEPublicKey>(fnamePK))
+            { loadFile(make_nvp("UserTool", *this), fname); }
 		
-		// XXX: this was causing a seg fault...
-		//~UserTool() { delete bankParameters; }
-
 		// getters
 		ZZ getPublicKey() const { return userPublicKey; }
-		Ptr<const VEPublicKey> getVEPublicKey() const { return &vepk; }
 		SigmaProof getIdentityProof() const { return idProof; }
 		Ptr<const BankParameters> getBankParameters() const { return bankParameters; }
 
@@ -44,25 +38,25 @@ class UserTool {
 
 		/* Factory functions for user */
 		Ptr<Buyer> getBuyer(time_t timeout) const 
-            { return new_ptr<Buyer>(timeout, &vepk, stat); }
+            { return new_ptr<Buyer>(timeout, vepk, stat); }
 
 		Ptr<Seller> getSeller(time_t timeout, int timeoutTolerance) const 
-            { return new_ptr<Seller>(timeout, timeoutTolerance, &vepk, stat); }
+            { return new_ptr<Seller>(timeout, timeoutTolerance, vepk, stat); }
 		
 		Ptr<Seller> getSeller(Ptr<EncBuffer> ctext, int t, int timeoutTolerance) const
-            { return new_ptr<Seller>(ctext, t, timeoutTolerance, &vepk, stat); }
+            { return new_ptr<Seller>(ctext, t, timeoutTolerance, vepk, stat); }
 
 		Ptr<FEInitiator> getFEInitiator(time_t timeout) const 
-            { return new_ptr<FEInitiator>(timeout, &vepk, &pk, stat); }
+            { return new_ptr<FEInitiator>(timeout, vepk, pk, stat); }
 
 		Ptr<FEResponder> getFEResponder(time_t t, int tolerance) const 
-            { return new_ptr<FEReponder>(t, tolerance, &vepk, &pk, stat); }
+            { return new_ptr<FEResponder>(t, tolerance, vepk, pk, stat); }
 
 	private:
 		int stat, lx;
 		Ptr<const BankParameters> bankParameters;
-        VEPublicKey vepk;
-		VEPublicKey pk;
+        Ptr<const VEPublicKey> vepk;
+		Ptr<const VEPublicKey> pk;
 		ZZ userSecretKey;
 		ZZ userPublicKey;
 		hashalg_t hashAlg;

@@ -24,9 +24,6 @@ class Seller {
 			   const int timeoutTolerance, Ptr<const VEPublicKey> pk, 
 			   const int stat);
 		
-		/*! copy constructor */
-		Seller(const Seller &o);
-		
 		/*! destructor */
 		~Seller();
 

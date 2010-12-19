@@ -6,7 +6,7 @@
 #include "ZKP/InterpreterProver.h"
 
 VEDecrypter::VEDecrypter(const int m, const int modLength, const int stat) {
-	setup(m, modLength, stat, 0);
+	setup(m, modLength, stat, Ptr<GroupRSA>());
 }
 
 VEDecrypter::VEDecrypter(const int m, const int modLength, const int stat, 
@@ -16,9 +16,9 @@ VEDecrypter::VEDecrypter(const int m, const int modLength, const int stat,
 
 void VEDecrypter::setup(const int m, const int modLength, 
 						const int stat, Ptr<GroupRSA> auxGroup) {
-	GroupRSA group1("arbiter", modLength, stat);
-	ZZ bigN = group1.getModulus();
-	ZZ bigP = group1.getP();
+	Ptr<GroupRSA> group1 = new_ptr<GroupRSA>(string("arbiter"), modLength, stat);
+	ZZ bigN = group1->getModulus();
+	ZZ bigP = group1->getP();
 	ZZ bigQ = bigN / bigP;
 	ZZ bigNsquared = power(bigN, 2);
 	// f0 is random element of Z_{N^2}*
@@ -29,7 +29,7 @@ void VEDecrypter::setup(const int m, const int modLength,
 	Ptr<GroupSquareMod> grp = new_ptr<GroupSquareMod>("arbiter", bigNsquared, stat);
 	group_map g;
 	variable_map v;
-	g["RSAGroup"] = &group1;
+	g["RSAGroup"] = group1;
 	g["G"] = grp;
 	v["f0"] = f0;
 
@@ -60,7 +60,7 @@ void VEDecrypter::setup(const int m, const int modLength,
 
 	Ptr<GroupRSA> group2;
 	// if we weren't given a group, make one
-	if (auxGroup == 0) {
+	if (auxGroup.get() == 0) {
 		group2 = createSecondGroup(m, modLength, stat);
 	}
 	else {

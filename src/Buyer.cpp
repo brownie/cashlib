@@ -9,16 +9,10 @@
 // Constructors
 Buyer::Buyer(int timeoutLength, Ptr<const VEPublicKey> pk, int stat)
 	: timeoutLength(timeoutLength), stat(stat), pk(pk), 
-	  contract(NULL), inProgress(false)
+	  inProgress(false)
 {
 }
 
-Buyer::Buyer(const Buyer& o)
-	: timeoutLength(o.timeoutLength), stat(o.stat), pk(o.pk),
-	  contract(o.contract? new_ptr<FEContract>(*o.contract) : NULL),
-	  r(o.r), endorsement(o.endorsement), inProgress(o.inProgress)
-{
-}
 /*----------------------------------------------------------------------------*/
 // Destructor
 Buyer::~Buyer() {
@@ -27,15 +21,12 @@ Buyer::~Buyer() {
 
 void Buyer::reset() {
 	inProgress = false;
-#ifdef DELETE_BUFFERS
-	for (unsigned i = 0; i < ptext.size(); i++) {
-		delete ptext[i];
-    }
-#endif
 	ptext.clear();
-	delete contract;
-	contract = NULL;
+	ctext.clear();
+	contract.reset();
+    coin.reset();
 }
+
 /*----------------------------------------------------------------------------*/
 // Buy
 Ptr<BuyMessage> Buyer::buy(Ptr<Wallet> wallet, Ptr<EncBuffer> ciphertext, 
@@ -98,7 +89,7 @@ Ptr<BuyMessage> Buyer::buy(const vector<Ptr<EncBuffer> >& ct,
 	// set inProgress
 	inProgress = true;
 	
-	return new_ptr<BuyMessage>(coin, contract, escrow);
+	return new_ptr<BuyMessage>(*coin, contract, escrow);
 }
 
 void Buyer::createContract() {
@@ -113,8 +104,8 @@ void Buyer::createContract() {
 VECiphertext Buyer::makeEscrow() {
 	// now set up the verifiable encryption
 	VEProver prover(pk);
-	return prover.verifiableEncrypt(coin.getEndorsementCom(), endorsement, 
-									coin.getCashGroup(), saveString(*contract), 
+	return prover.verifiableEncrypt(coin->getEndorsementCom(), endorsement, 
+									coin->getCashGroup(), saveString(*contract), 
 									pk->hashAlg, stat);
 }
 
@@ -123,11 +114,11 @@ void Buyer::makeCoin(Wallet& w, const ZZ& R) {
 	setCoin( w.nextCoin(R) );
 }
 
-void Buyer::setCoin(const Coin& c)
+void Buyer::setCoin(Ptr<Coin> c)
 {	
 	coin = c;
-	endorsement = coin.getEndorsement();
-	coin.unendorse();
+	endorsement = coin->getEndorsement();
+	coin->unendorse();
 }
 
 /*----------------------------------------------------------------------------*/

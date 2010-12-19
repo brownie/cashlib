@@ -14,9 +14,6 @@ class Buyer {
 		 * arbiter's public key */
 		Buyer(int timeoutLength, Ptr<const VEPublicKey> pk, int stat);
 
-		/*! copy constructor */
-		Buyer(const Buyer &o);
-
 		/*! destructor */
 		~Buyer();
 		
@@ -59,13 +56,13 @@ class Buyer {
 		/*! get the endorsement (send after key is checked) */
 		const vector<ZZ>& getEndorsement() const { return endorsement; }
 		
-		bool canAbortLocally() {return !inProgress; };
+		bool canAbortLocally() { return !inProgress; };
 		
 		// setters
-		void setCoin(const Coin& coin);
-		void setTimeout() { timeout =time(NULL) + timeoutLength; }
-		void setSecurity(const int newstat) {stat = newstat;}
-		void setVEPublicKey(Ptr<const VEPublicKey> newpk) {pk = newpk;}
+		void setCoin(Ptr<Coin> coin);
+		void setTimeout() { timeout = time(NULL) + timeoutLength; }
+		void setSecurity(const int newstat) { stat = newstat; }
+		void setVEPublicKey(Ptr<const VEPublicKey> newpk) { pk = newpk; }
 		
 		void reset();
 		
@@ -80,7 +77,7 @@ class Buyer {
 		int stat;
 		Ptr<const VEPublicKey> pk;
 
-		Coin coin;
+		Ptr<Coin> coin;
 		Ptr<FEContract> contract;
 
 		// ciphertext to decrypt, received from Seller

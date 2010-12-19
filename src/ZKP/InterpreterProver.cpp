@@ -27,7 +27,7 @@ void InterpreterProver::compute(variable_map &vars, group_map grps) {
 		// add group information if this wasn't done at compile time
 		env.groups = grps;
 		env.variables = vars;
-		env.groups[Environment::NO_GROUP] = 0;
+		env.groups[Environment::NO_GROUP] = Ptr<const Group>();
 		BindGroupValues groupBinder(env);
 		groupBinder.apply(tree);
 	}

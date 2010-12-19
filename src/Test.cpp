@@ -211,17 +211,17 @@ double* createParameters() {
 	//	loadFile(repk, "public.regular."+sec+".arbiter");
 	
 	startTimer();
-	VEDecrypter ve(m, rsaModLength, security);
-	saveFile(make_nvp("VEPublicKey", *ve.getPK()), "public."+sec+".arbiter");
-	saveFile(make_nvp("VESecretKey", *ve.getSK()), "secret."+sec+".arbiter");
+	Ptr<VEDecrypter> ve = new_ptr<VEDecrypter>(m, rsaModLength, security);
+	saveFile(make_nvp("VEPublicKey", *ve->getPK()), "public."+sec+".arbiter");
+	saveFile(make_nvp("VESecretKey", *ve->getSK()), "secret."+sec+".arbiter");
 	timers[timer++] = printTimer(timer, "Arbiter public and secret keys "
 										"created and saved");
 
 	startTimer();
 	m = 1024;
-	VEDecrypter re(m, rsaModLength, security);
-	saveFile(make_nvp("VEPublicKey", *re.getPK()), "public.regular."+sec+".arbiter");
-	saveFile(make_nvp("VESecretKey", *re.getSK()), "secret.regular."+sec+".arbiter");
+	Ptr<VEDecrypter> re = new_ptr<VEDecrypter>(m, rsaModLength, security);
+	saveFile(make_nvp("VEPublicKey", *re->getPK()), "public.regular."+sec+".arbiter");
+	saveFile(make_nvp("VESecretKey", *re->getSK()), "secret.regular."+sec+".arbiter");
 	timers[timer++] = printTimer(timer, "Arbiter public and secret keys (for "
 										"non-verifiable encryption) created " 
 			   							"and saved");
@@ -243,7 +243,7 @@ double* createParameters() {
 	// save a new user
 	startTimer();
 	UserTool userTool(security, lx, bankParameters, 
-					  *ve.getPK(), *re.getPK(), hashAlg);
+					  ve->getPK(), re->getPK(), hashAlg);
 	saveFile(make_nvp("UserTool",userTool), "tool."+sec+".user");
 	timers[timer++] = printTimer(timer, "User created and saved");
 	return timers;
@@ -264,8 +264,8 @@ double* loadParameters() {
 	VEPublicKey pk(("public.regular."+sec+".arbiter").c_str());
 
 	BankTool bankTool(("tool."+sec+".bank").c_str());
-	BankParameters bp(("bank."+sec+".params").c_str());
-	Ptr<const BankParameters> params = &bp;
+	Ptr<BankParameters> params(
+        new BankParameters(("bank."+sec+".params").c_str()));
 
 	cout << "Number of denominations is " << params->getDenominations().size()
 		 << endl;
@@ -387,8 +387,8 @@ double* testSophie() {
 double* testClone() {
 	double* timers = new double[MAX_TIMERS];
 	istringstream iss(string("x * a ^ b_i + -2"));
-	Ptr<ZKPLexer> lexer = new_ptr<ZKPLexer>(iss);
-	Ptr<ZKPParser> parser = new_ptr<ZKPParser>(*lexer);
+	Ptr<ZKPLexer> lexer(new ZKPLexer(iss));
+    Ptr<ZKPParser> parser(new ZKPParser(*lexer));
 	ASTExprPtr n = parser->expr();
 	
 	Printer print;
@@ -403,8 +403,8 @@ double* testClone() {
 double* testFor() {
 	double* timers = new double[MAX_TIMERS];
 	istringstream iss(string("for(i, 1:3, &&, c_i := (g^x_i) * (h^r_i))"));
-	Ptr<ZKPLexer> lexer = new_ptr<ZKPLexer>(iss);
-	Ptr<ZKPParser> parser = new_ptr<ZKPParser>(*lexer);
+	Ptr<ZKPLexer> lexer(new ZKPLexer(iss));
+	Ptr<ZKPParser> parser(new ZKPParser(*lexer));
 	ASTNodePtr n = parser->spec();
 	
 	Printer print;
@@ -431,8 +431,8 @@ double* testConstSub() {
 							"r[1:l], vprime such that: for(i, 1:l, range: "
 							"-(2^l_x - 1) <= x_i < 2^l_x) C =  h^vprime * "
 							"for(i, 1:l, *, c_i * h^(-r_i))"));
-	Ptr<ZKPLexer> lexer = new_ptr<ZKPLexer>(iss);
-	Ptr<ZKPParser> parser = new_ptr<ZKPParser>(*lexer);
+	Ptr<ZKPLexer> lexer(new ZKPLexer(iss));
+	Ptr<ZKPParser> parser(new ZKPParser(*lexer));
 	ASTNodePtr n = parser->spec();
 	
 	Printer print;
@@ -718,7 +718,7 @@ double* testCLProver(){
 								 numPublics);
 	timers[timer++] = printTimer(timer, "Created CL verifier");
 	startTimer();
-	bool verified = verifier.verify(publicProof, stat);
+	bool verified = verifier.verify(*publicProof, stat);
 	timers[timer++] = printTimer(timer, "Verifier checked prover's proof");
 	if(verified){
 		cout<<"Proving possession of a CL signature succeeded"<<endl;
@@ -841,7 +841,7 @@ double* testCLGroups() {
 	timers[timer++] = printTimer(timer, "CL signature verifier created");
 
 	startTimer();
-	bool sigVerified = verifier.verify(sigProof, stat);
+	bool sigVerified = verifier.verify(*sigProof, stat);
 	timers[timer++] = printTimer(timer, "Verifier verified the prover's PoK");
 
 	if (sigVerified)
@@ -858,8 +858,8 @@ double* testVE() {
 	hashalg_t hashAlg = Hash::SHA1;
 
 	// later will just save and load, but for now make keys from scratch
-	VEDecrypter decrypter(m, modLength, stat);
-	Ptr<VEPublicKey> pk = decrypter.getPK();
+	Ptr<VEDecrypter> decrypter = new_ptr<VEDecrypter>(m, modLength, stat);
+	Ptr<VEPublicKey> pk = decrypter->getPK();
 
 	// set up the prover
 	VEProver prover(pk);
@@ -1045,7 +1045,7 @@ double* testWithdraw() {
 
 	// this is PK used for verifiable encryption
 	startTimer();
-	VEDecrypter decrypter(m, modLen, stat);
+	Ptr<VEDecrypter> decrypter = new_ptr<VEDecrypter>(m, modLen, stat);
 	VEPublicKey vepk = *decrypter.getPK();
 	VESecretKey vesk = *decrypter.getSK();
 	timers[timer++] = printTimer(timer, "Arbiter public and secret keys created");
@@ -1127,11 +1127,10 @@ double* testWithdraw() {
 	*/
 	saveFile(make_nvp("Wallet", wallet), ("wallet."+statName).c_str());
 
-	delete idProof; delete clProof; delete pm;
+	idProof.reset(); clProof.reset(); pm.reset();
 
-	// XXX: having some seg fault issues here...
-	delete uwTool;
-	delete bwTool;
+	uwTool.reset();
+	bwTool.reset();
 
 	// also like to make sure that coin is valid here
 	vector<ZZ> contractInfo;
@@ -1139,11 +1138,11 @@ double* testWithdraw() {
 	ZZ rVal = Hash::hash(contractInfo, hashAlg);
 
 	startTimer();
-	Coin coin = wallet.nextCoin(rVal);
+	Ptr<Coin> coin = wallet.nextCoin(rVal);
 	timers[timer++] = printTimer(timer, "Got a coin from the wallet");
 
-	coin.unendorse();
-	bool coinVerified = coin.verifyCoin();
+	coin->unendorse();
+	bool coinVerified = coin->verifyCoin();
 	if (coinVerified)
 		cout << "Coin successfully verified and we're done!" << endl;
 	else
@@ -1173,7 +1172,7 @@ double* testCoin() {
 	ZZ rVal = Hash::hash(contractInfo, hashAlg);
 
 	startTimer();
-	Coin coin = wallet.nextCoin(rVal);
+	Coin coin = *wallet.nextCoin(rVal);
 	timers[timer++] = printTimer(timer, "Got coin from wallet");
 	cout << "Coin size: " << saveGZString(coin).size() << endl;
 
@@ -1228,7 +1227,7 @@ double* testCoin() {
 	wallet.replaceCoin(sameIndex);
 
 	startTimer();
-	Coin coin2 = wallet.nextCoin(rVal2);
+	Coin coin2 = *wallet.nextCoin(rVal2);
 	timers[timer++] = printTimer(timer, "Withdrew the same coin from the wallet");
 	startTimer();
 	bool isDoubleSpent = bankTool.isCoinDoubleSpent(coin, coin2);
@@ -1257,9 +1256,9 @@ double* testBuy() {
 	hashalg_t hashAlg = Hash::SHA1;
 	cipher_t encAlg = "aes-128-ctr";
 
-	Ptr<const BankParameters> params = new_ptr<BankParameters>("bank.80.params");
-	Wallet wallet("wallet.80", params);
-	VEPublicKey vepk("public.80.arbiter");
+	Ptr<BankParameters> params = new_ptr<BankParameters>("bank.80.params");
+	Ptr<Wallet> wallet(new Wallet("wallet.80", params));
+	Ptr<VEPublicKey> vepk(new VEPublicKey("public.80.arbiter"));
 
 	ZZ R = RandomBits_ZZ(params->getCashGroup()->getOrderLength());
 
@@ -1268,8 +1267,8 @@ double* testBuy() {
 	Hash::hash_t ptHash = ptext->hash(hashAlg, string(), Hash::TYPE_PLAIN);
 
 	// create buyer and seller objects
-	Buyer buyer(timeoutLength, &vepk, stat);
-	Seller seller(timeoutLength, timeoutTolerance, &vepk, stat);	
+	Buyer buyer(timeoutLength, vepk, stat);
+	Seller seller(timeoutLength, timeoutTolerance, vepk, stat);	
 
 	// step 1: seller gives ciphertext to buyer
 	startTimer();
@@ -1279,7 +1278,7 @@ double* testBuy() {
 
 	// step 2: buyer creates contract and verifiable escrow 
 	startTimer();
-	Ptr<BuyMessage> buyMessage = buyer.buy(&wallet, ctext, ptHash, R);
+	Ptr<BuyMessage> buyMessage = buyer.buy(wallet, ctext, ptHash, R);
 	timers[timer++] = printTimer(timer, "Buyer created buy message");
 
 	cout << "Buy message size: " << saveGZString(*buyMessage).size() << endl;
@@ -1327,8 +1326,8 @@ double* testBuy() {
 	else
 		cout << "Buy protocol failed" << endl;
 
-	delete ptext;
-	delete buyMessage; delete loadedBMsg;
+	ptext.reset();
+	buyMessage.reset(); loadedBMsg.reset();
 	return timers;
 }
 
@@ -1342,11 +1341,11 @@ double* testBarter() {
 	int hashType = Hash::TYPE_PLAIN;
 	
 	Ptr<const BankParameters> params = new_ptr<BankParameters>("bank.80.params");
-	Wallet wallet("wallet.80", params);
-	VEPublicKey vepk("public.80.arbiter");
-	VEPublicKey pk("public.regular.80.arbiter");
+	Ptr<Wallet> wallet = new_ptr<Wallet>("wallet.80", params);
+	Ptr<VEPublicKey> vepk(new VEPublicKey("public.80.arbiter"));
+	Ptr<VEPublicKey> pk(new VEPublicKey("public.regular.80.arbiter"));
 
-	string trackerHashKey = vepk.getHashKey();
+	string trackerHashKey = vepk->getHashKey();
 	ZZ R = RandomBits_ZZ(params->getCashGroup()->getOrderLength());
 
 	// get random files for Alice and Bob
@@ -1364,12 +1363,12 @@ double* testBarter() {
 	timers[timer++] = printTimer(timer, "Signature key generated");
 
 	// create initiator and responder objects
-	FEInitiator alice(timeoutLength, &vepk, &pk, stat, signKey);
-	FEResponder bob(timeoutLength, timeoutTolerance, &vepk, &pk, stat);
+	FEInitiator alice(timeoutLength, vepk, pk, stat, signKey);
+	FEResponder bob(timeoutLength, timeoutTolerance, vepk, pk, stat);
 
 	// step 1: Alice sends Bob a setup message
 	startTimer();
-	Ptr<FESetupMessage> setupMsg = alice.setup(&wallet, R, signAlg);
+	Ptr<FESetupMessage> setupMsg = alice.setup(wallet, R, signAlg);
 	timers[timer++] = printTimer(timer, "Alice created setup message");
 	cout << "Setup size: " << saveGZString(*setupMsg).size() << endl;
 
@@ -1465,14 +1464,14 @@ double* testBarter() {
 	else
 		cout << "Bartering on the second set of files failed" << endl;
 
-	delete aData;
-	delete bData;
-	delete setupMsg;
-	delete message;
-	delete aData2;
-	delete bData2;
-	delete signKey;
-	delete message2;
+	aData.reset();
+	bData.reset();
+	setupMsg.reset();
+	message.reset();
+	aData2.reset();
+	bData2.reset();
+	signKey.reset();
+	message2.reset();
 	return timers;
 }
 
@@ -1486,11 +1485,11 @@ double* testBuyWithSetup() {
 	int hashType = Hash::TYPE_PLAIN;
 
 	Ptr<const BankParameters> params = new_ptr<BankParameters>("bank.80.params");
-	Wallet wallet("wallet.80", params);
-	VEPublicKey vepk("public.80.arbiter");
-	VEPublicKey pk("public.regular.80.arbiter");
+	Ptr<Wallet> wallet = new_ptr<Wallet>("wallet.80", params);
+	Ptr<VEPublicKey> vepk = new_ptr<VEPublicKey>("public.80.arbiter");
+	Ptr<VEPublicKey> pk = new_ptr<VEPublicKey>("public.regular.80.arbiter");
 
-	string trackerHashKey = vepk.getHashKey();
+	string trackerHashKey = vepk->getHashKey();
 	ZZ R = RandomBits_ZZ(params->getCashGroup()->getOrderLength());
 
 	// get random files for Alice and Bob
@@ -1505,12 +1504,12 @@ double* testBuyWithSetup() {
 	timers[timer++] = printTimer(timer, "Signature key generated");
 	
 	// create initiator and responder objects
-	FEInitiator alice(timeoutLength, &vepk, &pk, stat, signKey);
-	FEResponder bob(timeoutLength, timeoutTolerance, &vepk, &pk, stat);
+	FEInitiator alice(timeoutLength, vepk, pk, stat, signKey);
+	FEResponder bob(timeoutLength, timeoutTolerance, vepk, pk, stat);
 
 	// step 1: Alice sends Bob a setup message
 	startTimer();
-	Ptr<FESetupMessage> setupMsg = alice.setup(&wallet, R, signAlg);
+	Ptr<FESetupMessage> setupMsg = alice.setup(wallet, R, signAlg);
 	timers[timer++] = printTimer(timer, "Alice created setup message");
 	cout << "Setup size: " << saveGZString(*setupMsg).size() << endl;
 
@@ -1563,19 +1562,19 @@ double* testBuyResolution()  {
 	int hashType = Hash::TYPE_PLAIN;
 	cipher_t encAlg = "aes-128-ctr";
 
-	VEPublicKey vepk("public.80.arbiter");
-	VESecretKey vesk("secret.80.arbiter");
-	VEDecrypter veDecrypter(&vepk, &vesk);
+	Ptr<VEPublicKey> vepk = new_ptr<VEPublicKey>("public.80.arbiter");
+	Ptr<VESecretKey> vesk = new_ptr<VESecretKey>("secret.80.arbiter");
+	Ptr<VEDecrypter> veDecrypter = new_ptr<VEDecrypter>(vepk, vesk);
 
-	VEPublicKey pk("public.80.arbiter");
-	VESecretKey sk("secret.80.arbiter");
-	VEDecrypter decrypter(&pk, &sk);
+	Ptr<VEPublicKey> pk = new_ptr<VEPublicKey>("public.80.arbiter");
+	Ptr<VESecretKey> sk = new_ptr<VESecretKey>("secret.80.arbiter");
+	Ptr<VEDecrypter> decrypter = new_ptr<VEDecrypter>(pk, sk);
 
 	BankTool bankTool("tool.80.bank");
 	Ptr<const BankParameters> params = new_ptr<BankParameters>("bank.80.params");
-	Wallet wallet("wallet.80", params);
+	Ptr<Wallet> wallet = new_ptr<Wallet>("wallet.80", params);
 
-	string trackerHashKey = vepk.getHashKey();
+	string trackerHashKey = vepk->getHashKey();
 	ZZ R = RandomBits_ZZ(params->getCashGroup()->getOrderLength());
 	
 	char buf[1024];
@@ -1584,8 +1583,8 @@ double* testBuyResolution()  {
 	hash_t ptHash = ptext->hash(hashAlg, trackerHashKey, hashType);
 	
 	// now let's create our buyer and seller objects
-	Buyer buyer(timeoutLength, &vepk, stat);
-	Seller seller(timeoutLength, timeoutTolerance, &vepk, stat);
+	Buyer buyer(timeoutLength, vepk, stat);
+	Seller seller(timeoutLength, timeoutTolerance, vepk, stat);
 	
 	// step 1: seller gives ciphertext to buyer
 	startTimer();
@@ -1594,7 +1593,7 @@ double* testBuyResolution()  {
 
 	// step 2: buyer creates contract and verifiable escrow 
 	startTimer();
-	Ptr<BuyMessage> buyMessage = buyer.buy(&wallet, ctext, ptHash, R);
+	Ptr<BuyMessage> buyMessage = buyer.buy(wallet, ctext, ptHash, R);
 	timers[timer++] = printTimer(timer, "Buyer created buy message");
 
 	// step 3: seller checks contract and escrow, returns key(s) if valid 
@@ -1607,7 +1606,7 @@ double* testBuyResolution()  {
 	buyer.pay(key);
 
 	// so let's say arbiter needs to get involved
-	Arbiter arbiter(&veDecrypter, &decrypter, hashAlg, timeoutTolerance);
+	Arbiter arbiter(veDecrypter, decrypter, hashAlg, timeoutTolerance);
 
 	// step 1: seller sends over relevant info to act as request
 	startTimer();
@@ -1663,17 +1662,17 @@ double* testBarterResolution() {
 	int hashType = Hash::TYPE_PLAIN;
 	
 	Ptr<const BankParameters> params = new_ptr<BankParameters>("bank.80.params");
-	Wallet wallet("wallet.80", params);
+	Ptr<Wallet> wallet = new_ptr<Wallet>("wallet.80", params);
 
-	VEPublicKey vepk("public.80.arbiter");
-	VESecretKey vesk("secret.80.arbiter");
-	VEDecrypter veDecrypter(&vepk, &vesk);
+	Ptr<VEPublicKey> vepk = new_ptr<VEPublicKey>("public.80.arbiter");
+	Ptr<VESecretKey> vesk = new_ptr<VESecretKey>("secret.80.arbiter");
+	Ptr<VEDecrypter> veDecrypter = new_ptr<VEDecrypter>(vepk, vesk);
 
-	VEPublicKey pk("public.regular.80.arbiter");
-	VESecretKey sk("secret.regular.80.arbiter");
-	VEDecrypter decrypter(&vepk, &vesk);
+	Ptr<VEPublicKey> pk = new_ptr<VEPublicKey>("public.regular.80.arbiter");
+	Ptr<VESecretKey> sk = new_ptr<VESecretKey>("secret.regular.80.arbiter");
+	Ptr<VEDecrypter> decrypter = new_ptr<VEDecrypter>(vepk, vesk);
 
-	string trackerHashKey = vepk.getHashKey();
+	string trackerHashKey = vepk->getHashKey();
 	ZZ R = RandomBits_ZZ(params->getCashGroup()->getOrderLength());
 
 	// get random files for Alice and Bob
@@ -1691,12 +1690,12 @@ double* testBarterResolution() {
 	timers[timer++] = printTimer(timer, "Signature key generated");
 
 	// create initiator and responder objects
-	FEInitiator alice(timeoutLength, &vepk, &pk, stat, signKey);
-	FEResponder bob(timeoutLength, timeoutTolerance, &vepk, &pk, stat);
+	FEInitiator alice(timeoutLength, vepk, pk, stat, signKey);
+	FEResponder bob(timeoutLength, timeoutTolerance, vepk, pk, stat);
 
 	// step 1: Alice sends Bob a setup message
 	startTimer();
-	Ptr<FESetupMessage> setupMsg = alice.setup(&wallet, R, signAlg);
+	Ptr<FESetupMessage> setupMsg = alice.setup(wallet, R, signAlg);
 	timers[timer++] = printTimer(timer, "Alice created setup message");
 	
 	// step 2: Bob checks setup message and outputs his file ciphertext
@@ -1732,7 +1731,7 @@ double* testBarterResolution() {
 	alice.giveKeys(bKey);
 
 	// now let's say we need to get arbiter involved
-	Arbiter arbiter(&veDecrypter, &decrypter, hashAlg, timeoutTolerance);
+	Arbiter arbiter(veDecrypter, decrypter, hashAlg, timeoutTolerance);
 
 	// step 1: responder sends request to arbiter
 	startTimer();
@@ -1802,8 +1801,8 @@ double* testSerializeAbstract() {
 	double* timers = new double[MAX_TIMERS];
 	// test serializing base and derived pointers
 	istringstream iss(string("g^x"));
-	Ptr<ZKPLexer> lexer = new_ptr<ZKPLexer>(iss);
-	Ptr<ZKPParser> parser = new_ptr<ZKPParser>(*lexer);
+	Ptr<ZKPLexer> lexer(new ZKPLexer(iss));
+	Ptr<ZKPParser> parser(new ZKPParser(*lexer));
 	ASTExprPtr n = parser->expr();
 	
 	cout << "type of expr: " << type_to_str(typeid(*n)) << endl;

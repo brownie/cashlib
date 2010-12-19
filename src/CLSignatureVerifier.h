@@ -16,7 +16,7 @@ class CLSignatureVerifier {
 							const vector<CommitmentInfo> &coms);
 		
 		/*! checks to see if a signature composed of A, e, and v is valid */
-		bool verify(Ptr<const ProofMessage> pm, int stat);
+		bool verify(const ProofMessage& pm, int stat);
 
 	private:
 		group_map g;

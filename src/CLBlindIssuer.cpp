@@ -87,7 +87,8 @@ Ptr<ProofMessage> CLBlindIssuer::getPartialSignature(const ZZ &C,
 		// map for doing issue program
 		ZZ lx = v.at("l_x");
 		v.clear();
-		Ptr<const GroupRSA> grp = (Ptr<GroupRSA> ) g.at("pkGroup");
+		Ptr<const GroupRSA> grp = 
+            dynamic_pointer_cast<const GroupRSA>(g.at("pkGroup"));
 		v["l_x"] = lx;
 		v["stat"] = grp->getStat();
 		v["modSize"] = grp->getModulusLength();
