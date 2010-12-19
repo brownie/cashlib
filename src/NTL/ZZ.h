@@ -1,21 +1,29 @@
 #ifndef __GMPXX_ZZ_H__
 #define __GMPXX_ZZ_H__
 #include <gmpxx.h>
+#include <assert.h>
 #include "CashException.h"
 #include "Serialize.h"
 
-#define MININTL_GMPXX 1
+/* 
+ * miniNTL: somewhat NTL-compatible ZZ and vec_ZZ classes,
+ * backed by mpz_class from GNU GMP C++ API (gmpxx.h).
+ *
+ * based on 
+ *   NTL       http://www.shoup.net/ntl/ 
+ *   ZZ        http://www.shoup.net/ntl/doc/ZZ.txt
+ *   vec_ZZ    http://www.shoup.net/ntl/doc/vec_ZZ.txt
+ */
 
 #define NTL_CLIENT using std::vector; using std::string; using namespace NTL;
 
 namespace NTL {
 
+// MININTL_GMPXX indicates ZZ's are actually mpz_class from GMP++
+#define MININTL_GMPXX 1
 typedef mpz_class ZZ;
-
-#define to_ZZ(x) ZZ(x)
-
-// helpful macros for implementing mpz_ versions below
-#define MPZ(x) (x).get_mpz_t()
+#define MPZ(x) (x).get_mpz_t() // helpful for using mpz_ functions
+#define to_ZZ(x) ZZ(x) // mpz_class constructor handles NTL::to_ZZ cases
 
 void SetSeed(const ZZ& z);
 void SetSeed(unsigned long int l);
@@ -177,8 +185,6 @@ inline ZZ GenPrime_ZZ(long l, long err = 80) { ZZ r; GenPrime(r, l, err); return
 void GenGermainPrime(ZZ& n, long l, long err = 80);
 inline ZZ GenGermainPrime_ZZ(long l, long err = 80) { ZZ r; GenGermainPrime(r, l, err); return r; }
 
-// XXX NOT IMPLEMENTED
-#include <assert.h>
 // x = sum(p[i]*256^i, i=0..n-1). 
 inline void ZZFromBytes(ZZ& x, const unsigned char *p, long n) { 
 	// NTL uses native byte order? (that means all our data files are little-endian?)

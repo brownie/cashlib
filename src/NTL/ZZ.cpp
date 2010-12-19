@@ -34,6 +34,18 @@ inline long MakeOdd(ZZ& z) {
 	return mpz_remove(MPZ(z), MPZ(z), MPZ(ZZ(2))); // XXX probably not very fast
 }
 
+
+/* The following code for GenPrime and GenGermainPrime was copied &
+ * ported from NTL g_lip_impl.h and ZZ.c, probably from version 5.4.1
+ *
+ * Author: Victor Shoup (victor@shoup.net)
+ * http://www.shoup.net/ntl/
+ *
+ * NTL is open-source software distributed under the terms of the
+ * GNU General Public License.
+ */
+
+
 /* from NTL's g_lip_impl.h */
 
 /*
