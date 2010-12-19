@@ -12,7 +12,7 @@ class BankTool {
 				 vector<int> &coinDenoms);
 
 		BankTool(int st, int l, const hashalg_t &ha,
-				 BankParameters bp);
+				 const BankParameters& bp);
 
 		BankTool(const char *fname) 
 			: bankParameters(), publicBankParameters() 

@@ -211,6 +211,7 @@ ZZ ASTDiv::eval(Environment &env) {
 			ZZ right = InvMod(rhs->eval(env), ord);
 			return lhs->eval(env) * right;
 		} else {
+            cout << "ORDER " << retGroup->getOrder() << endl;
 			throw CashException(CashException::CE_PARSE_ERROR,
 								"That operation is not permitted in an RSA group");
 		}

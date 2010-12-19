@@ -41,7 +41,9 @@ int BankParameters::getCoinDenomination(Ptr<GroupRSA> group) const {
 
 void BankParameters::makePublic() {
 	for(unsigned i = 0 ; i < secretKeys.size(); i++) {
-		secretKeys[i]->clearSecrets();
+        // copy key, so as not to overwrite original secret key
+		secretKeys[i] = new_ptr<GroupRSA>(*secretKeys[i]);
+        secretKeys[i]->clearSecrets();
 	}
 	type = BankParameters::TYPE_PUBLIC;
 }

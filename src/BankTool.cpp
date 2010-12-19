@@ -33,7 +33,7 @@ BankTool::BankTool(int st, int l, int modLen, const hashalg_t &ha,
 }
 
 BankTool::BankTool(int st, int l, const hashalg_t &ha,
-				   BankParameters bp)
+				   const BankParameters& bp)
 	: stat(st), lx(l), hashAlg(ha)
 {
 	bankParameters = new_ptr<BankParameters>(bp);

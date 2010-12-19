@@ -1029,15 +1029,18 @@ double* testWithdraw() {
 	denoms.push_back(512);
 	denoms.push_back(1024);
 
-	int stat=80;
+	int stat=80, lx=2*stat, modLen=1024, m=3;
 	string statName = lexical_cast<string>(stat);
-	
+
+#if LOAD_DATA
 	// load bank and user from file
 	BankTool bankTool("tool.80.bank");
 	Ptr<const BankParameters> params = new_ptr<BankParameters>("bank.80.params");
 	UserTool userTool("tool.80.user", params, "public.80.arbiter",
 					  "public.regular.80.arbiter");
-/*
+
+#else // generate from scratch
+
 	startTimer();
 	BankTool bankTool(stat, lx, modLen, hashAlg, denoms);
 	timers[timer++] = printTimer(timer, "BankTool created");
@@ -1046,15 +1049,15 @@ double* testWithdraw() {
 	// this is PK used for verifiable encryption
 	startTimer();
 	Ptr<VEDecrypter> decrypter = new_ptr<VEDecrypter>(m, modLen, stat);
-	VEPublicKey vepk = *decrypter.getPK();
-	VESecretKey vesk = *decrypter.getSK();
+	Ptr<VEPublicKey> vepk = decrypter->getPK();
+	Ptr<VESecretKey> vesk = decrypter->getSK();
 	timers[timer++] = printTimer(timer, "Arbiter public and secret keys created");
 	
 	// this is PK used for regular encryption
 	startTimer();
-	VEDecrypter regularDecrypter(m, modLen, stat);
-	VEPublicKey pk = *regularDecrypter.getPK();
-	VESecretKey sk = *regularDecrypter.getSK();
+	Ptr<VEDecrypter> regularDecrypter = new_ptr<VEDecrypter>(m, modLen, stat);
+	Ptr<VEPublicKey> pk = regularDecrypter->getPK();
+	Ptr<VESecretKey> sk = regularDecrypter->getSK();
 	timers[timer++] = printTimer(timer, "Arbiter regular public and secret "
 										"keys created");
 
@@ -1062,7 +1065,7 @@ double* testWithdraw() {
 	startTimer();
 	UserTool userTool(stat, lx, params, vepk, pk, hashAlg);
 	timers[timer++] = printTimer(timer, "UserTool created");
-*/
+#endif
 
 	// step 1: user sends bank the public key and desired wallet size
 	ZZ userPK = userTool.getPublicKey();

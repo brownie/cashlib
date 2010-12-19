@@ -12,7 +12,7 @@
 #include <boost/lexical_cast.hpp>
 
 //#define DEBUG
-//#define TIMER
+#define TIMER
 //#define DELETE_BUFFERS
 #define DOUBLE_CHECK
 

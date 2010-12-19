@@ -72,6 +72,8 @@ CASHSOURCE =  Arbiter.cpp \
 OPENSSL_INC := $(shell pkg-config openssl --cflags)
 OPENSSL_LIB := $(shell pkg-config openssl --libs)
 
+#CC = gcc-mp-4.4
+#CPP = g++-mp-4.4
 CC = gcc
 CPP = g++
 
@@ -139,10 +141,12 @@ ${UNITTEST_BIN}: $(CASHLIB_STATIC) $(UNITTEST_OBJS)
 parser:
 	cd ZKP && ${ANTLRDIR}/bin/antlr zkp.g
 
-Serialize.h.gch: Serialize.h
+PRECOMPILED=Serialize
+
+$(PRECOMPILED).h.gch: $(PRECOMPILED).h
 	$(CPP) $(CFLAGS) -MD -c -o $@ $<
 
-%.o : %.cpp Serialize.h.gch
+%.o : %.cpp $(PRECOMPILED).h.gch
 	@mkdir -p $(DEPDIR)
 	$(CPP) $(CFLAGS) -MD -c -o $@ $<
 	@cp $*.d $(df).P; \
@@ -159,4 +163,4 @@ Serialize.h.gch: Serialize.h
 	  rm -f $*.d
 
 clean:
-	@rm -f ${TEST_BIN} ${ZKPTEST_BIN} *.o NTL/*.o ZKP/*.o *.d *.P $(CASHLIB_STATIC) $(DEPDIR)/*.P
+	@rm -f ${TEST_BIN} ${ZKPTEST_BIN} *.o NTL/*.o ZKP/*.o *.d *.P $(CASHLIB_STATIC) $(DEPDIR)/*.P *.gch
