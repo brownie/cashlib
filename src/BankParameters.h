@@ -22,6 +22,9 @@ class BankParameters {
 		BankParameters(const char* fname) 
 			{	loadFile(make_nvp("BankParameters", *this), fname); }
 
+        /*! copy constructor */
+        BankParameters(const BankParameters &o);
+
 		/*! determines whether RSA groups have had secrets cleared or not */
 		static const int TYPE_SECRET = 1;
 		static const int TYPE_PUBLIC = 0;

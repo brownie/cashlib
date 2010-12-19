@@ -64,7 +64,7 @@ void VEDecrypter::setup(const int m, const int modLength,
 		group2 = createSecondGroup(m, modLength, stat);
 	}
 	else {
-		group2 = auxGroup;
+		group2 = new_ptr<GroupRSA>(*auxGroup); // calls clearSecrets later
 	}
 	
 	ZZ n = group2->getModulus();
