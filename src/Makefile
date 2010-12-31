@@ -76,8 +76,8 @@ CC = gcc
 CPP = g++
 
 # Extra libraries: where are ANTLR and boost installed?
-OPTDIR=/opt/local
-ANTLRDIR=/opt/local
+OPTDIR=/pro/brownie/local
+ANTLRDIR=/pro/brownie/local
 
 #TEST_BIN = brownieTest
 #TEST_SRCS = BrownieTester.cpp
@@ -139,7 +139,7 @@ ${UNITTEST_BIN}: $(CASHLIB_STATIC) $(UNITTEST_OBJS)
 parser:
 	cd ZKP && ${ANTLRDIR}/bin/antlr zkp.g
 
-Serialize.h.gch: Serialize.h
+Serialize.h.gch : Serialize.h
 	$(CPP) $(CFLAGS) -MD -c -o $@ $<
 
 %.o : %.cpp Serialize.h.gch
@@ -159,4 +159,4 @@ Serialize.h.gch: Serialize.h
 	  rm -f $*.d
 
 clean:
-	@rm -f ${TEST_BIN} ${ZKPTEST_BIN} *.o NTL/*.o ZKP/*.o *.d *.P $(CASHLIB_STATIC) $(DEPDIR)/*.P
+	@rm -f ${TEST_BIN} ${ZKPTEST_BIN} *.o NTL/*.o ZKP/*.o *.d *.P $(CASHLIB_STATIC) $(DEPDIR)/*.P *.gch
