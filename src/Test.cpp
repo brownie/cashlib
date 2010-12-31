@@ -489,7 +489,7 @@ double* testProofInteraction() {
 
 	startTimer();
 	pgrps["G"] = cashG;
-	p.check("ZKP/examples/dlr.txt", pgrps);
+	p.check(CommonFunctions::getZKPDir()+"/dlr.txt", pgrps);
 	timers[timer++] = printTimer(timer, "Prover checked DLR program");
 	startTimer();
 	p.compute(pvars);
@@ -503,7 +503,7 @@ double* testProofInteraction() {
 
 	vgrps["G"] = cashG;
 	startTimer();
-	v.check("ZKP/examples/dlr.txt", vgrps);
+	v.check(CommonFunctions::getZKPDir()+"/dlr.txt", vgrps);
 	timers[timer++] = printTimer(timer, "Verifier checked DLR program");
 	startTimer();
 	v.compute(vvars, publics, pv);
@@ -524,7 +524,7 @@ double* testProofInteraction() {
 	pvars.clear();
 	pgrps["G"] = cashG;
 	startTimer();
-	p.check("ZKP/examples/multiplication.txt", pgrps);
+	p.check(CommonFunctions::getZKPDir()+"/multiplication.txt", pgrps);
 	timers[timer++] = printTimer(timer, "Prover checked multiplication program");
 	startTimer();
 	p.compute(pvars);
@@ -542,7 +542,7 @@ double* testProofInteraction() {
 	vvars.clear();
 	vgrps["G"] = cashG;
 	startTimer();
-	v.check("ZKP/examples/multiplication.txt", vgrps);
+	v.check(CommonFunctions::getZKPDir()+"/multiplication.txt", vgrps);
 	timers[timer++] = printTimer(timer, "Verifier checked multiplication program");
 	startTimer();
 	v.compute(vvars, publics2, pv2);
@@ -566,7 +566,7 @@ double* testProofInteraction() {
 	pvars["W"] = to_ZZ(100);
 	pvars["J"] = to_ZZ(51);
 	startTimer();
-	p.check("ZKP/examples/range.txt", pgrps);
+	p.check(CommonFunctions::getZKPDir()+"/range.txt", pgrps);
 	timers[timer++] = printTimer(timer, "Prover checked range program");
 	startTimer();
 	p.compute(pvars);
@@ -584,7 +584,7 @@ double* testProofInteraction() {
 	vgrps["G"] = rangeG;
 	vvars["W"] = to_ZZ(100);
 	startTimer();
-	v.check("ZKP/examples/range.txt", vgrps);
+	v.check(CommonFunctions::getZKPDir()+"/range.txt", vgrps);
 	timers[timer++] = printTimer(timer, "Verifier checked range program");
 	startTimer();
 	v.compute(vvars, publics3, pv3);

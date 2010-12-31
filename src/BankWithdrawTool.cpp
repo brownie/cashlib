@@ -45,7 +45,7 @@ ProofMessage* BankWithdrawTool::sign(ProofMessage* id, ProofMessage* cl){
 	InterpreterVerifier verifier;
 	group_map g;
 	g["cashGroup"] = bankParameters->getCashGroup();
-	verifier.check("ZKP/examples/presig.txt", g);
+	verifier.check(CommonFunctions::getZKPDir()+"/presig.txt", g);
 	variable_map v;
 	v["pk_u"] = userPublicKey;
 	verifier.compute(v, id->publics);
