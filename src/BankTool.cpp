@@ -56,7 +56,7 @@ BankWithdrawTool* BankTool::getWithdrawTool(const ZZ &userPK, int wSize,
 								coinDenom, hashAlg);
 }
 
-bool BankTool::verifyIdentity(ProofMessage* idProof, const ZZ &userPK) const {
+bool BankTool::verifyIdentity(const ProofMessage& idProof, const ZZ &userPK) const {
 	// check user's PoK of sk_u such that pk_u = g^sk_u
 	InterpreterVerifier verifier;
 	group_map g;
@@ -64,8 +64,8 @@ bool BankTool::verifyIdentity(ProofMessage* idProof, const ZZ &userPK) const {
 	verifier.check("ZKP/examples/userid.txt", input_map(), g);
 	variable_map v;
 	v["pk_u"] = userPK;
-	verifier.compute(v, idProof->publics);
-	return verifier.verify(idProof->proof, stat);
+	verifier.compute(v, idProof.publics);
+	return verifier.verify(idProof.proof, stat);
 }
 
 bool BankTool::verifyCoin(const Coin &coin) const {

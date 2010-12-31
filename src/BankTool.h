@@ -43,7 +43,7 @@ class BankTool {
 		/*! Input: a non interactive sigma proof of knowledge of a user's secret
 		 *  key, using the public key as a commitment to the secret key.
 		 * Ouputs: true if proof accepted, false if proof not accepted. */
-		bool verifyIdentity(ProofMessage* idProof, const ZZ &userPK) const;
+		bool verifyIdentity(const ProofMessage& idProof, const ZZ &userPK) const;
 
 		// functions for depositing at the bank
 		/*! Returns true if a coin is formed correctly */
