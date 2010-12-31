@@ -36,7 +36,7 @@ void VEDecrypter::setup(const int m, const int modLength,
 	InterpreterProver prover;
 	input_map inputs;
 	inputs["m"] = m;
-	prover.check("ZKP/examples/vedecrypter.txt", inputs, g);
+	prover.check(CommonFunctions::getZKPDir()+"/vedecrypter.txt", inputs, g);
 	prover.compute(v);
 	Environment env = prover.getEnvironment();
 	ZZ d = env.variables.at("d");

@@ -4,6 +4,28 @@
 #include "FourSquares.h"
 #include "base64.h"
 
+// Singleton object holding some global config values
+struct Config {
+    Config() : zkp_program_dir("./ZKP/examples") {}
+
+    // location of programs in cashlib/src/ZKP/examples/ used by various Cashlib wrapper classes
+    std::string zkp_program_dir;
+};
+
+Config& getConfig() {
+    static Config pc; // lazy-initialized singleton
+    return pc;
+}
+
+// accessors for config
+string CommonFunctions::getZKPDir() {
+    return getConfig().zkp_program_dir;
+}
+
+void CommonFunctions::setZKPDir(const string& dir) {
+    getConfig().zkp_program_dir = dir;
+}
+
 bool CommonFunctions::isTTP(const string &name) {
 	if ( name.compare("bank") == 0 ||  name.compare("TTP") == 0
 		|| name.compare("arbiter") == 0)

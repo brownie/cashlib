@@ -23,7 +23,7 @@ CLBlindRecipient::CLBlindRecipient(const GroupRSA* pk, const Group* comGroup,
 	inputs["l"] = to_ZZ(numPrivates);
 	inputs["k"] = to_ZZ(numPublics);
 	
-	prover.check("ZKP/examples/cl-obtain-ecash.txt", inputs, g);
+	prover.check(CommonFunctions::getZKPDir()+"/cl-obtain-ecash.txt", inputs, g);
 }
 
 CLBlindRecipient::CLBlindRecipient(const GroupRSA* pk, int lx, int numPrivates,
@@ -90,7 +90,7 @@ ProofMessage* CLBlindRecipient::getC(const vector<SecretValue>& privates,
 bool CLBlindRecipient::verifySig(const ProofMessage &pm, int stat){
 	startTimer();
 	InterpreterVerifier verifier;
-    verifier.check("ZKP/examples/cl-issue.txt", inputs);
+    verifier.check(CommonFunctions::getZKPDir()+"/cl-issue.txt", inputs);
 	// XXX: does the verifier really not need any inputs of its own?
 	// this would be a good place to incorporate public messages...
 	variable_map q;

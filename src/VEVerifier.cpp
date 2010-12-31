@@ -37,7 +37,7 @@ bool VEVerifier::verify(const VECiphertext& text, const ZZ& x,
 	SigmaProof proof = text.getProof();
 	variable_map publics = text.getPublics();
 	InterpreterVerifier verifier;
-	verifier.check("ZKP/examples/ve.txt", inputs, env.groups);
+	verifier.check(CommonFunctions::getZKPDir()+"/ve.txt", inputs, env.groups);
 	verifier.compute(env.variables, proof.getCommitments(), publics);
 	return verifier.verify(proof, stat);
 }

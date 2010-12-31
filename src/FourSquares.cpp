@@ -21,6 +21,9 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
     Change history
+    October 2008 Brownie Points Project (http://cs.brown.edu/research/brownie)
+    -   Converted to C++ for use in Cashlib library.
+
     29-Nov-2005 Peter Schorn
     -   Added isProbableSquare
 

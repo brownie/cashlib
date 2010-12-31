@@ -32,7 +32,7 @@ class ProgramMaker {
 	public:
 		ProgramMaker() {}
 
-		/*! given the various groups and commitments, creates a CL
+		/*! given the various group and commitment names, creates a CL
 		 * program for obtaining a signature */
 		static string makeCLObtain(const string &grpPart,
 								   const string &comPart,

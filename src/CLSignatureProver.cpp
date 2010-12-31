@@ -21,7 +21,7 @@ CLSignatureProver::CLSignatureProver(const GroupRSA* publicKey,
 
 	inputs["l"] = numPrivates;
 	inputs["k"] = numPublics;
-	prover.check("ZKP/examples/cl-prove-ecash.txt", inputs, g);
+	prover.check(CommonFunctions::getZKPDir()+"/cl-prove-ecash.txt", inputs, g);
 }
 
 CLSignatureProver::CLSignatureProver(const GroupRSA* pk, int lx, 

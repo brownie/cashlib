@@ -21,7 +21,7 @@ UserTool::UserTool(int st, int l, const BankParameters *bp,
 	v["sk_u"] = userSecretKey;
 	// now compute proof and save it
 	InterpreterProver p;
-	p.check("ZKP/examples/userid.txt", groups);
+	p.check(CommonFunctions::getZKPDir()+"/userid.txt", groups);
 	p.compute(v);
 	idProof = p.computeProof(hashAlg);
 }
