@@ -20,7 +20,7 @@ CLBlindIssuer::CLBlindIssuer(const GroupRSA* sk, const Group* comGroup,
 	g["pkGroup"] = sk;	
 	g["comGroup"] = comGroup;
 
-	verifier.check("ZKP/examples/cl-obtain-ecash.txt", inputs, g);	
+	verifier.check(CommonFunctions::getZKPDir()+"/cl-obtain-ecash.txt", inputs, g);	
 }
 
 CLBlindIssuer::CLBlindIssuer(const GroupRSA* sk, int lx, int numPrivates,
@@ -81,7 +81,7 @@ ProofMessage* CLBlindIssuer::getPartialSignature(const ZZ &C,
 
 		startTimer();
 		InterpreterProver prover;
-		prover.check("ZKP/examples/cl-issue.txt", inputs, g);
+		prover.check(CommonFunctions::getZKPDir()+"/cl-issue.txt", inputs, g);
 
 		// want to keep the same inputs and groups, but need a new variable 
 		// map for doing issue program

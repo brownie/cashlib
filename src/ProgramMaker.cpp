@@ -1,8 +1,9 @@
 
 #include "ProgramMaker.h"
 #include <assert.h>
-#include "ZKP/ASTNode.h"
 #include <fstream>
+#include "ZKP/ASTNode.h"
+#include "CommonFunctions.h"
 
 string ProgramMaker::makeCLObtain(const gen_group_map &grps, 
 								  const vector<CommitmentInfo> &coms) {
@@ -31,7 +32,7 @@ string ProgramMaker::makeCLObtain(const string &grpPart, const string &comPart,
 	program += comRelPart;
 	// now write this to file and return the file name
 	ofstream writer;
-	string fname = "ZKP/examples/cl-obtain-temp.txt";
+	string fname = CommonFunctions::getZKPDir()+"/cl-obtain-temp.txt";
 	writer.open(fname.c_str(), ios::out);
 	if (!writer)
 		throw CashException(CashException::CE_PARSE_ERROR,
@@ -75,7 +76,7 @@ string ProgramMaker::makeCLProve(const string &grpPart, const string &comPart,
 	program += " " + comRelPart;
 	// again, write to file and return filename
 	ofstream writer;
-	string fname = "ZKP/examples/cl-prove-temp.txt";
+	string fname = CommonFunctions::getZKPDir()+"/cl-prove-temp.txt";
 	writer.open(fname.c_str(), ios::out);
 	if (!writer)
 		throw CashException(CashException::CE_PARSE_ERROR,

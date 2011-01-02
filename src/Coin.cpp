@@ -25,7 +25,7 @@ Coin::Coin(const BankParameters* params, int wSize, int index,
 	v["J"] = coinIndex;
 	
 	InterpreterProver prover;
-	prover.check("ZKP/examples/ecash.txt", g);
+	prover.check(CommonFunctions::getZKPDir()+"/ecash.txt", g);
 	prover.compute(v);
 	Environment env = prover.getEnvironment();
 
@@ -105,7 +105,7 @@ bool Coin::verifyCoin() const {
 	group_map cashG;
 	cashG["cashGroup"] = parameters->getCashGroup();
 	startTimer();
-	verifier.check("ZKP/examples/ecash.txt", cashG);
+	verifier.check(CommonFunctions::getZKPDir()+"/ecash.txt", cashG);
 	printTimer("[Coin] Verifier checked ST part");
 	variable_map cashV;
 	variable_map coinPub = coinProof.publics;

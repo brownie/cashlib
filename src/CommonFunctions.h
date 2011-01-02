@@ -11,6 +11,9 @@
 class CommonFunctions {
 	
 	public:
+        static string getZKPDir();
+        static void setZKPDir(const string&);
+
 		static bool isTTP(const string &name);
 
 		static string vecToBytes(const vector<ZZ>& vec) {
