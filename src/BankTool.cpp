@@ -61,7 +61,7 @@ bool BankTool::verifyIdentity(const ProofMessage& idProof, const ZZ &userPK) con
 	InterpreterVerifier verifier;
 	group_map g;
 	g["G"] = bankParameters->getCashGroup();
-	verifier.check("ZKP/examples/userid.txt", input_map(), g);
+	verifier.check(CommonFunctions::getZKPDir()+"/userid.txt", input_map(), g);
 	variable_map v;
 	v["pk_u"] = userPK;
 	verifier.compute(v, idProof.publics);

@@ -36,7 +36,7 @@ vector<ZZ> VEProver::encrypt(const vector<ZZ> &messages, const string &label,
 
 	// now do the computation: this gives us r, u_i, v
 	InterpreterProver calculator;
-	calculator.check("ZKP/examples/encrypt.txt", inputs, e.groups);
+	calculator.check(CommonFunctions::getZKPDir()+"/encrypt.txt", inputs, e.groups);
 	startTimer();
 	calculator.compute(e.variables);
 	printTimer("Computed stuff for normal encryption");
@@ -99,7 +99,7 @@ VECiphertext VEProver::verifiableEncrypt(const ZZ &commitment,
 	inputs["m"] = opening.size();
 
 	InterpreterProver prover;
-	prover.check("ZKP/examples/ve.txt", inputs, env.groups);
+	prover.check(CommonFunctions::getZKPDir()+"/ve.txt", inputs, env.groups);
 	startTimer();
 	prover.compute(env.variables);
 	printTimer("Computed values for verifiable encryption");
