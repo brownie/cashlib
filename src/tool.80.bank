@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="5">
+<boost_serialization signature="serialization::archive" version="7">
 <BankTool class_id="0" tracking_level="0" version="0">
 	<stat>80</stat>
 	<lx>160</lx>
@@ -492,8 +492,24 @@
 			<count>11</count>
 			<item_version>0</item_version>
 			<item class_id="9" tracking_level="0" version="0">
+				<first class_id_reference="7" object_id_reference="_12"></first>
+				<second>1024</second>
+			</item>
+			<item>
 				<first class_id_reference="7" object_id_reference="_6"></first>
 				<second>16</second>
+			</item>
+			<item>
+				<first class_id_reference="7" object_id_reference="_11"></first>
+				<second>512</second>
+			</item>
+			<item>
+				<first class_id_reference="7" object_id_reference="_7"></first>
+				<second>32</second>
+			</item>
+			<item>
+				<first class_id_reference="7" object_id_reference="_3"></first>
+				<second>2</second>
 			</item>
 			<item>
 				<first class_id_reference="7" object_id_reference="_4"></first>
@@ -508,18 +524,6 @@
 				<second>1</second>
 			</item>
 			<item>
-				<first class_id_reference="7" object_id_reference="_3"></first>
-				<second>2</second>
-			</item>
-			<item>
-				<first class_id_reference="7" object_id_reference="_7"></first>
-				<second>32</second>
-			</item>
-			<item>
-				<first class_id_reference="7" object_id_reference="_11"></first>
-				<second>512</second>
-			</item>
-			<item>
 				<first class_id_reference="7" object_id_reference="_8"></first>
 				<second>64</second>
 			</item>
@@ -530,10 +534,6 @@
 			<item>
 				<first class_id_reference="7" object_id_reference="_10"></first>
 				<second>256</second>
-			</item>
-			<item>
-				<first class_id_reference="7" object_id_reference="_12"></first>
-				<second>1024</second>
 			</item>
 		</groupToDenom>
 		<denomToGroup class_id="10" tracking_level="0" version="0">
@@ -1087,10 +1087,6 @@
 			<count>11</count>
 			<item_version>0</item_version>
 			<item>
-				<first class_id_reference="7" object_id_reference="_25"></first>
-				<second>1024</second>
-			</item>
-			<item>
 				<first class_id_reference="7" object_id_reference="_15"></first>
 				<second>1</second>
 			</item>
@@ -1129,6 +1125,10 @@
 			<item>
 				<first class_id_reference="7" object_id_reference="_24"></first>
 				<second>512</second>
+			</item>
+			<item>
+				<first class_id_reference="7" object_id_reference="_25"></first>
+				<second>1024</second>
 			</item>
 		</groupToDenom>
 		<denomToGroup>
