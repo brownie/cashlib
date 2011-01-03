@@ -71,6 +71,12 @@ struct ProofMessage {
 	variable_map publics;
 	SigmaProof proof;
 
+    bool operator==(const ProofMessage& other) const {
+        return (vars == other.vars &&
+                publics == other.publics &&
+                proof == other.proof);
+    }
+
 	// need to be able to serialize this
 	friend class boost::serialization::access;
 	template <class Archive>
