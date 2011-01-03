@@ -51,11 +51,11 @@ class SigmaProof {
 		/*! gets our third-round messages */
 		var_map getResponses() const { return responses; }
 
-		// XXX: what about commitments?
-		bool operator==(const SigmaProof& other) {
+		bool operator==(const SigmaProof& other) const {
 		    return (randomizedProofs == other.randomizedProofs &&
 			    	responses == other.responses &&
-			    	hashAlg == other.hashAlg);
+			    	hashAlg == other.hashAlg &&
+                    commitments == other.commitments);
 		}
 
 		void dump() const;

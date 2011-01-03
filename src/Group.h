@@ -97,6 +97,15 @@ class Group {
 		/*! Used to determine whether the group is trusted. */
 		virtual bool checkPreconditions() const = 0;
 
+		virtual bool operator==(const Group& o) const {
+		    return (modulusLength == o.modulusLength &&
+                    orderLength == o.orderLength &&
+                    generators == o.generators &&
+                    isTrusted == o.isTrusted &&
+                    modulus == o.modulus &&
+                    type == o.type);
+		}
+
 		int modulusLength;
 		int orderLength;
 		vector<ZZ> generators;
