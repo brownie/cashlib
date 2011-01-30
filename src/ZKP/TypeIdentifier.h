@@ -14,7 +14,7 @@ class TypeIdentifier : public ASTTVisitor {
 
 	public:
 		/*! this visitor should be used before we have actual values */
-		TypeIdentifier(Environment &e) : env(e) {}
+		TypeIdentifier(Environment &e) : env(e), isPrivate(false) {}
 
 		/*! used for privacy settings */
 		void applyASTProof(ASTProofPtr n);
