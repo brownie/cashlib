@@ -68,7 +68,7 @@ void Wallet::newCoin(Coin& coin, const ZZ &rValue, int coinIndex) {
 				lx, rValue, coinDenom, hashAlg);
 }
 
-bool Wallet::replaceCoin(ZZ &index) {
+bool Wallet::replaceCoin(const ZZ &index) {
 	// check that 0 <= indexArg < walletSize
 	if(index < 0 || index >= walletSize) {
 		return false;
