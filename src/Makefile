@@ -76,8 +76,8 @@ CC = gcc
 CPP = g++
 
 # Extra libraries: where are ANTLR and boost installed?
-OPTDIR=/pro/brownie/local
-ANTLRDIR=/pro/brownie/local
+OPTDIR=/opt/local
+ANTLRDIR=/opt/local
 
 #TEST_BIN = brownieTest
 #TEST_SRCS = BrownieTester.cpp
