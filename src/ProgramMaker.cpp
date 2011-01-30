@@ -27,7 +27,7 @@ string ProgramMaker::makeCLObtain(const string &grpPart, const string &comPart,
 							"integers: x[1:l], r[1:l] "
 							"exponent in pkGroup: vprime "
 						"such that: "
-							"for(i, 1:l, range: (-(2^l_x-1)) <= x_i < 2^l_x) "
+							"for(i, 1:l, range in pkGroup: (-(2^l_x-1)) <= x_i < 2^l_x) "
 							"C = h^vprime * for(i, 1:l, *, g_i^x_i) ";
 	program += comRelPart;
 	// now write this to file and return the file name
@@ -70,7 +70,7 @@ string ProgramMaker::makeCLProve(const string &grpPart, const string &comPart,
 							"integers: x[1:l], r[1:l] "
 							"exponents in pkGroup: e, vprime, r_C "
 						"such that: "
-							"for(i, 1:l, range: (-(2^l_x-1)) <= x_i < 2^l_x) "
+							"for(i, 1:l, range in pkGroup: (-(2^l_x-1)) <= x_i < 2^l_x) "
 							"C = h^r_C * for(i, 1:l, *, g_i^x_i) "
 							"f = C^(-1) * D^(-1) * (Aprime^e) * h^(r_C-vprime)";
 	program += " " + comRelPart;
