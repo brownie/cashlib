@@ -11,6 +11,7 @@
 #include <string>
 #include <assert.h>
 #include <vector>
+#include <sys/time.h>
 #include <boost/unordered_map.hpp>
 #include <boost/foreach.hpp>
 #define foreach BOOST_FOREACH
@@ -139,7 +140,11 @@ void printTests() {
 
 int main(int argc , const char* argv[]) {
 	// XXX: want to incorporate a different random seed every time?
-	SetSeed(to_ZZ(0));
+	timeval t;
+	gettimeofday(&t, NULL);
+	cout << "NTL::SetSeed: " << t.tv_sec + t.tv_usec << endl;
+	NTL::SetSeed(to_ZZ(t.tv_sec + t.tv_usec)); // XXX sure, why not
+	//SetSeed(to_ZZ(0));
 
 	/*setprecision(5);
 	resetiosflags(ios::scientific);
