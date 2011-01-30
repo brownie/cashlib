@@ -1044,8 +1044,16 @@ double* testWithdraw() {
 	// load bank and user from file
 	BankTool bankTool("tool.80.bank");
 	const BankParameters* params = new BankParameters("bank.80.params");
+
+    // create new user
+#if 0
+    VEPublicKey vepk("public.80.arbiter");
+    VEPublicKey repk("public.regular.80.arbiter");
+	UserTool userTool(stat, 2*stat, params, vepk, repk, hashAlg);
+#else
 	UserTool userTool("tool.80.user", params, "public.80.arbiter",
 					  "public.regular.80.arbiter");
+#endif
 /*
 	startTimer();
 	BankTool bankTool(stat, lx, modLen, hashAlg, denoms);
