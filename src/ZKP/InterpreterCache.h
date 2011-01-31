@@ -15,14 +15,11 @@ struct CacheValue {
 
 	CacheValue() {}
 
-	//CacheValue(ASTNodePtr n, const Environment& e, const input_map& i)
-	//	: tree(n), env(e), inputs(i) {}
 	CacheValue(ASTNodePtr n, const Environment& e)
 		: tree(n), env(e) {}
 
 	ASTNodePtr tree;
 	Environment env;
-	//input_map inputs;	
 };
 
 class InterpreterCache {
@@ -34,24 +31,18 @@ class InterpreterCache {
 			return _icache;
 		}
 		
-		//typedef boost::unordered_map<string, CacheValue> cache_t;
 		typedef boost::unordered_map<cache_key_pair, CacheValue> cache_t;
 
 		// store values in the cache
 		static void store(cache_key_pair key, ASTNodePtr n,
 						  Environment &env) {
-			//instance().cache[key] = CacheValue(n, env, i);
 			instance().cache[key] = CacheValue(n, env);
 		}
 
-		//static bool contains(const string& fname) {
-		//	return instance().cache.count(fname) != 0;
 		static bool contains(cache_key_pair key) {
 			return instance().cache.count(key) != 0;
 		}
 
-		//static CacheValue& get(const string &fname) {
-		//	return instance().cache.at(fname);
 		static CacheValue& get(cache_key_pair key) {
 			return instance().cache.at(key);
 		}
