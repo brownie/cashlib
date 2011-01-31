@@ -10,6 +10,8 @@
  * \brief This class will interpret instructions given by a program
  */
 
+typedef pair<string,ZZ> cache_key_pair;
+
 class Interpreter {
 
 	public:
@@ -37,6 +39,8 @@ class Interpreter {
 
 	protected:
 		void cachePowers();
+
+		cache_key_pair hashForCache(const string &fname, input_map i, group_map g);
 
 		/*! used by the prover/verifier to compute any runtime values
 		 * that are needed for the proof but haven't been handed in 
