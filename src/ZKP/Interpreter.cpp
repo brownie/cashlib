@@ -28,7 +28,6 @@ void Interpreter::check(const string &programName, input_map inputs,
 	// and inputs used
 	cache_key_pair key = hashForCache(programName,inputs,groups);
 	if (InterpreterCache::contains(key)) {
-		//CacheValue& val = InterpreterCache::get(programName);
 		CacheValue& val = InterpreterCache::get(key);
 		// if it has, just store the values and we're done
 		env = val.env;
@@ -177,7 +176,6 @@ cache_key_pair Interpreter::hashForCache(const string &fname, input_map i,
 	sort(iNames.begin(),iNames.end());
 	vector<ZZ> hashInput;
 	for (unsigned j = 0; j < gNames.size(); j++) {
-		cout << gNames[j] << endl;
 		if (gNames[j] == Environment::NO_GROUP) {
 			hashInput.push_back(to_ZZ(0));
 		} else {
