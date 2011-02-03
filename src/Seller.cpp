@@ -45,7 +45,8 @@ Seller::Seller(const Seller& o)
 /*----------------------------------------------------------------------------*/
 // Destructor
 Seller::~Seller() {
-	reset();
+//	reset();
+    cout << "Seller::~Seller() going away" << endl;
 }
 
 void Seller::reset() {

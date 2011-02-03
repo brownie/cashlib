@@ -1543,7 +1543,7 @@ double* testBuy() {
 		 << endl;
 	
 	// test saving and loading BuyMessage
-	string bmsg = saveGZString(*buyMessage);
+	string bmsg = saveString(*buyMessage);
 	saveXML(make_nvp("BuyMessage", *buyMessage), "buym1.xml");
 	BuyMessage* loadedBMsg = new BuyMessage(bmsg, params);
 	saveXML(make_nvp("BuyMessage", *loadedBMsg), "buym2.xml");

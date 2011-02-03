@@ -4,6 +4,10 @@
 
 #include "../Group.h"
 
+#ifndef USE_STD_MAP
+#define USE_STD_MAP 1
+#endif
+
 #ifdef USE_STD_MAP
 // XXX for some reason, BuyMessages are not working when unordered_map
 // is used in ProofMessages: may have to do with map serialization
