@@ -1175,21 +1175,17 @@ double* testWithdrawInterleaved() {
 	
 	// load bank and user from file
 	BankTool bankTool("tool.80.bank");
-	const BankParameters* params = new BankParameters("bank.80.params");
+	Ptr<const BankParameters> params = new_ptr<BankParameters>("bank.80.params");
 
-    // create new user
-    VEPublicKey vepk("public.80.arbiter");
-    VEPublicKey repk("public.regular.80.arbiter");
-	UserTool userTool(stat, 2*stat, params, vepk, repk, hashAlg);
-//	UserTool userTool("tool.80.user", params, "public.80.arbiter",
-//					  "public.regular.80.arbiter");
+	UserTool userTool("tool.80.user", params, "public.80.arbiter",
+					  "public.regular.80.arbiter");
     cout << "user pubkey " << userTool.getPublicKey() << endl;
 
 	// step 1: user sends bank the public key and desired wallet size
 	ZZ userPK = userTool.getPublicKey();
 	// also uses tool for withdrawing
-	UserWithdrawTool* uwTool1 = userTool.getWithdrawTool(walletSize, coinDenom1);
-	UserWithdrawTool* uwTool2 = userTool.getWithdrawTool(walletSize, coinDenom2);
+	Ptr<UserWithdrawTool> uwTool1 = userTool.getWithdrawTool(walletSize, coinDenom1);
+	Ptr<UserWithdrawTool> uwTool2 = userTool.getWithdrawTool(walletSize, coinDenom2);
 	// also sends partial commitment (in partial commitment to s')
 	startTimer();
 	ZZ sPrimeCom1 = uwTool1->createPartialCommitment();
@@ -1199,8 +1195,8 @@ double* testWithdrawInterleaved() {
 	cout << "Partial commitment 2 size: " <<saveGZString(sPrimeCom2).size()<<endl;
 
 	// step 2: now bank needs withdraw tool as well
-	BankWithdrawTool* bwTool1 = bankTool.getWithdrawTool(userPK, walletSize, coinDenom1);
-	BankWithdrawTool* bwTool2 = bankTool.getWithdrawTool(userPK, walletSize, coinDenom2);
+	Ptr<BankWithdrawTool> bwTool1 = bankTool.getWithdrawTool(userPK, walletSize, coinDenom1);
+	Ptr<BankWithdrawTool> bwTool2 = bankTool.getWithdrawTool(userPK, walletSize, coinDenom2);
 
 	// given commitment to s', computes full commitment to s = s' + r'
 	startTimer();
@@ -1216,10 +1212,10 @@ double* testWithdrawInterleaved() {
 	// step 3: now, the user sends bank a proof of identity and a proof
 	// from the CL signature protocol
 	startTimer();
-	ProofMessage* idProof1 = uwTool1->initiateSignature(bankPart1);
-	ProofMessage* idProof2 = uwTool2->initiateSignature(bankPart2);
-	ProofMessage* clProof1 = uwTool1->getCLProof();
-	ProofMessage* clProof2 = uwTool2->getCLProof();
+	Ptr<ProofMessage> idProof1 = uwTool1->initiateSignature(bankPart1);
+	Ptr<ProofMessage> idProof2 = uwTool2->initiateSignature(bankPart2);
+	Ptr<ProofMessage> clProof1 = uwTool1->getCLProof();
+	Ptr<ProofMessage> clProof2 = uwTool2->getCLProof();
 	timers[timer++] = printTimer(timer, "User created proof of identity, as "
 										"well as all commitments");
 	cout << "ID proof size: " << saveGZString(*idProof1).size() << endl;
@@ -1231,8 +1227,8 @@ double* testWithdrawInterleaved() {
 	// signature
 	// bank also needs to send a proof of knowledge of 1/e
 	startTimer();
-	ProofMessage* pm1 = bwTool1->sign(idProof1, clProof1);
-	ProofMessage* pm2 = bwTool2->sign(idProof2, clProof2);
+	Ptr<ProofMessage> pm1 = bwTool1->sign(idProof1, clProof1);
+	Ptr<ProofMessage> pm2 = bwTool2->sign(idProof2, clProof2);
 	timers[timer++] = printTimer(timer, "Bank created PoK of 1/e and partial "
 										"signature");
 	cout << "Bank proof 1 size: " << saveGZString(*pm1).size() << endl;
@@ -1263,14 +1259,14 @@ double* testWithdrawInterleaved() {
 	ZZ rVal2 = Hash::hash(contractInfo2, hashAlg);
 
 	startTimer();
-	Coin coin1 = wallet1.nextCoin(rVal1);
-	Coin coin2 = wallet2.nextCoin(rVal2);
+	Ptr<Coin> coin1 = wallet1.nextCoin(rVal1);
+	Ptr<Coin> coin2 = wallet2.nextCoin(rVal2);
 	timers[timer++] = printTimer(timer, "Got a coin from the wallet");
 
-	coin1.unendorse();
-	coin2.unendorse();
-	bool coinVerified1 = coin1.verifyCoin();
-	bool coinVerified2 = coin2.verifyCoin();
+	coin1->unendorse();
+	coin2->unendorse();
+	bool coinVerified1 = coin1->verifyCoin();
+	bool coinVerified2 = coin2->verifyCoin();
     cout << (coinVerified1 ? "Coin 1 successfully verified and we're done!" : "Coin 1 failed to verify") << endl;
     cout << (coinVerified2 ? "Coin 2 successfully verified and we're done!" : "Coin 2 failed to verify") << endl;
 
@@ -1290,20 +1286,16 @@ double* testWithdrawRepeated() {
 	
 	// load bank and user from file
 	BankTool bankTool("tool.80.bank");
-	const BankParameters* params = new BankParameters("bank.80.params");
+	Ptr<const BankParameters> params = new_ptr<BankParameters>("bank.80.params");
 
-    // create new user
-    VEPublicKey vepk("public.80.arbiter");
-    VEPublicKey repk("public.regular.80.arbiter");
-	UserTool userTool(stat, 2*stat, params, vepk, repk, hashAlg);
-//	UserTool userTool("tool.80.user", params, "public.80.arbiter",
-//					  "public.regular.80.arbiter");
+	UserTool userTool("tool.80.user", params, "public.80.arbiter",
+					  "public.regular.80.arbiter");
     cout << "user pubkey " << userTool.getPublicKey() << endl;
 
 	// step 1: user sends bank the public key and desired wallet size
 	ZZ userPK = userTool.getPublicKey();
 	// also uses tool for withdrawing
-	UserWithdrawTool* uwTool1 = userTool.getWithdrawTool(walletSize, coinDenom1);
+	Ptr<UserWithdrawTool> uwTool1 = userTool.getWithdrawTool(walletSize, coinDenom1);
 	// also sends partial commitment (in partial commitment to s')
 	startTimer();
 	ZZ sPrimeCom1 = uwTool1->createPartialCommitment();
@@ -1311,7 +1303,7 @@ double* testWithdrawRepeated() {
 	cout << "Partial commitment 1 size: " <<saveGZString(sPrimeCom1).size()<<endl;
 
 	// step 2: now bank needs withdraw tool as well
-	BankWithdrawTool* bwTool1 = bankTool.getWithdrawTool(userPK, walletSize, coinDenom1);
+	Ptr<BankWithdrawTool> bwTool1 = bankTool.getWithdrawTool(userPK, walletSize, coinDenom1);
 
 	// given commitment to s', computes full commitment to s = s' + r'
 	startTimer();
@@ -1324,8 +1316,8 @@ double* testWithdrawRepeated() {
 	// step 3: now, the user sends bank a proof of identity and a proof
 	// from the CL signature protocol
 	startTimer();
-	ProofMessage* idProof1 = uwTool1->initiateSignature(bankPart1);
-	ProofMessage* clProof1 = uwTool1->getCLProof();
+	Ptr<ProofMessage> idProof1 = uwTool1->initiateSignature(bankPart1);
+	Ptr<ProofMessage> clProof1 = uwTool1->getCLProof();
 	timers[timer++] = printTimer(timer, "User created proof of identity, as "
 										"well as all commitments");
 	cout << "ID proof size: " << saveGZString(*idProof1).size() << endl;
@@ -1335,7 +1327,7 @@ double* testWithdrawRepeated() {
 	// signature
 	// bank also needs to send a proof of knowledge of 1/e
 	startTimer();
-	ProofMessage* pm1 = bwTool1->sign(idProof1, clProof1);
+	Ptr<ProofMessage> pm1 = bwTool1->sign(idProof1, clProof1);
 	timers[timer++] = printTimer(timer, "Bank created PoK of 1/e and partial "
 										"signature");
 	cout << "Bank proof 1 size: " << saveGZString(*pm1).size() << endl;
@@ -1359,29 +1351,29 @@ double* testWithdrawRepeated() {
 	ZZ rVal1 = Hash::hash(contractInfo1, hashAlg);
 
 	startTimer();
-	Coin coin1 = wallet1.nextCoin(rVal1);
+	Ptr<Coin> coin1 = wallet1.nextCoin(rVal1);
 	timers[timer++] = printTimer(timer, "Got a coin from the wallet");
 
-	coin1.unendorse();
-	bool coinVerified1 = coin1.verifyCoin();
+	coin1->unendorse();
+	bool coinVerified1 = coin1->verifyCoin();
     cout << (coinVerified1 ? "Coin 1 successfully verified and we're done!" : "Coin 1 failed to verify") << endl;
 
     //
     // now do it again, with a different denom
     //
-	//UserWithdrawTool* uwTool2 = userTool.getWithdrawTool(walletSize, coinDenom1); // works (weird, why?)
-	UserWithdrawTool* uwTool2 = userTool.getWithdrawTool(walletSize, coinDenom2); // doesn't work
+	//Ptr<UserWithdrawTool> uwTool2 = userTool.getWithdrawTool(walletSize, coinDenom1); // works (weird, why?)
+	Ptr<UserWithdrawTool> uwTool2 = userTool.getWithdrawTool(walletSize, coinDenom2); // doesn't work
 	ZZ sPrimeCom2 = uwTool2->createPartialCommitment();
 	cout << "Partial commitment 2 size: " <<saveGZString(sPrimeCom2).size()<<endl;
-	BankWithdrawTool* bwTool2 = bankTool.getWithdrawTool(userPK, walletSize, coinDenom2);
+	Ptr<BankWithdrawTool> bwTool2 = bankTool.getWithdrawTool(userPK, walletSize, coinDenom2);
 	bwTool2->computeFullCommitment(sPrimeCom2);
 	ZZ bankPart2 = bwTool2->getBankContribution();
 	cout << "Bank contribution 2 size: " << saveGZString(bankPart2).size() << endl;
-	ProofMessage* idProof2 = uwTool2->initiateSignature(bankPart2);
-	ProofMessage* clProof2 = uwTool2->getCLProof();
+	Ptr<ProofMessage> idProof2 = uwTool2->initiateSignature(bankPart2);
+	Ptr<ProofMessage> clProof2 = uwTool2->getCLProof();
 	cout << "ID proof size: " << saveGZString(*idProof2).size() << endl;
 	cout << "CL proof size: " << saveGZString(*clProof2).size() << endl;
-	ProofMessage* pm2 = bwTool2->sign(idProof2, clProof2);
+	Ptr<ProofMessage> pm2 = bwTool2->sign(idProof2, clProof2);
 	cout << "Bank proof 2 size: " << saveGZString(*pm2).size() << endl;
     cout << "Verifying proof message 2" << endl;
 	vector<ZZ> partialSig2 = uwTool2->verify(*pm2);
@@ -1389,9 +1381,9 @@ double* testWithdrawRepeated() {
 	vector<ZZ> contractInfo2;
 	contractInfo2.push_back(1234567891);
 	ZZ rVal2 = Hash::hash(contractInfo2, hashAlg);
-	Coin coin2 = wallet2.nextCoin(rVal2);
-	coin2.unendorse();
-	bool coinVerified2 = coin2.verifyCoin();
+	Ptr<Coin> coin2 = wallet2.nextCoin(rVal2);
+	coin2->unendorse();
+	bool coinVerified2 = coin2->verifyCoin();
     cout << (coinVerified2 ? "Coin 2 successfully verified and we're done!" : "Coin 2 failed to verify") << endl;
 
 	return timers;
