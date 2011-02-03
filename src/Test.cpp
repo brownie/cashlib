@@ -139,12 +139,14 @@ void printTests() {
 }
 
 int main(int argc , const char* argv[]) {
-	// XXX: want to incorporate a different random seed every time?
+#if 0
 	timeval t;
 	gettimeofday(&t, NULL);
 	cout << "NTL::SetSeed: " << t.tv_sec + t.tv_usec << endl;
 	NTL::SetSeed(to_ZZ(t.tv_sec + t.tv_usec)); // XXX sure, why not
-	//SetSeed(to_ZZ(0));
+#else
+	SetSeed(to_ZZ(0));
+#endif
 
 	/*setprecision(5);
 	resetiosflags(ios::scientific);
@@ -1541,7 +1543,8 @@ double* testBuy() {
 		 << endl;
 	cout << " Escrow size: " << saveGZString(buyMessage->getEscrow()).size() 
 		 << endl;
-	
+
+#if 1	
 	// test saving and loading BuyMessage
 	string bmsg = saveString(*buyMessage);
 	saveXML(make_nvp("BuyMessage", *buyMessage), "buym1.xml");
@@ -1555,6 +1558,9 @@ double* testBuy() {
 		 << endl;
 	cout << " Escrow size: " << saveGZString(loadedBMsg->getEscrow()).size() 
 		 << endl;
+#else
+	BuyMessage* loadedBMsg = buyMessage;
+#endif
 
 	// step 3: seller checks contract and escrow, returns key(s) if valid 
 	startTimer();
