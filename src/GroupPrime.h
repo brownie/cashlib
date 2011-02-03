@@ -45,13 +45,6 @@ class GroupPrime : public Group {
 
 		virtual void debug() const;
 
-		virtual bool operator==(const GroupPrime& o) const {
-		    return (Group::operator==(o) &&
-                    order == o.order &&
-                    factor == o.factor &&
-                    stat == o.stat);
-		}
-
 	protected:
 		/*! returns true iff 1 <= exp < order */
 		bool isProperExponent(const ZZ &exp) const;

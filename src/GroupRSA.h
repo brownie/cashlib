@@ -53,13 +53,6 @@ class GroupRSA : public Group {
 		/*! debug */
 		virtual void debug() const;
 
-		virtual bool operator==(const GroupRSA& o) const {
-		    return (Group::operator==(o) &&
-                    p == o.p &&
-                    q == o.q &&
-                    stat == o.stat);
-		}
-
 	protected:
 		/*! checks to make sure preconditions are satisfied */
 		virtual bool checkPreconditions() const;

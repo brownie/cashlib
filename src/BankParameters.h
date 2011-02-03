@@ -40,54 +40,6 @@ class BankParameters {
 		/*! clear all secrets and set type to public */
 		void makePublic();
 
-		virtual bool operator==(const BankParameters& o) const {
-
-		    if (!( *ecashGroup == *o.ecashGroup &&
-                   type == o.type &&
-                   stat == o.stat &&
-                   coinDenominations == o.coinDenominations &&
-                   secretKeys.size() == o.secretKeys.size() &&
-                   groupToDenom.size() == o.groupToDenom.size() &&
-                   denomToGroup.size() == o.denomToGroup.size() ))
-                return false;
-
-            for (size_t i = 0; i < secretKeys.size(); ++i) {
-                if (!(*secretKeys[i] == *o.secretKeys[i]))
-                    return false;
-            }
-
-            for (map<int,GroupRSA*>::const_iterator i = denomToGroup.begin();
-                 i != denomToGroup.end(); ++i) {
-
-                map<int,GroupRSA*>::const_iterator j = o.denomToGroup.find(i->first);
-                if (j == o.denomToGroup.end())
-                    return false;
-
-                if (!( *j->second == *i->second ))
-                    return false;
-
-            }
-
-            for (map<GroupRSA*,int>::const_iterator i = groupToDenom.begin();
-                 i != groupToDenom.end(); ++i) {
-
-                // check for matching group key
-                for (map<GroupRSA*,int>::const_iterator oi = o.groupToDenom.begin();
-                     oi != o.groupToDenom.end(); ++oi) {
-
-                    if (*i->first == *oi->first) {
-                        // found, check denom value
-                        if (i->second == oi->second)
-                            continue; // OK, same denomination for this group
-                        else
-                            return false;
-                    }
-                }
-            }
-
-            return true;
-		}
-
 	private:
 		BankParameters() : type(1) {}
 

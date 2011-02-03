@@ -147,35 +147,3 @@ hash_t Coin::hash() const {
     return Hash::hash(ZZToBytes(S), Hash::SHA1, string(), 
 					  Hash::TYPE_PLAIN);
 }
-
-bool Coin::operator==(const Coin &o) const {
-
-    return (stat == o.stat &&
-            lx == o.lx &&
-            coinDenom == o.coinDenom &&
-            walletSize == o.walletSize &&
-            coinIndex == o.coinIndex &&
-            R == o.R &&
-            hashAlg == o.hashAlg &&
-            B == o.B &&
-            C == o.C &&
-            D == o.D &&
-            S == o.S &&
-            T == o.T &&
-            endorsement == o.endorsement &&
-            signature == o.signature &&
-            y == o.y &&
-            coinProof == o.coinProof &&
-            clProof == o.clProof &&
-
-            *parameters == *o.parameters //&&
-
-#if 0
-            // secrets
-            sk_u == o.sk_u &&
-            s == o.s &&
-            t == o.t &&
-#endif
-        );
-
-}

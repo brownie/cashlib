@@ -67,9 +67,6 @@ class Coin {
 
 		hash_t hash() const;
 
-        bool operator==(const Coin &o) const;
-        bool operator!=(const Coin &o) const { return !(*this == o); }
-
 	private:
 		int stat, lx, coinDenom;
 		Ptr<const BankParameters> parameters; // NOT serialized
