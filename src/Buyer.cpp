@@ -89,7 +89,7 @@ Ptr<BuyMessage> Buyer::buy(const vector<Ptr<EncBuffer> >& ct,
 	// set inProgress
 	inProgress = true;
 	
-	return new_ptr<BuyMessage>(*coin, contract, escrow);
+	return new_ptr<BuyMessage>(coin, contract, escrow);
 }
 
 void Buyer::createContract() {

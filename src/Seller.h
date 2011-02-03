@@ -61,7 +61,7 @@ class Seller {
 		Ptr<MerkleProof> resolveII(vector<unsigned> &challenges);
 		
 		// getters
-		Ptr<Coin> getCoin() const { return new_ptr<Coin>(coinPrime); };
+		Ptr<Coin> getCoin() const { return coinPrime; };
 		Ptr<BuyMessage> getBuyMessage() const;
 		
 		// setters
@@ -90,7 +90,7 @@ class Seller {
 		// Seller will exchange ctext->key for Buyer's coin
 		vector<Ptr<EncBuffer> > ctext;
 
-		Coin coinPrime;
+		Ptr<Coin> coinPrime;
 		Ptr<FEContract> contract;
 		Ptr<VECiphertext> escrow;
 		

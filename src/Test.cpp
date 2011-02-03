@@ -139,12 +139,14 @@ void printTests() {
 }
 
 int main(int argc , const char* argv[]) {
-	// XXX: want to incorporate a different random seed every time?
+#if 0
 	timeval t;
 	gettimeofday(&t, NULL);
 	cout << "NTL::SetSeed: " << t.tv_sec + t.tv_usec << endl;
 	NTL::SetSeed(to_ZZ(t.tv_sec + t.tv_usec)); // XXX sure, why not
-	//SetSeed(to_ZZ(0));
+#else
+	SetSeed(to_ZZ(0));
+#endif
 
 	/*setprecision(5);
 	resetiosflags(ios::scientific);
@@ -1041,6 +1043,7 @@ double* testWithdraw() {
 	int stat=80, lx=2*stat, modLen=1024, m=3;
 	string statName = lexical_cast<string>(stat);
 
+#define LOAD_DATA 1
 #if LOAD_DATA
 	// load bank and user from file
 	BankTool bankTool("tool.80.bank");
@@ -1415,7 +1418,7 @@ double* testCoin() {
 	timers[timer++] = printTimer(timer, "Got coin from wallet");
 	cout << "Coin size: " << saveGZString(coin).size() << endl;
 
-	string coinstr = saveGZString(coin);
+	string coinstr = saveString(coin);
 	startTimer();
 	Coin coinGZ(coinstr, params);
 	timers[timer++] = printTimer(timer, "Deserialized coin from binary");
@@ -1527,7 +1530,8 @@ double* testBuy() {
 		 << endl;
 	cout << " Escrow size: " << saveGZString(buyMessage->getEscrow()).size() 
 		 << endl;
-	
+
+#if 1
 	// test saving and loading BuyMessage
 	string bmsg = saveString(*buyMessage);
 	saveXML(make_nvp("BuyMessage", *buyMessage), "buym1.xml");
@@ -1541,6 +1545,9 @@ double* testBuy() {
 		 << endl;
 	cout << " Escrow size: " << saveGZString(loadedBMsg->getEscrow()).size() 
 		 << endl;
+#else
+	Ptr<BuyMessage> loadedBMsg = buyMessage;
+#endif
 
 	// step 3: seller checks contract and escrow, returns key(s) if valid 
 	startTimer();

@@ -16,9 +16,11 @@ class BuyMessage {
 		/*! coinPrime represents the unendorsed coin, contract represents
 		 * the label for the verifiable encryption, and escrow represents
 		 * the verifiable escrow on the coin's endorsement */
-		BuyMessage(const Coin &coinPrime, Ptr<FEContract> contract, 
+		BuyMessage(Ptr<Coin> coinPrime, Ptr<FEContract> contract, 
 				   Ptr<VECiphertext> escrow)
-			: coinPrime(coinPrime), contract(contract), escrow(escrow) {}
+			: coinPrime(new_ptr<Coin>(*coinPrime)), 
+              contract(new_ptr<FEContract>(*contract)), 
+              escrow(new_ptr<VECiphertext>(*escrow)) {}
 
 		/*! copy constructor */
 		BuyMessage(const BuyMessage &o) 
@@ -27,20 +29,20 @@ class BuyMessage {
 		BuyMessage(const string& s, Ptr<const BankParameters> params) {
 			// need to set params for Coin contained in message
 			loadString(make_nvp("BuyMessage", *this), s); 
-			coinPrime.setParameters(params);
+			coinPrime->setParameters(params);
 		}
 
 		/*! check contents (verify coin and escrow) */
 		bool check(Ptr<const VEPublicKey> pk, const int stat, const ZZ& R) const;
 
 		// getters
-		Coin getCoinPrime() const { return coinPrime; }
+		Ptr<Coin> getCoinPrime() const { return coinPrime; }
 		Ptr<FEContract> getContract() const { return contract; }
 		Ptr<VECiphertext> getEscrow() const { return escrow; }
 
 	private:
 		// XXX these should all be shared_ptr?
-		Coin coinPrime;
+		Ptr<Coin> coinPrime;
 		Ptr<FEContract> contract;
 		Ptr<VECiphertext> escrow;
 

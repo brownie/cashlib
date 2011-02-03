@@ -21,7 +21,7 @@ vector<unsigned> Arbiter::sellerResolveI(const ResolutionPair &keyMessagePair){
 	keys = keyMessagePair.first;
 	// now, unwrap and check the buyMessage, then store everything
 	Ptr<BuyMessage> buyMessage = keyMessagePair.second;
-	Coin coinPrime = buyMessage->getCoinPrime();
+	Ptr<Coin> coinPrime = buyMessage->getCoinPrime();
 	Ptr<VECiphertext> escrow = buyMessage->getEscrow();
 	// want to store the contract as well (for stage II)
 	contract = buyMessage->getContract();
@@ -30,7 +30,7 @@ vector<unsigned> Arbiter::sellerResolveI(const ResolutionPair &keyMessagePair){
 		endorsement = verifiableDecrypter->decrypt(escrow->getCiphertext(), 
 												   saveString(*contract), hashAlg);
 		// make sure the endorsement on the coin is valid
-		if(coinPrime.verifyEndorsement(endorsement)){
+		if(coinPrime->verifyEndorsement(endorsement)){
 			// construct verifiers based on the data in the contract and 
 			// return a set of challenges
 			hash_t ptHash = contract->getPTHashB();

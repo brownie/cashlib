@@ -183,5 +183,5 @@ Ptr<BuyMessage> Seller::getBuyMessage() const {
 }
 
 bool Seller::endorseCoin(const vector<ZZ> &endorsement) {
-	return coinPrime.endorse(endorsement);
+	return coinPrime->endorse(endorsement);
 }
