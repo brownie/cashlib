@@ -17,36 +17,33 @@ class FESetupMessage {
 		 * the endorsement for the coin), and the public key
 		 * for the initiator's signature scheme (label for the 
 		 * verifiable escrow) */
-		FESetupMessage(const Coin &coinPrime, VECiphertext* escrow, 
+		FESetupMessage(const Coin &coinPrime, Ptr<VECiphertext> escrow, 
                 	   const Signature::Key &signPK)
 		: coinPrime(coinPrime), escrow(escrow), signPK(signPK.getPublicKey()) {}
 
 		/*! copy constructor */
 		FESetupMessage(const FESetupMessage &o)
 			: coinPrime(o.coinPrime), escrow(o.escrow),
-			  signPK(new Signature::Key(*o.signPK)) {}
+			  signPK(new_ptr<Signature::Key>(*o.signPK)) {}
 		
-		/*! destructor */
-        ~FESetupMessage() { delete signPK; }
-
-		FESetupMessage(const string& s, const BankParameters *params) {
+		FESetupMessage(const string& s, Ptr<const BankParameters> params) {
 			// need to set params for Coin contained in message
 			loadString(make_nvp("FESetupMessage", *this), s); 
 			coinPrime.setParameters(params);
 		}
 		
 		/*! check contents (verify coin and escrow) */
-		bool check(const VEPublicKey* pk, const int stat, const ZZ& R) const;
+		bool check(Ptr<const VEPublicKey> pk, const int stat, const ZZ& R) const;
 		
 		/*! getters for coin', escrow, and signature PK */
 		Coin getCoinPrime() const { return coinPrime; }
-		VECiphertext* getEscrow() const { return escrow; }
-		const Signature::Key* getPK() const { return signPK; }
+		Ptr<VECiphertext> getEscrow() const { return escrow; }
+		Ptr<const Signature::Key> getPK() const { return signPK; }
 				
 	private:
 		Coin coinPrime;
-		VECiphertext* escrow;
-		Signature::Key* signPK;
+		Ptr<VECiphertext> escrow;
+		Ptr<Signature::Key> signPK;
 
         friend class boost::serialization::access;
         template <class Archive> 

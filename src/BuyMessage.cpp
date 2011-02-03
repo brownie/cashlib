@@ -2,7 +2,7 @@
 #include "VEVerifier.h"
 #include "Timer.h"
 
-bool BuyMessage::check(const VEPublicKey* pk, const int stat, 
+bool BuyMessage::check(Ptr<const VEPublicKey> pk, const int stat, 
 					   const ZZ& R) const {
 	// check coin
 	if (!coinPrime.verifyCoin() || coinPrime.getR() != R)
@@ -13,7 +13,7 @@ bool BuyMessage::check(const VEPublicKey* pk, const int stat,
 	startTimer();
 	VEVerifier verifier(pk);
 	if (!verifier.verify(*escrow, coinPrime.getEndorsementCom(),
-						 coinPrime.getCashGroup(), saveString(contract), 
+						 coinPrime.getCashGroup(), saveString(*contract), 
 						 pk->hashAlg, stat))
 		throw CashException(CashException::CE_FE_ERROR,
 							"[BuyMessage::check] Malformed escrow");

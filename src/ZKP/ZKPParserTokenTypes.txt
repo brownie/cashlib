@@ -1,4 +1,4 @@
-// $ANTLR 2.7.7 (20090708): zkp.g -> ZKPParserTokenTypes.txt$
+// $ANTLR 2.7.7 (20090830): zkp.g -> ZKPParserTokenTypes.txt$
 ZKPParser    // output token vocab name
 LITERAL_computation="computation"=4
 COLON=5

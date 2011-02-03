@@ -5,16 +5,15 @@
 #include "Coin.h"
 
 class Wallet {
-
 	public:
 		Wallet(const ZZ &sk, const ZZ &sIn, const ZZ &tIn, int size,
-			   int d, const BankParameters* b, int st, int l, 
+			   int d, Ptr<const BankParameters> b, int st, int l, 
 			   const hashalg_t &alg, const vector<ZZ> &sig);
 		
 		Wallet(const Wallet &o);
 
 		/*! constructor to load from file */
-		Wallet(const char* fname, const BankParameters* bp)
+		Wallet(const char* fname, Ptr<const BankParameters> bp)
 			: params(bp) 
 			{ loadFile(make_nvp("Wallet", *this), fname); }
 
@@ -23,10 +22,10 @@ class Wallet {
 		int nextCoinIndex();
 
 		/*! returns the next coin to use */
-		Coin nextCoin(const ZZ &R);
+		Ptr<Coin> nextCoin(const ZZ &R);
 
 		/*! returns a coin for a given index */
-		Coin* newCoin(const ZZ &R, int coinIndex);
+        Ptr<Coin> newCoin(const ZZ &R, int coinIndex);
 		void newCoin(Coin& coin, const ZZ &R, int coinIndex);
 
 		bool replaceCoin(const ZZ &index);
@@ -45,7 +44,7 @@ class Wallet {
 		int coinDenom;
 		int numCoinsUsed;
 
-		const BankParameters* params; 
+		Ptr<const BankParameters> params; 
 		int stat;
 		int lx;
 		hashalg_t hashAlg;

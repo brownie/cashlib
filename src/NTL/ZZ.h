@@ -204,14 +204,14 @@ inline void BytesFromZZ(unsigned char *p, const ZZ& a, long n) {
 }
 
 // Convert binary string to NTL integer
-inline ZZ ZZFromBytes(const string &str) {
+inline ZZ ZZFromBytes(const std::string &str) {
 	return ZZFromBytes((const unsigned char *)str.data(), str.size());
 }
  
-inline string ZZToBytes(const ZZ& n) {
+inline std::string ZZToBytes(const ZZ& n) {
 	unsigned char buf[NumBytes(n)];
 	BytesFromZZ((unsigned char *)&buf, n, sizeof(buf));
-	return string((char *)&buf, sizeof(buf));
+	return std::string((char *)&buf, sizeof(buf));
 }
 
 } // namespace NTL

@@ -2,7 +2,7 @@
 #define INC_ZKPLexer_hpp_
 
 #include <antlr/config.hpp>
-/* $ANTLR 2.7.7 (20090708): "zkp.g" -> "ZKPLexer.hpp"$ */
+/* $ANTLR 2.7.7 (20090830): "zkp.g" -> "ZKPLexer.hpp"$ */
 #include <antlr/CommonToken.hpp>
 #include <antlr/InputBuffer.hpp>
 #include <antlr/BitSet.hpp>

@@ -7,18 +7,12 @@
 
 /*----------------------------------------------------------------------------*/
 // Constructors
-Buyer::Buyer(int timeoutLength, const VEPublicKey* pk, int stat)
+Buyer::Buyer(int timeoutLength, Ptr<const VEPublicKey> pk, int stat)
 	: timeoutLength(timeoutLength), stat(stat), pk(pk), 
-	  contract(NULL), inProgress(false)
+	  inProgress(false)
 {
 }
 
-Buyer::Buyer(const Buyer& o)
-	: timeoutLength(o.timeoutLength), stat(o.stat), pk(o.pk),
-	  contract(o.contract? new FEContract(*o.contract) : NULL),
-	  r(o.r), endorsement(o.endorsement), inProgress(o.inProgress)
-{
-}
 /*----------------------------------------------------------------------------*/
 // Destructor
 Buyer::~Buyer() {
@@ -27,24 +21,21 @@ Buyer::~Buyer() {
 
 void Buyer::reset() {
 	inProgress = false;
-#ifdef DELETE_BUFFERS
-	for (unsigned i = 0; i < ptext.size(); i++) {
-		delete ptext[i];
-    }
-#endif
 	ptext.clear();
-	delete contract;
-	contract = NULL;
+	ctext.clear();
+	contract.reset();
+    coin.reset();
 }
+
 /*----------------------------------------------------------------------------*/
 // Buy
-BuyMessage* Buyer::buy(Wallet* wallet, EncBuffer* ciphertext, 
+Ptr<BuyMessage> Buyer::buy(Ptr<Wallet> wallet, Ptr<EncBuffer> ciphertext, 
 					   const hash_t& ptHash, const ZZ& R) {
-	return buy(wallet, CommonFunctions::vectorize<EncBuffer*>(ciphertext),
+	return buy(wallet, CommonFunctions::vectorize<Ptr<EncBuffer> >(ciphertext),
 			   CommonFunctions::vectorize<hash_t>(ptHash), R);
 }
 
-BuyMessage* Buyer::buy(Wallet* wallet, const vector<EncBuffer*>& ctext,
+Ptr<BuyMessage> Buyer::buy(Ptr<Wallet> wallet, const vector<Ptr<EncBuffer> >& ctext,
 					   const vector<hash_t>& ptHash, const ZZ &R) {
 	startTimer();
 	makeCoin(*wallet, R);
@@ -52,12 +43,12 @@ BuyMessage* Buyer::buy(Wallet* wallet, const vector<EncBuffer*>& ctext,
 	return buy(ctext, ptHash);
 }
 
-BuyMessage* Buyer::buy(EncBuffer* ciphertext, const hash_t& ptHash) {
-	return buy(CommonFunctions::vectorize<EncBuffer*>(ciphertext),
+Ptr<BuyMessage> Buyer::buy(Ptr<EncBuffer> ciphertext, const hash_t& ptHash) {
+	return buy(CommonFunctions::vectorize<Ptr<EncBuffer> >(ciphertext),
 			   CommonFunctions::vectorize<hash_t>(ptHash));
 }
 
-BuyMessage* Buyer::buy(const vector<EncBuffer*>& ct, 
+Ptr<BuyMessage> Buyer::buy(const vector<Ptr<EncBuffer> >& ct, 
 					   const vector<hash_t>& ptHash) {
 	if (inProgress)
 		throw CashException(CashException::CE_FE_ERROR,
@@ -92,13 +83,13 @@ BuyMessage* Buyer::buy(const vector<EncBuffer*>& ct,
 	
 	startTimer();
 	// set up the escrow
-	VECiphertext* escrow = new VECiphertext(makeEscrow());
+	Ptr<VECiphertext> escrow = new_ptr<VECiphertext>(makeEscrow());
 	printTimer("[Buyer::buy] created escrow");
 
 	// set inProgress
 	inProgress = true;
 	
-	return new BuyMessage(coin, contract, escrow);
+	return new_ptr<BuyMessage>(*coin, contract, escrow);
 }
 
 void Buyer::createContract() {
@@ -107,14 +98,14 @@ void Buyer::createContract() {
 	ZZ id = Hash::hash(r, pk->hashAlg, pk->hashKey);
 	// prepare timeout
 	setTimeout();
-	contract = new FEContract(timeout, id);
+	contract = new_ptr<FEContract>(timeout, id);
 }
 
 VECiphertext Buyer::makeEscrow() {
 	// now set up the verifiable encryption
 	VEProver prover(pk);
-	return prover.verifiableEncrypt(coin.getEndorsementCom(), endorsement, 
-									coin.getCashGroup(), saveString(*contract), 
+	return prover.verifiableEncrypt(coin->getEndorsementCom(), endorsement, 
+									coin->getCashGroup(), saveString(*contract), 
 									pk->hashAlg, stat);
 }
 
@@ -123,11 +114,11 @@ void Buyer::makeCoin(Wallet& w, const ZZ& R) {
 	setCoin( w.nextCoin(R) );
 }
 
-void Buyer::setCoin(const Coin& c)
+void Buyer::setCoin(Ptr<Coin> c)
 {	
 	coin = c;
-	endorsement = coin.getEndorsement();
-	coin.unendorse();
+	endorsement = coin->getEndorsement();
+	coin->unendorse();
 }
 
 /*----------------------------------------------------------------------------*/
@@ -153,7 +144,7 @@ bool Buyer::checkKey(const vector<string>& keys) {
 	for (unsigned i = 0; i < ctext.size(); i++) {
 		// decrypt the ciphertext using key
 		unsigned index = (keys.size() == 1) ? 0 : i;
-		Buffer* plaintext = ctext[i]->decrypt(keys[index], 
+		Ptr<Buffer> plaintext = ctext[i]->decrypt(keys[index], 
 											contract->getEncAlgB());
 		ptext.push_back(plaintext);
 	}

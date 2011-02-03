@@ -6,57 +6,48 @@ BankTool::BankTool(int st, int l, int modLen, const hashalg_t &ha,
 				   vector<int> &coinDenoms)
 	: stat(st), lx(l), hashAlg(ha)
 {
-	vector<GroupRSA> secretKeys;
+	vector<Ptr<GroupRSA> > secretKeys;
 	for(unsigned i = 0; i < coinDenoms.size(); i++) {
-		GroupRSA g("bank", modLen, stat);
+		Ptr<GroupRSA> g = new_ptr<GroupRSA>("bank", modLen, stat);
 		// initial generator is f
 		// want to add g_1,...,g_4,h
 		for (int j = 0; j < 5; j++) {
-			g.addNewGenerator();
+			g->addNewGenerator();
 		}
 		secretKeys.push_back(g);
 	}
 
 	// generator: f (different from RSA group)
-	GroupPrime cashGroup("bank", modLen, 2*stat, stat);
+	Ptr<GroupPrime> cashGroup = 
+        new_ptr<GroupPrime>("bank", modLen, 2*stat, stat);
 	// additional endorsed ecash group generators: g, h, h1, h2
 	for (int i = 0; i < 4; i++) {
-		cashGroup.addNewGenerator();
+		cashGroup->addNewGenerator();
 	}
 	
-	bankParameters = new BankParameters(secretKeys, cashGroup, coinDenoms);
+	bankParameters = new_ptr<BankParameters>(secretKeys, cashGroup, coinDenoms);
 		
-	publicBankParameters = new BankParameters(secretKeys, cashGroup, 
+	publicBankParameters = new_ptr<BankParameters>(secretKeys, cashGroup, 
 													coinDenoms);
 	publicBankParameters->makePublic();
 }
 
 BankTool::BankTool(int st, int l, const hashalg_t &ha,
-				   BankParameters bp)
+				   const BankParameters& bp)
 	: stat(st), lx(l), hashAlg(ha)
 {
-	bankParameters = new BankParameters(bp);
-	publicBankParameters = new BankParameters(bp);
+	bankParameters = new_ptr<BankParameters>(bp);
+	publicBankParameters = new_ptr<BankParameters>(bp);
 	publicBankParameters->makePublic();
 }
 
-BankTool::BankTool(const BankTool &o)
-	: stat(o.stat), lx(o.lx), hashAlg(o.hashAlg),
-	  bankParameters(o.bankParameters) // XXX: what about public BP?
-{
-}
-
-BankTool::~BankTool() {
-	delete bankParameters;
-}
-
-BankWithdrawTool* BankTool::getWithdrawTool(const ZZ &userPK, int wSize, 
+Ptr<BankWithdrawTool> BankTool::getWithdrawTool(const ZZ &userPK, int wSize, 
 											int coinDenom) const {
-	return new BankWithdrawTool(bankParameters, userPK, stat, lx, wSize, 
+	return new_ptr<BankWithdrawTool>(bankParameters, userPK, stat, lx, wSize, 
 								coinDenom, hashAlg);
 }
 
-bool BankTool::verifyIdentity(ProofMessage* idProof, const ZZ &userPK) const {
+bool BankTool::verifyIdentity(Ptr<ProofMessage> idProof, const ZZ &userPK) const {
 	// check user's PoK of sk_u such that pk_u = g^sk_u
 	InterpreterVerifier verifier;
 	group_map g;

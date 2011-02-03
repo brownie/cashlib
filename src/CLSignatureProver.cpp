@@ -2,8 +2,8 @@
 #include <assert.h>
 #include "Timer.h"
 
-CLSignatureProver::CLSignatureProver(const GroupRSA* publicKey, 
-									 const Group* comGroup, int lx,
+CLSignatureProver::CLSignatureProver(Ptr<const GroupRSA> publicKey, 
+									 Ptr<const Group> comGroup, int lx,
 									 const vector<ZZ> &coms, int numPrivates, 
 									 int numPublics)
 	:numPrivates(numPrivates), numPublics(numPublics)
@@ -24,7 +24,7 @@ CLSignatureProver::CLSignatureProver(const GroupRSA* publicKey,
 	prover.check(CommonFunctions::getZKPDir()+"/cl-prove-ecash.txt", inputs, g);
 }
 
-CLSignatureProver::CLSignatureProver(const GroupRSA* pk, int lx, 
+CLSignatureProver::CLSignatureProver(Ptr<const GroupRSA> pk, int lx, 
 									 int numPrivates, int numPublics,
 									 const gen_group_map &grps,
 									 const vector<CommitmentInfo> &coms) 
@@ -54,7 +54,7 @@ CLSignatureProver::CLSignatureProver(const GroupRSA* pk, int lx,
 	prover.check(fname, inputs, g);
 }
 
-ProofMessage* CLSignatureProver::getProof(const vector<ZZ>& sig, 
+Ptr<ProofMessage> CLSignatureProver::getProof(const vector<ZZ>& sig, 
 										  const vector<SecretValue>& privates, 
 										  const vector<ZZ>& publics,
 										  const hashalg_t &hashAlg){
@@ -85,7 +85,7 @@ ProofMessage* CLSignatureProver::getProof(const vector<ZZ>& sig,
 	startTimer();
 	prover.compute(v);
 	printTimer("CL prover computed all values");
-	return new ProofMessage(prover.getPublicVariables(), 
+	return new_ptr<ProofMessage>(prover.getPublicVariables(), 
 							prover.computeProof(hashAlg));
 }
 

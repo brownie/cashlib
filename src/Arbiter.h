@@ -10,11 +10,11 @@
 /*! \brief This class is for resolving any disputes that may arise in the 
  * course of a fair exchange protocol */
 
-typedef pair<vector<string>, BuyMessage*> ResolutionPair;
+typedef pair<vector<string>, Ptr<BuyMessage> > ResolutionPair;
 
 class Arbiter {
 	public:	
-		Arbiter(const VEDecrypter* vD, const VEDecrypter* rD,
+		Arbiter(Ptr<const VEDecrypter> vD, Ptr<const VEDecrypter> rD,
 				const hashalg_t &h, int t) 
 			: verifiableDecrypter(vD), regularDecrypter(rD), hashAlg(h), 
 			  timeoutTolerance(t) {}
@@ -32,23 +32,23 @@ class Arbiter {
 		/*! if the proof verifies, output the buyer's endorsement and
 		 * store the seller's keys in the database (for the buyer to 
 		 * retrieve at some later date) */
-		vector<ZZ> sellerResolveII(const MerkleProof* proof);
+		vector<ZZ> sellerResolveII(Ptr<const MerkleProof> proof);
 
 		// the following are resolutions for the responder		
 		/*! Stage I: the responder sends a request, and the arbiter
 		 * checks the validity of the two messages and stores the keys */
-		vector<unsigned> responderResolveI(const FEResolutionMessage* request);
+		vector<unsigned> responderResolveI(Ptr<const FEResolutionMessage> request);
 		vector<unsigned> responderResolveI(const vector<string> &keys, 
-										   const FEMessage* message, 
-										   const FESetupMessage* setupMessage);
+										   Ptr<const FEMessage> message, 
+										   Ptr<const FESetupMessage> setupMessage);
 	
 		/*! Stage II: if the proof verifies, return the initiator's keys */
-		vector<string> responderResolveII(const MerkleProof* proof);
+		vector<string> responderResolveII(Ptr<const MerkleProof> proof);
 	
 		/*! Stage III: if the initiator's keys were incorrect, the responder
 		 * sends a proof of this.  if this proof is valid the arbiter will
 		 * return the endorsement */
-		vector<ZZ> responderResolveIII(const MerkleProof* prooof);
+		vector<ZZ> responderResolveIII(Ptr<const MerkleProof> prooof);
 	
 		//used to test stuff
 		void setKeys(const vector<string> &ks){ keys = ks; }
@@ -60,21 +60,21 @@ class Arbiter {
 		void updateDatabase(const ZZ &sessionID, const string &key);
 
 		/*! takes in a proof and verifies it using the stored keys */
-		bool verifyKeys(const MerkleProof* proof);
+		bool verifyKeys(Ptr<const MerkleProof> proof);
 		
 		/*! much like verifyKeys except it ignores plaintext proofs; this
 		 * is a helper for responderResolveIII */
-		bool verifyDecryption(const MerkleProof* proof);
+		bool verifyDecryption(Ptr<const MerkleProof> proof);
 		
-		const VEDecrypter* verifiableDecrypter;//, regularDecrypter;
-		const VEDecrypter* regularDecrypter;
+		Ptr<const VEDecrypter> verifiableDecrypter;//, regularDecrypter;
+		Ptr<const VEDecrypter> regularDecrypter;
 		hashalg_t hashAlg;
 		int timeoutTolerance;
-		boost::shared_ptr<MerkleVerifier> ptVerifier, ctVerifier;
+		Ptr<MerkleVerifier> ptVerifier, ctVerifier;
 		vector<ZZ> endorsement;	
 		vector<string> keys;
-		FEContract contract;
-		const FEMessage* message;
+		Ptr<FEContract> contract;
+		Ptr<const FEMessage> message;
 };
 
 #endif

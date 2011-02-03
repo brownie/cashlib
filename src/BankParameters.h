@@ -14,18 +14,16 @@ class BankParameters {
 	public:
 		/*! this class stores the bank's public keys, the group used
 		 * for e-cash, and a list of possible coin denominations */
-		BankParameters(vector<GroupRSA> &secretKey, GroupPrime &ecash, 
-					   vector<int> &denoms);
+		BankParameters(const vector<Ptr<GroupRSA> >& secretKey, 
+                       Ptr<GroupPrime> ecash, 
+					   const vector<int>& denoms);
 
 		/*! constructor to load from file */
 		BankParameters(const char* fname) 
 			{	loadFile(make_nvp("BankParameters", *this), fname); }
 
-		/*! copy constructor */
-		BankParameters(const BankParameters &original);
-
-		/*! destructor */
-		~BankParameters();
+        /*! copy constructor */
+        BankParameters(const BankParameters &o);
 
 		/*! determines whether RSA groups have had secrets cleared or not */
 		static const int TYPE_SECRET = 1;
@@ -33,11 +31,11 @@ class BankParameters {
 		int getType() const { return type; }
 
 		/*! getters */
-		const GroupPrime* getCashGroup() const { return ecashGroup; }
-		const vector<GroupRSA*> getBankKeys() const { return secretKeys; }
+		Ptr<const GroupPrime> getCashGroup() const { return ecashGroup; }
+		const vector<Ptr<GroupRSA> > getBankKeys() const { return secretKeys; }
 		vector<int> getDenominations() const { return coinDenominations; }
-		const GroupRSA* getBankKey(int coinDenomination) const;
-		int getCoinDenomination(GroupRSA* group) const;
+		Ptr<const GroupRSA> getBankKey(int coinDenomination) const;
+		int getCoinDenomination(Ptr<GroupRSA> group) const;
 
 		/*! clear all secrets and set type to public */
 		void makePublic();
@@ -91,15 +89,15 @@ class BankParameters {
 		}
 
 	private:
-		BankParameters() : ecashGroup(0), type(1) {}
+		BankParameters() : type(1) {}
 
-		GroupPrime* ecashGroup;
+		Ptr<GroupPrime> ecashGroup;
 		int type;
-		vector<GroupRSA*> secretKeys;
+		vector<Ptr<GroupRSA> > secretKeys;
 		// XXX: do we want this to be hardcoded?
 		const static int stat = 80;
-		map<GroupRSA*,int> groupToDenom;
-		map<int,GroupRSA*> denomToGroup;
+		map<Ptr<GroupRSA>, int> groupToDenom;
+		map<int, Ptr<GroupRSA> > denomToGroup;
 		vector<int> coinDenominations;
 
 		friend class boost::serialization::access;

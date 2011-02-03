@@ -2,6 +2,7 @@
 #define _ASTVISITOR_H_
 
 #include <boost/shared_ptr.hpp>
+#include "new_ptr.hpp"
 
 class ASTNode;
 class ASTIdentifierLit;
@@ -52,65 +53,65 @@ class ASTVisitor {
 
 	public:
 		virtual ~ASTVisitor() {}
-		virtual void applyASTNode(boost::shared_ptr<ASTNode> n) = 0;
+		virtual void applyASTNode(Ptr<ASTNode> n) = 0;
 
 		//Lists
-		virtual void applyASTList(boost::shared_ptr<ASTList> n) = 0;
-		virtual void applyASTListIdentifierLit(boost::shared_ptr<ASTListIdentifierLit> n) = 0;
-		virtual void applyASTListIdentifierSub(boost::shared_ptr<ASTListIdentifierSub> n) = 0;
-		virtual void applyASTListDeclIdentifierLit(boost::shared_ptr<ASTListDeclIdentifierLit> n) = 0;
-		virtual void applyASTListDeclIdentifierSub(boost::shared_ptr<ASTListDeclIdentifierSub> n) = 0;
-		virtual void applyASTListRelation(boost::shared_ptr<ASTListRelation> n) = 0;
-		virtual void applyASTListGiven(boost::shared_ptr<ASTListGiven> n) = 0;
-		virtual void applyASTListRandoms(boost::shared_ptr<ASTListRandoms> n) = 0;
-		virtual void applyASTListDecl(boost::shared_ptr<ASTListDecl> n) = 0;
-		virtual void applyASTDeclIDRange(boost::shared_ptr<ASTDeclIDRange> n) = 0;
+		virtual void applyASTList(Ptr<ASTList> n) = 0;
+		virtual void applyASTListIdentifierLit(Ptr<ASTListIdentifierLit> n) = 0;
+		virtual void applyASTListIdentifierSub(Ptr<ASTListIdentifierSub> n) = 0;
+		virtual void applyASTListDeclIdentifierLit(Ptr<ASTListDeclIdentifierLit> n) = 0;
+		virtual void applyASTListDeclIdentifierSub(Ptr<ASTListDeclIdentifierSub> n) = 0;
+		virtual void applyASTListRelation(Ptr<ASTListRelation> n) = 0;
+		virtual void applyASTListGiven(Ptr<ASTListGiven> n) = 0;
+		virtual void applyASTListRandoms(Ptr<ASTListRandoms> n) = 0;
+		virtual void applyASTListDecl(Ptr<ASTListDecl> n) = 0;
+		virtual void applyASTDeclIDRange(Ptr<ASTDeclIDRange> n) = 0;
 
 		//Expressions
-		virtual void applyASTExpr(boost::shared_ptr<ASTExpr> n) = 0;	
-		virtual void applyASTExprInt(boost::shared_ptr<ASTExprInt> n) = 0;
-		virtual void applyASTUnaryOp(boost::shared_ptr<ASTUnaryOp> n) = 0;
-		virtual void applyASTBinaryOp(boost::shared_ptr<ASTBinaryOp> n) = 0;
-		virtual void applyASTNegative(boost::shared_ptr<ASTNegative> n) = 0;
-		virtual void applyASTExprIdentifier(boost::shared_ptr<ASTExprIdentifier> n) = 0;
-		virtual void applyASTPow(boost::shared_ptr<ASTPow> n) = 0;
-		virtual void applyASTMul(boost::shared_ptr<ASTMul> n) = 0;
-		virtual void applyASTDiv(boost::shared_ptr<ASTDiv> n) = 0;
-		virtual void applyASTAdd(boost::shared_ptr<ASTAdd> n) = 0;
-		virtual void applyASTSub(boost::shared_ptr<ASTSub> n) = 0;
+		virtual void applyASTExpr(Ptr<ASTExpr> n) = 0;	
+		virtual void applyASTExprInt(Ptr<ASTExprInt> n) = 0;
+		virtual void applyASTUnaryOp(Ptr<ASTUnaryOp> n) = 0;
+		virtual void applyASTBinaryOp(Ptr<ASTBinaryOp> n) = 0;
+		virtual void applyASTNegative(Ptr<ASTNegative> n) = 0;
+		virtual void applyASTExprIdentifier(Ptr<ASTExprIdentifier> n) = 0;
+		virtual void applyASTPow(Ptr<ASTPow> n) = 0;
+		virtual void applyASTMul(Ptr<ASTMul> n) = 0;
+		virtual void applyASTDiv(Ptr<ASTDiv> n) = 0;
+		virtual void applyASTAdd(Ptr<ASTAdd> n) = 0;
+		virtual void applyASTSub(Ptr<ASTSub> n) = 0;
 		
-		virtual void applyASTForExpr(boost::shared_ptr<ASTForExpr> n) = 0;
-		virtual void applyASTForRel(boost::shared_ptr<ASTForRel> n) = 0;
+		virtual void applyASTForExpr(Ptr<ASTForExpr> n) = 0;
+		virtual void applyASTForRel(Ptr<ASTForRel> n) = 0;
 	
 		//Relations
-		virtual void applyASTRelation(boost::shared_ptr<ASTRelation> n) = 0;
-		virtual void applyASTEqual(boost::shared_ptr<ASTEqual> n) = 0;
-		virtual void applyASTCommitment(boost::shared_ptr<ASTCommitment> n) = 0;
-		virtual void applyASTRange(boost::shared_ptr<ASTRange> n) = 0;
-		virtual void applyASTDeclEqual(boost::shared_ptr<ASTDeclEqual> n) = 0;
-		virtual void applyASTRandomBnd(boost::shared_ptr<ASTRandomBnd> n) = 0;
-		virtual void applyASTRandomPrime(boost::shared_ptr<ASTRandomPrime> n) = 0;
+		virtual void applyASTRelation(Ptr<ASTRelation> n) = 0;
+		virtual void applyASTEqual(Ptr<ASTEqual> n) = 0;
+		virtual void applyASTCommitment(Ptr<ASTCommitment> n) = 0;
+		virtual void applyASTRange(Ptr<ASTRange> n) = 0;
+		virtual void applyASTDeclEqual(Ptr<ASTDeclEqual> n) = 0;
+		virtual void applyASTRandomBnd(Ptr<ASTRandomBnd> n) = 0;
+		virtual void applyASTRandomPrime(Ptr<ASTRandomPrime> n) = 0;
 	
 		//Declarations
-		virtual void applyASTDeclIdentifierLit(boost::shared_ptr<ASTDeclIdentifierLit> n) = 0;
-		virtual void applyASTDeclIdentifierSub(boost::shared_ptr<ASTDeclIdentifierSub> n) = 0;
+		virtual void applyASTDeclIdentifierLit(Ptr<ASTDeclIdentifierLit> n) = 0;
+		virtual void applyASTDeclIdentifierSub(Ptr<ASTDeclIdentifierSub> n) = 0;
 	
 		//"Given" Constructions
-		virtual void applyASTGiven(boost::shared_ptr<ASTGiven> n) = 0;
-		virtual void applyASTDeclElements(boost::shared_ptr<ASTDeclElements> n) = 0;
-		virtual void applyASTDeclExponents(boost::shared_ptr<ASTDeclExponents> n) = 0;
-		virtual void applyASTDeclRandExponents(boost::shared_ptr<ASTDeclRandExponents> n) = 0;
-		virtual void applyASTDeclGroup(boost::shared_ptr<ASTDeclGroup> n) = 0;
-		virtual void applyASTDeclIntegers(boost::shared_ptr<ASTDeclIntegers> n) = 0;
+		virtual void applyASTGiven(Ptr<ASTGiven> n) = 0;
+		virtual void applyASTDeclElements(Ptr<ASTDeclElements> n) = 0;
+		virtual void applyASTDeclExponents(Ptr<ASTDeclExponents> n) = 0;
+		virtual void applyASTDeclRandExponents(Ptr<ASTDeclRandExponents> n) = 0;
+		virtual void applyASTDeclGroup(Ptr<ASTDeclGroup> n) = 0;
+		virtual void applyASTDeclIntegers(Ptr<ASTDeclIntegers> n) = 0;
 	
 		//The Core Constructions
-		virtual void applyASTProof(boost::shared_ptr<ASTProof> n) = 0;
-		virtual void applyASTComputation(boost::shared_ptr<ASTComputation> n) = 0;
-		virtual void applyASTSpec(boost::shared_ptr<ASTSpec> n) = 0;
+		virtual void applyASTProof(Ptr<ASTProof> n) = 0;
+		virtual void applyASTComputation(Ptr<ASTComputation> n) = 0;
+		virtual void applyASTSpec(Ptr<ASTSpec> n) = 0;
 	
 		//Other
-		virtual void applyASTIdentifierLit(boost::shared_ptr<ASTIdentifierLit> n) = 0;
-		virtual void applyASTIdentifierSub(boost::shared_ptr<ASTIdentifierSub> n) = 0;
+		virtual void applyASTIdentifierLit(Ptr<ASTIdentifierLit> n) = 0;
+		virtual void applyASTIdentifierSub(Ptr<ASTIdentifierSub> n) = 0;
 };
 
 #endif /*_ASTVISITOR_H_*/

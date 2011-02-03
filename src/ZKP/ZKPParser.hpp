@@ -2,7 +2,7 @@
 #define INC_ZKPParser_hpp_
 
 #include <antlr/config.hpp>
-/* $ANTLR 2.7.7 (20090708): "zkp.g" -> "ZKPParser.hpp"$ */
+/* $ANTLR 2.7.7 (20090830): "zkp.g" -> "ZKPParser.hpp"$ */
 #include <antlr/TokenStream.hpp>
 #include <antlr/TokenBuffer.hpp>
 #include "ZKPParserTokenTypes.hpp"

@@ -1,13 +1,14 @@
 #include "BankParameters.h"
 
-BankParameters::BankParameters(vector<GroupRSA> &secrets, GroupPrime &ecashGrp,
-							   vector<int> &denoms)
-	: coinDenominations(denoms)
+BankParameters::BankParameters(const vector<Ptr<GroupRSA> > &secrets, 
+                               Ptr<GroupPrime> ecashGrp,
+                               const vector<int> &denoms)
+	: type(BankParameters::TYPE_SECRET),
+      coinDenominations(denoms)
 {
-	ecashGroup = new GroupPrime(ecashGrp);
-	type = BankParameters::TYPE_SECRET;
+    ecashGroup = new_ptr<GroupPrime>(*ecashGrp);
 	for (unsigned i = 0; i < secrets.size(); i++) {
-		secretKeys.push_back(new GroupRSA(secrets[i]));
+		secretKeys.push_back(new_ptr<GroupRSA>(*secrets[i]));
 	}
 
 	// set up maps that associate a given key with a denomination
@@ -18,22 +19,14 @@ BankParameters::BankParameters(vector<GroupRSA> &secrets, GroupPrime &ecashGrp,
 }
 
 BankParameters::BankParameters(const BankParameters &o)
-	: ecashGroup(new GroupPrime(*o.ecashGroup)), type(o.type), 
-	  secretKeys(o.secretKeys), groupToDenom(o.groupToDenom), 
-	  denomToGroup(o.denomToGroup), coinDenominations(o.coinDenominations) 
+       : ecashGroup(new_ptr<GroupPrime>(*o.ecashGroup)), type(o.type), 
+         secretKeys(o.secretKeys), groupToDenom(o.groupToDenom), 
+         denomToGroup(o.denomToGroup), coinDenominations(o.coinDenominations) 
 {
 }
 
-BankParameters::~BankParameters() {
-	/*delete ecashGroup;
-	for (unsigned i = 0 ; i < secretKeys.size() ; i++) {
-		delete secretKeys[i];
-	}
-	secretKeys.clear();*/
-}
-
-const GroupRSA* BankParameters::getBankKey(int denomination) const {
-	map<int,GroupRSA*>::const_iterator i = denomToGroup.find(denomination);
+Ptr<const GroupRSA> BankParameters::getBankKey(int denomination) const {
+	map<int,Ptr<GroupRSA> >::const_iterator i = denomToGroup.find(denomination);
 	if (i == denomToGroup.end()) {
 		throw CashException(CashException::CE_UNKNOWN_ERROR,
 				"[BankParameters:getBankKey] Tried to find BankKey for "
@@ -43,8 +36,8 @@ const GroupRSA* BankParameters::getBankKey(int denomination) const {
 	return i->second;
 }
 
-int BankParameters::getCoinDenomination(GroupRSA* group) const {
-	map<GroupRSA*,int>::const_iterator i = groupToDenom.find(group);
+int BankParameters::getCoinDenomination(Ptr<GroupRSA> group) const {
+	map<Ptr<GroupRSA> ,int>::const_iterator i = groupToDenom.find(group);
 	if (i == groupToDenom.end()) {
 		throw CashException(CashException::CE_UNKNOWN_ERROR,
 			"[BankParameters:getCoinDenomination] Tried to find denomination "
@@ -55,7 +48,9 @@ int BankParameters::getCoinDenomination(GroupRSA* group) const {
 
 void BankParameters::makePublic() {
 	for(unsigned i = 0 ; i < secretKeys.size(); i++) {
-		secretKeys[i]->clearSecrets();
+        // copy key, so as not to overwrite original secret key
+		secretKeys[i] = new_ptr<GroupRSA>(*secretKeys[i]);
+        secretKeys[i]->clearSecrets();
 	}
 	type = BankParameters::TYPE_PUBLIC;
 }

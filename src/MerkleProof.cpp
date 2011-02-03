@@ -1,11 +1,11 @@
 
 #include "MerkleProof.h"
 
-MerkleProof::MerkleProof(const vector<EncBuffer*> &ctextBlocks, 
+MerkleProof::MerkleProof(const vector<Ptr<EncBuffer> > &ctextBlocks, 
 						 const hash_matrix &ctextProof,
                          const hash_matrix &fileProof, 
-						 MerkleContract* ctContract,
-						 MerkleContract* ptContract) 
+						 Ptr<MerkleContract> ctContract,
+						 Ptr<MerkleContract> ptContract) 
   	: ctextBlocks(ctextBlocks), ctextProof(ctextProof), fileProof(fileProof),
 	  ctContract(ctContract), ptContract(ptContract) 
 {
@@ -13,15 +13,15 @@ MerkleProof::MerkleProof(const vector<EncBuffer*> &ctextBlocks,
 	empty=false;
 }
 
-MerkleProof::MerkleProof(const vector<EncBuffer*> &ctextBlocks, 
+MerkleProof::MerkleProof(const vector<Ptr<EncBuffer> > &ctextBlocks, 
 						 const hash_matrix &ctextProof,
-                         const string &plaintext, MerkleContract* ctContract) 
+                         const string &plaintext, Ptr<MerkleContract> ctContract) 
   	: ctextBlocks(ctextBlocks), ctextProof(ctextProof), plaintext(plaintext), 
 	  ctContract(ctContract) {empty=false;}
 
-MerkleProof::MerkleProof(const vector<EncBuffer*> &ctextBlocks, 
+MerkleProof::MerkleProof(const vector<Ptr<EncBuffer> > &ctextBlocks, 
 						 const hash_matrix &ctextProof,
-						 MerkleContract* ctContract) 
+						 Ptr<MerkleContract> ctContract) 
 	: ctextBlocks(ctextBlocks), ctextProof(ctextProof), ctContract(ctContract)
 {
 }

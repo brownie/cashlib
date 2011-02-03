@@ -6,19 +6,19 @@
 #include "ZKP/InterpreterProver.h"
 
 VEDecrypter::VEDecrypter(const int m, const int modLength, const int stat) {
-	setup(m, modLength, stat, 0);
+	setup(m, modLength, stat, Ptr<GroupRSA>());
 }
 
 VEDecrypter::VEDecrypter(const int m, const int modLength, const int stat, 
-						 GroupRSA* auxGroup) {
+						 Ptr<GroupRSA> auxGroup) {
 	setup(m, modLength, stat, auxGroup);
 }
 
 void VEDecrypter::setup(const int m, const int modLength, 
-						const int stat, GroupRSA* auxGroup) {
-	GroupRSA group1("arbiter", modLength, stat);
-	ZZ bigN = group1.getModulus();
-	ZZ bigP = group1.getP();
+						const int stat, Ptr<GroupRSA> auxGroup) {
+	Ptr<GroupRSA> group1 = new_ptr<GroupRSA>(string("arbiter"), modLength, stat);
+	ZZ bigN = group1->getModulus();
+	ZZ bigP = group1->getP();
 	ZZ bigQ = bigN / bigP;
 	ZZ bigNsquared = power(bigN, 2);
 	// f0 is random element of Z_{N^2}*
@@ -26,10 +26,10 @@ void VEDecrypter::setup(const int m, const int modLength,
 	while (GCD(f0, bigNsquared) != 1) {
 		f0 = RandomBnd(bigNsquared);
 	}
-	GroupSquareMod* grp = new GroupSquareMod("arbiter", bigNsquared, stat);
+	Ptr<GroupSquareMod> grp = new_ptr<GroupSquareMod>("arbiter", bigNsquared, stat);
 	group_map g;
 	variable_map v;
-	g["RSAGroup"] = &group1;
+	g["RSAGroup"] = group1;
 	g["G"] = grp;
 	v["f0"] = f0;
 
@@ -58,31 +58,31 @@ void VEDecrypter::setup(const int m, const int modLength,
 	xs[m] = env.variables.at("y");
 	xs[m+1] = env.variables.at("z");
 
-	GroupRSA *group2;
+	Ptr<GroupRSA> group2;
 	// if we weren't given a group, make one
-	if (auxGroup == 0) {
+	if (auxGroup.get() == 0) {
 		group2 = createSecondGroup(m, modLength, stat);
 	}
 	else {
-		group2 = auxGroup;
+		group2 = new_ptr<GroupRSA>(*auxGroup); // calls clearSecrets later
 	}
 	
 	ZZ n = group2->getModulus();
 	ZZ p = group2->getP();
 	ZZ q = n / p;
-	sk = new VESecretKey(bigP, bigQ, xs, p, q);
+	sk = new_ptr<VESecretKey>(bigP, bigQ, xs, p, q);
 	group2->clearSecrets();
 	// XXX obviously this will not stay with hashKey as ""
 	string hashKey = ""; // won't call HMAC
 	hashalg_t hashAlg = Hash::SHA1; // XXX should be input parameter
-	pk = new VEPublicKey(bigN, as, b, d, e, f, *group2, hashAlg, hashKey);
+	pk = new_ptr<VEPublicKey>(bigN, as, b, d, e, f, *group2, hashAlg, hashKey);
 }
 
 
-GroupRSA* VEDecrypter::createSecondGroup(const int m, const int modLength, 
+Ptr<GroupRSA> VEDecrypter::createSecondGroup(const int m, const int modLength, 
 										 const int stat) {
 	// now initialize second group
-	GroupRSA *group2 = new GroupRSA("arbiter", modLength, stat);
+	Ptr<GroupRSA> group2 = new_ptr<GroupRSA>("arbiter", modLength, stat);
 	for (int i = 0; i < m; i++) {
 		// create m additional generators
 		group2->addNewGenerator();

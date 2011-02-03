@@ -82,7 +82,7 @@ class Group {
 		virtual bool isGenerator(const ZZ &value) const = 0;
 
 		/*! Returns a copy of the group. */
-		Group* copy() const;
+		Ptr<Group> copy() const;
 
 		/*! Debugging code. */
 		virtual void debug() const = 0;

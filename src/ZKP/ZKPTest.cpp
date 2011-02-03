@@ -36,13 +36,13 @@ void setupEnvironment(Environment &e, const string& fname) {
 	// hack for known examples: set up environment
 	if (fname.find("ecash.txt") != string::npos) {
 
-		GroupPrime* cashG = new GroupPrime("bank", 1024, stat*2, stat); // init gen is f
+		Ptr<GroupPrime> cashG = new_ptr<GroupPrime>("bank", 1024, stat*2, stat); // init gen is f
 		cashG->addNewGenerator(); // this is g
 		cashG->addNewGenerator(); // this is h
 		cashG->addNewGenerator(); // this is h1
 		cashG->addNewGenerator(); // this is h2	
 		
-		GroupRSA* rangeG = new GroupRSA("first", 1024, stat); // first gen is g1
+		Ptr<GroupRSA> rangeG = new_ptr<GroupRSA>("first", 1024, stat); // first gen is g1
 		rangeG->addNewGenerator(); // second gen is g2
 		e.groups["rangeGroup"] = rangeG;
 		e.groups["cashGroup"] = cashG;
@@ -57,7 +57,7 @@ void setupEnvironment(Environment &e, const string& fname) {
 
 	} else if (fname.find("multiplication.txt") != string::npos) {
 
-		GroupPrime* cashG = new GroupPrime("bank", 1024, 2*stat, stat); // this is g
+		Ptr<GroupPrime> cashG = new_ptr<GroupPrime>("bank", 1024, 2*stat, stat); // this is g
 		cashG->addNewGenerator(); // this is h
 		e.groups["G"] = cashG;	
 		// let's go ahead and give in a and b
@@ -73,15 +73,15 @@ void setupEnvironment(Environment &e, const string& fname) {
 			|| fname.find("declRange.txt") != string::npos
 			|| fname.find("compute.txt") != string::npos 
 			|| fname.find("modulus.txt") != string::npos) {
-		GroupPrime* cashG = new GroupPrime("bank", 1024, stat*2, stat);
+		Ptr<GroupPrime> cashG = new_ptr<GroupPrime>("bank", 1024, stat*2, stat);
 		cashG->addNewGenerator(); // this is h
 		e.groups["G"] = cashG;	
 		if (fname.find("badDLR.txt") != string::npos)
 			e.variables["J"] = to_ZZ(51);
 	} else if (fname.find("range.txt") != string::npos
 			   || fname.find("complicatedRange.txt") != string::npos) {
-		GroupRSA* cashG = new GroupRSA("bank", 1024, stat); // this is g
-		//GroupPrime* cashG = new GroupPrime("bank", 1024, stat*2, stat);
+		Ptr<GroupRSA> cashG = new_ptr<GroupRSA>("bank", 1024, stat); // this is g
+		//Ptr<GroupPrime> cashG = new_ptr<GroupPrime>("bank", 1024, stat*2, stat);
 		cashG->addNewGenerator(); // this is h
 		e.groups["G"] = cashG;	
 		e.variables["J"] = to_ZZ(51);
@@ -119,8 +119,8 @@ int main(int argc, char** argv) {
 	ifstream ifs(vm["input-file"].as<string>().c_str());
 
 	try { 
-		ZKPLexer* lexer = new ZKPLexer(ifs);
-		ZKPParser* parser = new ZKPParser(*lexer);
+		Ptr<ZKPLexer> lexer( new ZKPLexer(ifs) );
+		Ptr<ZKPParser> parser( new ZKPParser(*lexer) );
 		ASTSpecPtr n = parser->spec();
 		
 		if (n) {

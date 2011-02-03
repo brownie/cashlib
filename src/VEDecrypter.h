@@ -20,11 +20,11 @@ class VEDecrypter {
 		 * appropriate RSA group will be created in the course of the setup */
 		VEDecrypter(const int m, const int modLength, const int stat);
 		VEDecrypter(const int m, const int modLength, const int stat, 
-					GroupRSA* auxGroup);
+					Ptr<GroupRSA> auxGroup);
 		
 		/*! also allow the setup to be done elsewhere and the decrypter to
 		 * just be handed the public/secret keys */
-		VEDecrypter(VEPublicKey *p, VESecretKey *s) : pk(p), sk(s) {}
+		VEDecrypter(Ptr<VEPublicKey> p, Ptr<VESecretKey> s) : pk(p), sk(s) {}
 
 		/*! copy constructor */
 		VEDecrypter(const VEDecrypter& o) : pk(o.pk), sk(o.sk) {}
@@ -38,21 +38,21 @@ class VEDecrypter {
 						   const string &label, const hashalg_t &hashAlg) const;
 
 		// getters
-		VEPublicKey* getPK() { return pk; }
-		VESecretKey* getSK() { return sk; }
+		Ptr<VEPublicKey> getPK() { return pk; }
+		Ptr<VESecretKey> getSK() { return sk; }
 		
 	private:
 		/*! does the key generation for verifiable encryption (so sets the
 		 * public and secret keys) */
 		void setup(const int m, const int modLength, const int stat, 
-				   GroupRSA* auxGroup);
+				   Ptr<GroupRSA> auxGroup);
 		
 		/*! creates a group with the appropriate number of generators and
 		 * modLength */
-		GroupRSA* createSecondGroup(const int m, const int modLength, 
-									const int stat);
-		VEPublicKey *pk;
-		VESecretKey *sk;
+		Ptr<GroupRSA> createSecondGroup(const int m, const int modLength, 
+                                        const int stat);
+		Ptr<VEPublicKey> pk;
+		Ptr<VESecretKey> sk;
 };
 
 #endif /*VEDECRYPTER_H_*/
