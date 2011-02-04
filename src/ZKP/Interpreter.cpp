@@ -24,14 +24,13 @@
 
 void Interpreter::check(const string &programName, input_map inputs,
 						group_map groups) {
-	// first check if program has already been compiled
-	// also need inputs to be the same
-	// XXX: is there some way to still use the information even with different
-	// inputs?
-	if (InterpreterCache::contains(programName) &&
-		InterpreterCache::get(programName).inputs == inputs) {
-		CacheValue& val = InterpreterCache::get(programName);
-		// if they are, just store the values and we're done
+	// first check if program has already been compiled, with the same groups
+	// and inputs used
+	cache_key_pair key = hashForCache(programName,inputs,groups);
+	if (InterpreterCache::contains(key)) {
+		//CacheValue& val = InterpreterCache::get(programName);
+		CacheValue& val = InterpreterCache::get(key);
+		// if it has, just store the values and we're done
 		env = val.env;
 		tree = val.tree;
 		env.clearPrivates();
@@ -119,7 +118,7 @@ void Interpreter::check(const string &programName, input_map inputs,
 			}
 			// now want to store output in cache so we can load it up
 			// again later if necessary
-			InterpreterCache::store(programName, inputs, tree, env);
+			InterpreterCache::store(key, tree, env);
 		}
 	}
 }
@@ -161,4 +160,34 @@ void Interpreter::cachePowers() {
 			}
 		}
 	}
+}
+
+cache_key_pair Interpreter::hashForCache(const string &fname, input_map i, 
+										 group_map g) {
+	
+	vector<string> gNames;
+	for (group_map::const_iterator it = g.begin(); it != g.end(); ++it) {
+		gNames.push_back(it->first);
+	}
+	vector<string> iNames;
+	for (input_map::const_iterator it = i.begin(); it != i.end(); ++it) {
+		iNames.push_back(it->first);
+	}
+	sort(gNames.begin(),gNames.end());
+	sort(iNames.begin(),iNames.end());
+	vector<ZZ> hashInput;
+	for (unsigned j = 0; j < gNames.size(); j++) {
+		cout << gNames[j] << endl;
+		if (gNames[j] == Environment::NO_GROUP) {
+			hashInput.push_back(to_ZZ(0));
+		} else {
+			hashInput.push_back(g[gNames[j]]->getModulus());
+		}
+	}
+	for (unsigned j = 0; j < iNames.size(); j++) {
+		hashInput.push_back(to_ZZ(i[iNames[j]]));
+	}
+
+	ZZ h = Hash::hash(hashInput,Hash::SHA1);
+	return make_pair(fname,h);
 }
