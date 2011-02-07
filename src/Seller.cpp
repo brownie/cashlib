@@ -33,11 +33,6 @@ Seller::Seller(vector<Ptr<EncBuffer> > ctext, const int timeoutLength,
 }
 
 /*----------------------------------------------------------------------------*/
-// Destructor
-Seller::~Seller() {
-//	reset();
-    cout << "Seller::~Seller() going away" << endl;
-}
 
 void Seller::reset() {
 	inProgress = false;

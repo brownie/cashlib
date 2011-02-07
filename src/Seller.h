@@ -24,9 +24,6 @@ class Seller {
 			   const int timeoutTolerance, Ptr<const VEPublicKey> pk, 
 			   const int stat);
 		
-		/*! destructor */
-		~Seller();
-
 		/*! outputs the ciphertext of the file */
 		Ptr<EncBuffer> encrypt(Ptr<const Buffer> ptext, const cipher_t& encAlg, 
 						   const string& key = "");
