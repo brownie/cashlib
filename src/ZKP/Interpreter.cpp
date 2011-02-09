@@ -113,7 +113,8 @@ void Interpreter::check(const string &programName, input_map inputs,
 				env.groups[Environment::NO_GROUP] = Ptr<Group>();
 				BindGroupValues binder(env);
 				binder.apply(n);
-				//cachePowers();
+				if (getenv("CACHE_POWERS"))
+				  cachePowers();
 			}
 			// now want to store output in cache so we can load it up
 			// again later if necessary
