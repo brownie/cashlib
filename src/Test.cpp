@@ -1412,7 +1412,7 @@ double* testCoin() {
 	// now want to spend a coin from the wallet
 	// dummy contract
 	vector<ZZ> contractInfo;
-	contractInfo.push_back(123456789);
+	contractInfo.push_back(12345);
 	ZZ rVal = Hash::hash(contractInfo, hashAlg);
 
 	startTimer();
@@ -1426,16 +1426,16 @@ double* testCoin() {
 	timers[timer++] = printTimer(timer, "Deserialized coin from binary");
 
 	vector<ZZ> endorsement = coin.getEndorsement();
-	coin.unendorse();	
+	//coin.unendorse();	
 	// trying to verify an unendorsed coin
-	startTimer();
-	bool coinVerified = coin.verifyCoin();
-	timers[timer++] = printTimer(timer, "Checked unendorsed coin");
-	if (coinVerified)
-		cout << "Coin is valid (verified successfully)" << endl;
-	else
-		cout << "Coin verification failed" << endl;
-	coin.endorse(endorsement);
+	//startTimer();
+	//bool coinVerified = coin.verifyCoin();
+	//timers[timer++] = printTimer(timer, "Checked unendorsed coin");
+	//if (coinVerified)
+	//	cout << "Coin is valid (verified successfully)" << endl;
+	//else
+	//	cout << "Coin verification failed" << endl;
+	//coin.endorse(endorsement);
 	startTimer();
 	bool coinVerified2 = coin.verifyCoin();
 	timers[timer++] = printTimer(timer, "Checked endorsed coin");
@@ -1465,7 +1465,7 @@ double* testCoin() {
 
 	// now let's double spend a coin
 	vector<ZZ> contractInfo2;
-	contractInfo2.push_back(123459);
+	contractInfo2.push_back(12346);
 	ZZ rVal2 = Hash::hash(contractInfo2, hashAlg);
 	ZZ sameIndex = coin.getIndex();
 	wallet.replaceCoin(sameIndex);
