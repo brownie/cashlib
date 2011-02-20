@@ -235,8 +235,6 @@ namespace boost { namespace serialization {
 				unsigned char buf[len];
 				size_t l;
 				mpz_export(buf, &l, -1, 1, -1, 0, MPZ(t));
-				if (l != len)
-					std::cerr << "ZZ::save() yikes! len is " << len << " but l is " << l << std::endl;
 				assert(l == len);
 				ar & make_nvp("mpz", make_binary_object(buf, l));
 			}
