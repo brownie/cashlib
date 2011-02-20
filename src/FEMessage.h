@@ -23,7 +23,7 @@ class FEMessage {
 		FEMessage(const FEMessage &o)
 			: escrow(o.escrow), signature(o.signature), contract(o.contract) {}
 		
-		FEMessage(const string& s) { loadString(*this, s); };
+		FEMessage(const string& s) { loadGZString(*this, s); };
 
 		// getters
 		const vector<ZZ>& getEscrow() const { return escrow; }

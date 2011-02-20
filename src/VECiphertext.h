@@ -23,7 +23,7 @@ class VECiphertext {
 			: ciphertext(o.ciphertext), commitment(o.commitment),
 			  publicVariables(o.publicVariables), proof(o.proof) {}
 
-		VECiphertext(const string& s) { loadString(*this, s); }
+        //VECiphertext(const string& s) { loadGZString(*this, s); }
 
 		VECiphertext() 
 			: ciphertext(), commitment(0), publicVariables(), proof() {}

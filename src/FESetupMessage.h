@@ -28,7 +28,7 @@ class FESetupMessage {
 		
 		FESetupMessage(const string& s, Ptr<const BankParameters> params) {
 			// need to set params for Coin contained in message
-			loadString(make_nvp("FESetupMessage", *this), s); 
+			loadGZString(make_nvp("FESetupMessage", *this), s); 
 			coinPrime.setParameters(params);
 		}
 		

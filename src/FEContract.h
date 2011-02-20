@@ -23,7 +23,7 @@ class FEContract {
 			  ptHashBlocksB(o.ptHashBlocksB), ctHashBlocksB(o.ctHashBlocksB) {}
 		
 		/*! serialization constructor */
-		FEContract(const string& str) { loadString(*this, str); }
+        //FEContract(const string& str) { loadGZString(*this, str); }
 		
 		FEContract() {}
 

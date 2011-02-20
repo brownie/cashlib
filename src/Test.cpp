@@ -1420,7 +1420,7 @@ double* testCoin() {
 	timers[timer++] = printTimer(timer, "Got coin from wallet");
 	cout << "Coin size: " << saveGZString(coin).size() << endl;
 
-	string coinstr = saveString(coin);
+	string coinstr = saveGZString(coin);
 	startTimer();
 	Coin coinGZ(coinstr, params);
 	timers[timer++] = printTimer(timer, "Deserialized coin from binary");
@@ -1535,7 +1535,7 @@ double* testBuy() {
 
 #if 1
 	// test saving and loading BuyMessage
-	string bmsg = saveString(*buyMessage);
+	string bmsg = saveGZString(*buyMessage);
 	saveXML(make_nvp("BuyMessage", *buyMessage), "buym1.xml");
 	Ptr<BuyMessage> loadedBMsg = new_ptr<BuyMessage>(bmsg, params);
 	saveXML(make_nvp("BuyMessage", *loadedBMsg), "buym2.xml");

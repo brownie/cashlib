@@ -28,7 +28,7 @@ class BuyMessage {
 
 		BuyMessage(const string& s, Ptr<const BankParameters> params) {
 			// need to set params for Coin contained in message
-			loadString(make_nvp("BuyMessage", *this), s); 
+			loadGZString(make_nvp("BuyMessage", *this), s); 
 			coinPrime->setParameters(params);
 		}
 

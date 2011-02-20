@@ -24,7 +24,7 @@ class Coin {
 
 		Coin(const string& s, Ptr<const BankParameters> params)
 			: parameters(params)
-			{ loadString(make_nvp("Coin", *this), s); }
+			{ loadGZString(make_nvp("Coin", *this), s); }
 
 		Coin(const Coin &o);
 	
