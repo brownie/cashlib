@@ -228,6 +228,7 @@ namespace boost { namespace serialization {
 			bool neg = (NTL::sign(t) == -1);
 			ar & auto_nvp(neg); // save sign (true if negative)
 			size_t len = (mpz_sizeinbase(MPZ(t), 2) + 7) / 8;
+			if (t == 0) len = 0;
 			assert(len >= 0);
 			ar & auto_nvp(len);
 			if (len) {
@@ -257,6 +258,8 @@ namespace boost { namespace serialization {
 				ar & make_nvp("mpz", make_binary_object(buf, len));
 				mpz_import(MPZ(t), len, -1, 1, -1, 0, buf);
 				if (neg) mpz_neg(MPZ(t), MPZ(t));
+			} else {
+				t = 0;
 			}
 		}
 

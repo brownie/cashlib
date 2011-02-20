@@ -82,6 +82,7 @@ double* testBuyWithSetup();
 double* testBuyResolution();
 double* testBarterResolution();
 double* testSerializeAbstract();
+double* testSerializeZero();
 double* testMultiExp();
 
 double* multiTest();
@@ -113,6 +114,7 @@ test_desc_t test_funcs[] = {
 	{ testBuyResolution, "Buy resolution" },
 	{ testBarterResolution, "Barter resolution" },
 	{ testSerializeAbstract, "Test serialization of derived pointers"},
+	{ testSerializeZero, "Test serialization of zero"},
 	{ testMultiExp, "Test multi-exp"},
 	// add new tests here 
 	{ multiTest, "Multi-tester" },
@@ -2034,6 +2036,17 @@ double* testBarterResolution() {
 		cout << "Final stage of barter resolution worked!" << endl;
 	else
 		cout << "Barter resolution failed (endorsement not valid)" << endl;
+	return timers;
+}
+
+double* testSerializeZero() {
+	double* timers = new double[MAX_TIMERS];
+
+	ZZ z = 0, zz = 33;
+	string s = saveString(z);
+	loadString(zz, s);
+	cout << "loaded 0 zz " << zz << endl;
+
 	return timers;
 }
 
