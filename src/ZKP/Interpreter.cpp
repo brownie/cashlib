@@ -23,7 +23,7 @@
 #define UNUSED 0
 
 void Interpreter::check(const string &programName, input_map inputs,
-						group_map groups) {
+						group_map groups, bool enablePowerCache) {
 	// first check if program has already been compiled, with the same groups
 	// and inputs used
 	cache_key_pair key = hashForCache(programName,inputs,groups);
@@ -113,7 +113,7 @@ void Interpreter::check(const string &programName, input_map inputs,
 				env.groups[Environment::NO_GROUP] = Ptr<Group>();
 				BindGroupValues binder(env);
 				binder.apply(n);
-				if (getenv("CACHE_POWERS"))
+				if (enablePowerCache && getenv("CACHE_POWERS"))
 				  cachePowers();
 			}
 			// now want to store output in cache so we can load it up

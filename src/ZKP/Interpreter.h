@@ -27,13 +27,15 @@ class Interpreter {
 
 		/*! this will run all the visitors that are meant to be used 
 		 * BEFORE user has given any numeric values (maybe groups though) */
-		void check(const string &programName, input_map inputs, group_map grps);
-		void check(const string &programName) 
-					{ check(programName, input_map(), group_map()); }
-		void check(const string &programName, input_map &inputs)
-					{ check(programName, inputs, group_map()); }
-		void check(const string &programName, group_map &groups)
-					{ check(programName, input_map(), groups); }
+		void check(const string &programName, input_map inputs, group_map grps,
+                   bool enablePowerCache=true);
+
+		void check(const string &programName, bool enablePowerCache=true) 
+            { check(programName, input_map(), group_map(), enablePowerCache); }
+		void check(const string &programName, input_map &inputs, bool enablePowerCache=true)
+            { check(programName, inputs, group_map(), enablePowerCache); }
+		void check(const string &programName, group_map &groups, bool enablePowerCache=true)
+            { check(programName, input_map(), groups, enablePowerCache); }
 
 		Environment getEnvironment() { return env; }
 
