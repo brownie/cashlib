@@ -25,7 +25,7 @@ UserTool::UserTool(int st, int l,
 	v["sk_u"] = userSecretKey;
 	// now compute proof and save it
 	InterpreterProver p;
-	p.check(CommonFunctions::getZKPDir()+"/userid.txt", groups);
+	p.check(CommonFunctions::getZKPDir()+"/userid.txt", groups, false);
 	p.compute(v);
 	idProof = p.computeProof(hashAlg);
 }

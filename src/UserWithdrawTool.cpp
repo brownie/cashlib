@@ -95,7 +95,7 @@ Ptr<ProofMessage> UserWithdrawTool::preSignatureProof() {
 	InterpreterProver prover;
 	group_map g;
 	g["cashGroup"] = bankParameters->getCashGroup();
-	prover.check(CommonFunctions::getZKPDir()+"/presig.txt", g);
+	prover.check(CommonFunctions::getZKPDir()+"/presig.txt", g, false);
 	variable_map v;
 	v["A"] = partialCommitment[1];
 	v["r_u"] = partialCommitment[0];
