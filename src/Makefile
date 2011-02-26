@@ -58,6 +58,7 @@ CASHSOURCE =  Arbiter.cpp \
 			  ZKP/ExponentSub.cpp \
 			  ZKP/ForExpander.cpp \
 			  ZKP/Interpreter.cpp \
+			  ZKP/InterpreterCache.cpp \
 			  ZKP/InterpreterProver.cpp \
 			  ZKP/InterpreterVerifier.cpp \
 			  ZKP/Printer.cpp \
