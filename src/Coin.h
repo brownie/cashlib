@@ -62,9 +62,6 @@ class Coin {
 
 		void setParameters(Ptr<const BankParameters> p) { parameters = p; }
 
-		// XXX: can write debug later
-		void debug() const;
-
 		hash_t hash() const;
 
 	private:

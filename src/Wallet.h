@@ -28,7 +28,7 @@ class Wallet {
         Ptr<Coin> newCoin(const ZZ &R, int coinIndex);
 		void newCoin(Coin& coin, const ZZ &R, int coinIndex);
 
-		bool replaceCoin(const ZZ &index);
+		bool replaceCoin(ZZ &index);
 
 		// some accessors
 		int getWalletSize() const { return walletSize; }

@@ -13,6 +13,12 @@ Buyer::Buyer(int timeoutLength, Ptr<const VEPublicKey> pk, int stat)
 {
 }
 
+Buyer::Buyer(const Buyer& o)
+	: timeoutLength(o.timeoutLength), stat(o.stat), pk(o.pk),
+	  contract(o.contract? new FEContract(*o.contract) : NULL),
+	  r(o.r), endorsement(o.endorsement), inProgress(o.inProgress)
+{
+}
 /*----------------------------------------------------------------------------*/
 // Destructor
 Buyer::~Buyer() {

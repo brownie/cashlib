@@ -15,6 +15,17 @@ FEResponder::FEResponder(const int timeoutLength, const int timeoutTolerance,
 {
 }
 	
+FEResponder::FEResponder(const FEResponder& o)
+	: timeoutLength(o.timeoutLength), timeoutTolerance(o.timeoutTolerance), 
+	  stat(o.stat), verifiablePK(o.verifiablePK), regularPK(o.regularPK),
+	  ptextB(o.ptextB), ctextB(o.ctextB), ctextA(o.ctextA), ptextA(o.ptextA), 
+	  contract(o.contract ? new FEContract(*o.contract) : NULL),
+	  escrow(o.escrow ? new VECiphertext(*o.escrow) : NULL),
+	  initiatorSignPK(o.initiatorSignPK ? new Signature::Key(*o.initiatorSignPK) : NULL),
+	  message(o.message ? new FEMessage(*o.message) : NULL)
+{
+}
+
 /*----------------------------------------------------------------------------*/
 // Destructor
 FEResponder::~FEResponder() {

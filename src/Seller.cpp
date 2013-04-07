@@ -32,6 +32,16 @@ Seller::Seller(vector<Ptr<EncBuffer> > ctext, const int timeoutLength,
 {
 }
 
+Seller::Seller(const Seller& o)
+	: timeoutLength(o.timeoutLength), timeoutTolerance(o.timeoutTolerance), 
+	  stat(o.stat), pk(o.pk), ptext(o.ptext), ctext(o.ctext),
+	  coinPrime(o.coinPrime), 
+	  contract(o.contract ? new FEContract(*o.contract) : NULL),
+	  escrow(o.escrow ? new VECiphertext(*o.escrow) : NULL),
+	  inProgress(o.inProgress)
+{
+}
+
 /*----------------------------------------------------------------------------*/
 
 void Seller::reset() {
