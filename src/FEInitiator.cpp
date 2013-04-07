@@ -13,15 +13,6 @@ FEInitiator::FEInitiator(const long timeoutLength, Ptr<const VEPublicKey> pk,
 	  exchangeType(TYPE_NONE)
 {}
 
-FEInitiator::FEInitiator(const FEInitiator &o)
-	: timeoutLength(o.timeoutLength), stat(o.stat), 
-	  verifiablePK(o.verifiablePK), regularPK(o.regularPK), coin(o.coin), 
-	  contract(o.contract), signKey(new Signature::Key(*o.signKey)), 
-	  ptextA(o.ptextA), ctextA(o.ctextA), ctextB(o.ctextB), ptextB(o.ptextB),
-	  r(o.r), endorsement(o.endorsement), exchangeType(o.exchangeType)
-{
-}
-
 /*----------------------------------------------------------------------------*/
 // Destructor
 FEInitiator::~FEInitiator() {
