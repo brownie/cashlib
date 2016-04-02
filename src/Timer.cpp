@@ -10,12 +10,24 @@
 #include "CashException.h"
 #include <vector>
 #include <sys/time.h>
+#include <boost/thread/tss.hpp>
 
-vector<timeval> brownieTimerValue;
+struct BrownieTimer {
+    vector<timeval> timers;
+};
+// use thread-local storage
+boost::thread_specific_ptr<BrownieTimer> localTimer;
+
+vector<timeval>& getTimer() {
+    if (localTimer.get() == 0)
+        localTimer.reset(new BrownieTimer);
+    return localTimer->timers;
+}
+
 void startTimer() {
 	timeval t;
 	gettimeofday(&t, NULL);
-	brownieTimerValue.push_back(t);
+	getTimer().push_back(t);
 }
 
 /* Determine the difference, in milliseconds, between two struct timevals. */
@@ -40,12 +52,12 @@ double printTimer(const int index, const string &msg) {
 long long elapsedTime() {
 	timeval now;
 	gettimeofday(&now, NULL);
-	if (brownieTimerValue.size() == 0)
+	if (getTimer().size() == 0)
 		throw CashException(CashException::CE_TIMER_ERROR, 
 							"[Timer::printTimer] No running timer found. "
 							"Maybe you forgot to start one?");
-	long long elapsed = TV_DIFF_US(brownieTimerValue.back(), now);
-	brownieTimerValue.pop_back();
+	long long elapsed = TV_DIFF_US(getTimer().back(), now);
+	getTimer().pop_back();
 	return elapsed;
 }
 

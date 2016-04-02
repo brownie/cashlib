@@ -12,27 +12,28 @@ class FEMessage {
 		/*! constructor: takes in escrow (encryption of the symmetric
 		 * key), signature on this escrow, and contract (label for the
 		 * escrow) */
-		FEMessage(vector<ZZ> &escrow, string &sig, FEContract &contract)
+		FEMessage(const vector<ZZ> &escrow, 
+                  const string &sig, Ptr<FEContract> contract)
 			: escrow(escrow), signature(sig), contract(contract) {}
 		
-		FEMessage(string &sig, FEContract &contract)
+		FEMessage(const string &sig, Ptr<FEContract> contract)
 			: signature(sig), contract(contract) {}
 
 		/*! copy constructor */
 		FEMessage(const FEMessage &o)
 			: escrow(o.escrow), signature(o.signature), contract(o.contract) {}
 		
-		FEMessage(const string& s) { loadString(*this, s); };
+		FEMessage(const string& s) { loadGZString(*this, s); };
 
 		// getters
 		const vector<ZZ>& getEscrow() const { return escrow; }
 		const string& getSignature() const { return signature; }
-		const FEContract& getContract() const { return contract; }
+		Ptr<FEContract> getContract() const { return contract; }
 	
 	private:
 		vector<ZZ> escrow;
 		string signature;
-		FEContract contract;
+		Ptr<FEContract> contract;
 
 		friend class boost::serialization::access;
 		template <class Archive> 

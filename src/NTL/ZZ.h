@@ -204,14 +204,14 @@ inline void BytesFromZZ(unsigned char *p, const ZZ& a, long n) {
 }
 
 // Convert binary string to NTL integer
-inline ZZ ZZFromBytes(const string &str) {
+inline ZZ ZZFromBytes(const std::string &str) {
 	return ZZFromBytes((const unsigned char *)str.data(), str.size());
 }
  
-inline string ZZToBytes(const ZZ& n) {
+inline std::string ZZToBytes(const ZZ& n) {
 	unsigned char buf[NumBytes(n)];
 	BytesFromZZ((unsigned char *)&buf, n, sizeof(buf));
-	return string((char *)&buf, sizeof(buf));
+	return std::string((char *)&buf, sizeof(buf));
 }
 
 } // namespace NTL
@@ -228,6 +228,7 @@ namespace boost { namespace serialization {
 			bool neg = (NTL::sign(t) == -1);
 			ar & auto_nvp(neg); // save sign (true if negative)
 			size_t len = (mpz_sizeinbase(MPZ(t), 2) + 7) / 8;
+			if (t == 0) len = 0;
 			assert(len >= 0);
 			ar & auto_nvp(len);
 			if (len) {
@@ -257,6 +258,8 @@ namespace boost { namespace serialization {
 				ar & make_nvp("mpz", make_binary_object(buf, len));
 				mpz_import(MPZ(t), len, -1, 1, -1, 0, buf);
 				if (neg) mpz_neg(MPZ(t), MPZ(t));
+			} else {
+				t = 0;
 			}
 		}
 

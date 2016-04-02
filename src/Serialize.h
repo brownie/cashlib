@@ -24,6 +24,7 @@
 #include <strstream>
 #include <sstream>
 #include <fstream>
+#include "new_ptr.hpp"
 #include "Serialize_map.h"
 
 /* NVP stands for "name-value pair" and is used for naming variables

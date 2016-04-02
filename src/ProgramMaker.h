@@ -7,7 +7,7 @@
 
 // the following are useful for CLBlindRecipient and CLSignatureProver
 // for groups, need access to group object and names of generators
-typedef pair<const Group*, vector<string> > group_pair;
+typedef pair<Ptr<const Group>, vector<string> > group_pair;
 typedef boost::unordered_map<string, group_pair> gen_group_map;
 
 // for commitments, we'll assume that value being committed to is called

@@ -19,12 +19,9 @@ class FEInitiator {
 
 		/*! constructor takes in various parameters, as well as a wallet
 		 * and the public key of the arbiter */
-		FEInitiator(const long timeoutLength, const VEPublicKey* pk, 
-					const VEPublicKey* regularpk, const int stat, 
-					const Signature::Key* signKey = NULL);
-
-		/*! copy constructor */
-		FEInitiator(const FEInitiator &o);
+		FEInitiator(const long timeoutLength, Ptr<const VEPublicKey> pk, 
+					Ptr<const VEPublicKey> regularpk, const int stat, 
+					Ptr<Signature::Key> signKey = Ptr<Signature::Key>());
 
 		/*! destructor */
 		~FEInitiator();
@@ -33,19 +30,19 @@ class FEInitiator {
 		 * unendorsed coin, and then computes a verifiable escrow (using
 		 * the arbiter's PK) on the endorsement using the public key for
 		 * the signature scheme as a label */
-		FESetupMessage* setup(Wallet *wallet, const ZZ &R, 
+		Ptr<FESetupMessage> setup(Ptr<Wallet> wallet, const ZZ &R, 
 							  const string &signAlg);
 		/*! assumes setCoin() has been called */
-		FESetupMessage* setup(const string &signAlg);
+		Ptr<FESetupMessage> setup(const string &signAlg);
 		
 		
 		// the following functions should be used only for buy
 
 		/*! receives the ciphertext and computes the contract; also outputs
 		 * a signature on the contract */
-		FEMessage* buy(EncBuffer* ctextR, const hash_t& ptHashR);
+		Ptr<FEMessage> buy(Ptr<EncBuffer> ctextR, const hash_t& ptHashR);
 		
-		FEMessage* buy(const vector</*const*/ EncBuffer*>& ctextsR,
+		Ptr<FEMessage> buy(const vector</*const*/ Ptr<EncBuffer> >& ctextsR,
 					   const vector</*const*/ hash_t>& ptHashesR);
 		
 		/*! pay the seller with the endorsement (if key is correct) */
@@ -55,21 +52,21 @@ class FEInitiator {
 		
 		
 		// the following functions should be used only for barter
-		EncBuffer* continueRound(const Buffer *ptextI, const cipher_t& encAlgI);
+		Ptr<EncBuffer> continueRound(Ptr<const Buffer> ptextI, const cipher_t& encAlgI);
 		
-		vector<EncBuffer*> continueRound(const vector<const Buffer*>& ptextI,
+		vector<Ptr<EncBuffer> > continueRound(const vector<Ptr<const Buffer> >& ptextI,
 										 const cipher_t& encAlgI);
 		
 		/*! set initiator files (only for BT client use) */
-		void setInitiatorFiles(const Buffer* ptextI, EncBuffer* ctextI);
+		void setInitiatorFiles(Ptr<const Buffer> ptextI, Ptr<EncBuffer> ctextI);
 		
-		void setInitiatorFiles(const vector<const Buffer*>& ptextI,
-							   const vector<EncBuffer*>& ctextI);
+		void setInitiatorFiles(const vector<Ptr<const Buffer> >& ptextI,
+							   const vector<Ptr<EncBuffer> >& ctextI);
 		
 		
-		FEMessage* barter(EncBuffer* ctextR, const hash_t& ptHashR, 
+		Ptr<FEMessage> barter(Ptr<EncBuffer> ctextR, const hash_t& ptHashR, 
 						  const hash_t& ptHashI);
-		FEMessage* barter(const vector<EncBuffer*>& ctextR, 
+		Ptr<FEMessage> barter(const vector<Ptr<EncBuffer> >& ctextR, 
 						  const vector<hash_t>& ptHashR,
 						  const vector<hash_t>& ptHashI);
 			
@@ -84,7 +81,7 @@ class FEInitiator {
 		ZZ resolve();
 		
 		// get vector of decrypted plaintexts from responder
-		const vector<Buffer*>& getPtextB() const { return ptextB; }
+		const vector<Ptr<Buffer> >& getPtextB() const { return ptextB; }
 		
 		bool canAbortLocally() {return TYPE_NONE == exchangeType;};
 		
@@ -94,42 +91,42 @@ class FEInitiator {
 		void setTimeoutLength(const long newtimeout) 
 								{timeoutLength = newtimeout;}
 		void setSecurity(const int newstat) {stat = newstat;}
-		void setVerifiablePublicKey(const VEPublicKey* newpk) 
+		void setVerifiablePublicKey(Ptr<const VEPublicKey> newpk) 
 								{verifiablePK = newpk;}
-		void setRegularPublicKey(const VEPublicKey* newpk) {regularPK = newpk;}
-		void setSignatureKey(Signature::Key* newsignKey = NULL)
-		{ delete signKey; signKey = newsignKey ? new Signature::Key(*newsignKey) : NULL; }
+		void setRegularPublicKey(Ptr<const VEPublicKey> newpk) {regularPK = newpk;}
+		void setSignatureKey(Ptr<Signature::Key> sk=Ptr<Signature::Key>())
+                                { signKey = sk; }
 		void setExchangeType(int et) { exchangeType = et; }
 		
 		void reset();
 
 	protected:
-		void makeCoin(Wallet* wallet, const ZZ& R);
+		void makeCoin(Ptr<Wallet> wallet, const ZZ& R);
 		
 		void createContract();
 		string signContract() const;
 		
 		bool decryptCheck(const vector<string>& keys);
 		
-		vector<EncBuffer*> encrypt(const vector<const Buffer*>& ptextI, 
+		vector<Ptr<EncBuffer> > encrypt(const vector<Ptr<const Buffer> >& ptextI, 
 								   const cipher_t& encAlgI) const;
 		
 	private:
 		long timeoutLength;
 		int stat;
-		const VEPublicKey* verifiablePK;
-		const VEPublicKey* regularPK;
+		Ptr<const VEPublicKey> verifiablePK;
+		Ptr<const VEPublicKey> regularPK;
 
 		Coin coin;
-		FEContract* contract;
-		Signature::Key* signKey;
+		Ptr<FEContract> contract;
+		Ptr<Signature::Key> signKey;
 
 		// these correspond to the initiator's files (if doing barter)
-		vector<const Buffer*> ptextA;
-		vector<EncBuffer*> ctextA;
+		vector<Ptr<const Buffer> > ptextA;
+		vector<Ptr<EncBuffer> > ctextA;
 		// these correspond to the responder/seller's files
-		vector</*const*/ EncBuffer*> ctextB;
-		vector<Buffer*> ptextB;
+		vector<Ptr</*const*/ EncBuffer> > ctextB;
+		vector<Ptr<Buffer> > ptextB;
 		
 		ZZ r;
 		vector<ZZ> endorsement;

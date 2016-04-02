@@ -23,7 +23,7 @@ class FEContract {
 			  ptHashBlocksB(o.ptHashBlocksB), ctHashBlocksB(o.ctHashBlocksB) {}
 		
 		/*! serialization constructor */
-		FEContract(const string& str) { loadString(*this, str); }
+        //FEContract(const string& str) { loadGZString(*this, str); }
 		
 		FEContract() {}
 
@@ -46,12 +46,12 @@ class FEContract {
 		bool checkTimeout(const int timeoutTolerance) const;
 		bool checkEncAlgB(const cipher_t& encAlgR) const;
 		
-		bool checkAFiles(const vector<const Buffer*>& ptext, 
-						 const vector</*const*/ EncBuffer*>& ctext) const;
-		bool checkBFiles(const vector<const Buffer*>& ptext, 
-						 const vector</*const*/ EncBuffer*>& ctext) const;
-		bool checkAFile(const Buffer* ptext, /*const*/ EncBuffer* ctext) const;
-		bool checkBFile(const Buffer* ptext, /*const*/ EncBuffer* ctext) const;
+		bool checkAFiles(const vector<Ptr<const Buffer> >& ptext, 
+						 const vector<Ptr</*const*/ EncBuffer> >& ctext) const;
+		bool checkBFiles(const vector<Ptr<const Buffer> >& ptext, 
+						 const vector<Ptr</*const*/ EncBuffer> >& ctext) const;
+		bool checkAFile(Ptr<const Buffer> ptext, Ptr</*const*/ EncBuffer> ctext) const;
+		bool checkBFile(Ptr<const Buffer> ptext, Ptr</*const*/ EncBuffer> ctext) const;
 		
 		bool checkAHash(const hash_t& ptHash, const hash_t& ctHash) const;
 		bool checkBHash(const hash_t& ptHash, const hash_t& ctHash) const;
@@ -69,8 +69,8 @@ class FEContract {
 		const cipher_t& getEncAlgB() const { return encAlgB; }
 		
 	protected:
-		bool checkHashes(const vector<const Buffer*>& ptext, 
-						 const vector</*const*/ EncBuffer*>& ctext, 
+		bool checkHashes(const vector<Ptr<const Buffer> >& ptext, 
+						 const vector<Ptr</*const*/ EncBuffer> >& ctext, 
 						 const hash_t& ptHash, const hash_t& ctHash) const;
 		bool checkHash(const hash_t& hashGiven, const hash_t& hashStored) const;
 		

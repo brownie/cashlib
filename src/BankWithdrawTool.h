@@ -6,7 +6,7 @@
 
 class BankWithdrawTool {
 	public:
-		BankWithdrawTool(const BankParameters *bp, const ZZ &userPK, 
+		BankWithdrawTool(Ptr<const BankParameters> bp, const ZZ &userPK, 
 						 int stat, int lx, int wSize, int denom,
 						 const hashalg_t &hashAlg);
 		
@@ -22,13 +22,13 @@ class BankWithdrawTool {
 
 		// This method will return the bank's signature if the sigma proofs
 		// are verified, and will throw exceptions if they are not verified
-		ProofMessage* sign(ProofMessage* id, ProofMessage* cl);
+		Ptr<ProofMessage> sign(Ptr<ProofMessage> id, Ptr<ProofMessage> cl);
 
 		int getWalletSize() const { return walletSize; }
 		int getDenom() const { return coinDenom; }
 
 	private:
-		const BankParameters* bankParameters;
+		Ptr<const BankParameters> bankParameters;
 		ZZ userPublicKey;
 		int stat, lx, walletSize, coinDenom;
 		ZZ bankContribution;

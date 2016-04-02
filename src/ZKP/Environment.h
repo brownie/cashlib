@@ -4,6 +4,10 @@
 
 #include "../Group.h"
 
+#ifndef USE_STD_MAP
+#define USE_STD_MAP 1
+#endif
+
 #ifdef USE_STD_MAP
 // XXX for some reason, BuyMessages are not working when unordered_map
 // is used in ProofMessages: may have to do with map serialization
@@ -40,7 +44,7 @@ struct DecompNames {
 std::size_t hash_value(const ZZ& n);
 
 typedef MAP_TYPE<string, ZZ> variable_map;
-typedef MAP_TYPE<string, const Group*> group_map;
+typedef MAP_TYPE<string, Ptr<const Group> > group_map;
 typedef MAP_TYPE<string, string> commitment_map;
 typedef MAP_TYPE<string, DLRepresentation> dlr_map;
 typedef MAP_TYPE<string, vector<DecompNames> > decomp_map;
@@ -122,8 +126,8 @@ class Environment {
 		 * computed by verifier at runtime */
 		dlr_map rangeComs;
 		/*! information for caching powers of known bases */	
-		boost::shared_ptr<PowerCache> cache;
-		boost::shared_ptr<MultiExpCache> multiCache;
+		Ptr<PowerCache> cache;
+		Ptr<MultiExpCache> multiCache;
 
 		/*! clears out all the maps */
 		void clear();
@@ -131,7 +135,7 @@ class Environment {
 		void clearPrivates();
 
 		/*! gets group object for a given variable */
-		const Group* getGroup(const string &varName) const;
+		Ptr<const Group> getGroup(const string &varName) const;
 
 		/*! gets commitment description for a given committed variable 
 		 * whose value has already been computed */

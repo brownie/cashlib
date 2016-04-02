@@ -25,11 +25,10 @@ struct CacheValue {
 class InterpreterCache {
 
 	public:
-		static InterpreterCache& instance() {
-			// local static object initialization
-			static InterpreterCache _icache;  
-			return _icache;
-		}
+        /*! return a thread-local instance of the InterpreterCache.
+         * this should prevent different threads from invoking the
+         * same interpreter. */
+        static InterpreterCache& instance();
 		
 		typedef boost::unordered_map<cache_key_pair, CacheValue> cache_t;
 
@@ -54,7 +53,6 @@ class InterpreterCache {
 		InterpreterCache( InterpreterCache const & );  // copy ctor is hidden
 		// assignment operator is hidden
 		InterpreterCache& operator=( InterpreterCache const & );  
-		~InterpreterCache() {}  // destructor (dtor) is hidden
 };
 
 #endif /*_INTERPRETERCACHE_H_*/

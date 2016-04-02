@@ -45,7 +45,7 @@ struct VarInfo {
 
 class ASTNode {
 	public:	
-		typedef boost::shared_ptr<ASTNode> ptr_t;
+		typedef Ptr<ASTNode> ptr_t;
 		virtual void visit(ASTVisitor& v) = 0;
 		virtual void visitChildren(ASTVisitor& v) = 0;
 		virtual ~ASTNode() {}
@@ -68,7 +68,7 @@ class ASTIdentifierLit : public ASTNode,
 	public boost::enable_shared_from_this<ASTIdentifierLit> {
 
 	public:	
-		typedef boost::shared_ptr<ASTIdentifierLit> ptr_t;
+		typedef Ptr<ASTIdentifierLit> ptr_t;
 		/*! this class represents simple variable names, i.e. 'x' */	
 		ASTIdentifierLit(string n, int l, int c) 
 			: name(n), line(l), column(c) {}
@@ -108,7 +108,7 @@ class ASTIdentifierSub : public ASTNode,
 	public boost::enable_shared_from_this<ASTIdentifierSub> {
 
 	public:	
-		typedef boost::shared_ptr<ASTIdentifierSub> ptr_t; 
+		typedef Ptr<ASTIdentifierSub> ptr_t; 
 		/*! this class represents slightly more complex variable names, such
 		 * as x_1 */
 		ASTIdentifierSub(ASTIdentifierLitPtr b, string s) : base(b), sub(s) {}
@@ -164,7 +164,7 @@ class ASTDeclIdentifierLit : public ASTDeclGeneral,
 	public boost::enable_shared_from_this<ASTDeclIdentifierLit> {
 
 	public:	
-		typedef boost::shared_ptr<ASTDeclIdentifierLit> ptr_t;
+		typedef Ptr<ASTDeclIdentifierLit> ptr_t;
 		/*! this class represents a variable name such as 'x' as it is being
 		 * declared, either on the left-hand side of a declaration 
 		 * (so 'x := a * b') or in a list, such as 'exponent in G: x' */
@@ -194,13 +194,13 @@ class ASTDeclIdentifierLit : public ASTDeclGeneral,
 		}
 };
 typedef ASTDeclIdentifierLit::ptr_t ASTDeclIdentifierLitPtr;
-typedef boost::shared_ptr<ASTIdentifierLit> ASTIdentifierLitPtr;
+typedef Ptr<ASTIdentifierLit> ASTIdentifierLitPtr;
 
 class ASTDeclIdentifierSub : public ASTDeclGeneral, 
 	public boost::enable_shared_from_this<ASTDeclIdentifierSub> {
 
 	public:	
-		typedef boost::shared_ptr<ASTDeclIdentifierSub> ptr_t; 		
+		typedef Ptr<ASTDeclIdentifierSub> ptr_t; 		
 		/*! this class represents a variable name such as 'x_1' as it is being
 		 * declared, either on the left-hand side of a declaration 
 		 * (so 'x_1 := a * b') or in a list, such as 'exponent in G: x_1' */
@@ -241,7 +241,7 @@ typedef ASTDeclIdentifierSub::ptr_t ASTDeclIdentifierSubPtr;
 class ASTExpr : public ASTNode {
 
 	public:	
-		typedef boost::shared_ptr<ASTExpr> ptr_t;
+		typedef Ptr<ASTExpr> ptr_t;
 		/*! this class represents the parent class for all our arithmetic
 		 * expressions, as well as the variables that are used in those
 		 * expressions */
@@ -257,7 +257,7 @@ class ASTExpr : public ASTNode {
 
 		// clone sub-trees via a "virtual constructor", as in
 		// http://www.parashift.com/c++-faq-lite/virtual-functions.html#faq-20.8
-		virtual boost::shared_ptr<ASTExpr> clone() const = 0;
+		virtual Ptr<ASTExpr> clone() const = 0;
 
 	private:
 		friend class boost::serialization::access;
@@ -266,14 +266,14 @@ class ASTExpr : public ASTNode {
 		}
 };
 typedef ASTExpr::ptr_t ASTExprPtr;
-typedef boost::shared_ptr<ASTExpr> ASTExprPtr;
+typedef Ptr<ASTExpr> ASTExprPtr;
 BOOST_SERIALIZATION_ASSUME_ABSTRACT(ASTExpr)
 
 class ASTExprInt : public ASTExpr, 
 	public boost::enable_shared_from_this<ASTExprInt> {
 
 	public:	
-		typedef boost::shared_ptr<ASTExprInt> ptr_t; 
+		typedef Ptr<ASTExprInt> ptr_t; 
 		/*! this class represents an integer literal such as '1' or '2' as
 		 * it is being used in an arithmetic expression */
 		ASTExprInt() {}
@@ -307,7 +307,7 @@ class ASTExprIdentifier : public ASTExpr,
 	public boost::enable_shared_from_this<ASTExprIdentifier> {
 
 	public:	
-		typedef boost::shared_ptr<ASTExprIdentifier> ptr_t; 
+		typedef Ptr<ASTExprIdentifier> ptr_t; 
 		/*! this class represents a variable such as 'x' or 'x_1' as it
 		 * is being used in an arithmetic expression */
 		ASTExprIdentifier(ASTIdentifierSubPtr i) : id(i) {}
@@ -344,7 +344,7 @@ typedef ASTExprIdentifier::ptr_t ASTExprIdentifierPtr;
 class ASTUnaryOp : public ASTExpr {
 
 	public:	
-		typedef boost::shared_ptr<ASTUnaryOp> ptr_t;
+		typedef Ptr<ASTUnaryOp> ptr_t;
 		/*! this class represents an operation on one variable or expression */
 		ASTUnaryOp(ASTExprPtr e) : expr(e) {}
 
@@ -372,7 +372,7 @@ class ASTNegative : public ASTUnaryOp,
 	public boost::enable_shared_from_this<ASTNegative> {
 
 	public:	
-		typedef boost::shared_ptr<ASTNegative> ptr_t;
+		typedef Ptr<ASTNegative> ptr_t;
 		/*! given a variable 'x' (or a more complex expression), this class
 		 * represents -x */
 		ASTNegative(ASTExprPtr expr) : ASTUnaryOp(expr) {}
@@ -398,7 +398,7 @@ typedef ASTNegative::ptr_t ASTNegativePtr;
 class ASTBinaryOp : public ASTExpr {
 
 	public:	
-		typedef boost::shared_ptr<ASTBinaryOp> ptr_t;
+		typedef Ptr<ASTBinaryOp> ptr_t;
 		/*! this class represents operations on two variables or expressions
 		 * and so it stores a left-hand side and a right-hand side */
 		ASTBinaryOp(ASTExprPtr lhs, ASTExprPtr rhs) : lhs(lhs), rhs(rhs) {}
@@ -438,7 +438,7 @@ class ASTAdd : public ASTBinaryOp,
 	public boost::enable_shared_from_this<ASTAdd> {
 
 	public:	
-		typedef boost::shared_ptr<ASTAdd> ptr_t; 
+		typedef Ptr<ASTAdd> ptr_t; 
 		/*! this class represents the addition of its two input expressions */
 		ASTAdd(ASTExprPtr lhs, ASTExprPtr rhs) : ASTBinaryOp(lhs,rhs) {}
 		ASTExprPtr clone() const { return ptr_t(new ASTAdd(*this)); }
@@ -470,7 +470,7 @@ class ASTSub : public ASTBinaryOp,
 	public boost::enable_shared_from_this<ASTSub> {
 
 	public:	
-		typedef boost::shared_ptr<ASTSub> ptr_t;
+		typedef Ptr<ASTSub> ptr_t;
 		/*! this class represents the subtraction of the right-hand side
 		 * from the left-hand side */
 	   	ASTSub(ASTExprPtr lhs, ASTExprPtr rhs) : ASTBinaryOp(lhs,rhs) {}
@@ -503,7 +503,7 @@ class ASTMul : public ASTBinaryOp,
 	public boost::enable_shared_from_this<ASTMul> {
 
 	public:	
-		typedef boost::shared_ptr<ASTMul> ptr_t;
+		typedef Ptr<ASTMul> ptr_t;
 		/*! this class represents the multiplication of its two input
 		 * expressions */
 	   	ASTMul(ASTExprPtr lhs, ASTExprPtr rhs) : ASTBinaryOp(lhs,rhs) {}
@@ -536,7 +536,7 @@ class ASTDiv : public ASTBinaryOp,
 	public boost::enable_shared_from_this<ASTDiv> {
 
 	public:	
-		typedef boost::shared_ptr<ASTDiv> ptr_t;
+		typedef Ptr<ASTDiv> ptr_t;
 		/*! this class represents the division of the right-hand side from
 		 * the left-hand side */
 		ASTDiv(ASTExprPtr lhs, ASTExprPtr rhs) : ASTBinaryOp(lhs,rhs) {}
@@ -571,7 +571,7 @@ class ASTPow : public ASTBinaryOp,
 	public boost::enable_shared_from_this<ASTPow> {
 
 	public:	
-		typedef boost::shared_ptr<ASTPow> ptr_t;
+		typedef Ptr<ASTPow> ptr_t;
 		/*! this class represents raising the left-hand side to the 
 		 * right-hand side */
 		ASTPow(ASTExprPtr base, ASTExprPtr exp)	: ASTBinaryOp(base,exp) {}
@@ -606,7 +606,7 @@ class ASTList : public ASTNode,
 	public boost::enable_shared_from_this<ASTList> {
 
 	public:	
-		typedef boost::shared_ptr<ASTList> ptr_t;
+		typedef Ptr<ASTList> ptr_t;
 		/*! this class is the parent class for any type of parameterized list */
    		ASTList() {}
 		
@@ -639,7 +639,7 @@ typedef ASTList::ptr_t ASTListPtr;
 class ASTListIdentifierLit : public ASTList {
 
 	public:	
-		typedef boost::shared_ptr<ASTListIdentifierLit> ptr_t; 
+		typedef Ptr<ASTListIdentifierLit> ptr_t; 
 		/*! this class represents a list of variables 'x, y, z', etc */
     	ASTIdentifierLitPtr getLit(int x) 
 			{ return dynamic_pointer_cast<ASTIdentifierLit>(list[x]); }
@@ -658,7 +658,7 @@ typedef ASTListIdentifierLit::ptr_t ASTListIdentifierLitPtr;
 class ASTListIdentifierSub : public ASTList {
 
 	public:	
-		typedef boost::shared_ptr<ASTListIdentifierSub> ptr_t;
+		typedef Ptr<ASTListIdentifierSub> ptr_t;
 		/*! this class represents a list of variables 'x_1, x_2', etc */
 		ASTListIdentifierSub() {}
 
@@ -693,7 +693,7 @@ typedef ASTListIdentifierSub::ptr_t ASTListIdentifierSubPtr;
 class ASTListDecl : public ASTList {
 
 	public:	
-		typedef boost::shared_ptr<ASTListDecl> ptr_t;
+		typedef Ptr<ASTListDecl> ptr_t;
 		/*! this class is used as a parent for any list of declarations */
 		void visit(ASTVisitor& v){ v.applyASTListDecl(dynamic_pointer_cast<ASTListDecl>(shared_from_this())); }
 
@@ -708,7 +708,7 @@ typedef ASTListDecl::ptr_t ASTListDeclPtr;
 class ASTListDeclIdentifierLit : public ASTListDecl {
 
 	public:	
-		typedef boost::shared_ptr<ASTListDeclIdentifierLit> ptr_t; 
+		typedef Ptr<ASTListDeclIdentifierLit> ptr_t; 
 		/*! this represents a list of variables 'x, y, z' that are 
 		 * being declared within the list */
 		void visit(ASTVisitor& v) {
@@ -727,7 +727,7 @@ typedef ASTListDeclIdentifierLit::ptr_t ASTListDeclIdentifierLitPtr;
 class ASTListDeclIdentifierSub : public ASTListDecl {
 
 	public:	
-		typedef boost::shared_ptr<ASTListDeclIdentifierSub> ptr_t; 
+		typedef Ptr<ASTListDeclIdentifierSub> ptr_t; 
 		/*! this represents a list of variables 'x_1, x_2, x_3' that are 
 		 * being declared within the list */
 		void visit(ASTVisitor& v) {
@@ -747,7 +747,7 @@ class ASTDeclIDRange : public ASTDeclGeneral,
 	public boost::enable_shared_from_this<ASTDeclIDRange> {
 
 	public:	
-		typedef boost::shared_ptr<ASTDeclIDRange> ptr_t;
+		typedef Ptr<ASTDeclIDRange> ptr_t;
 		/*! this represents a variable declaration of the form 'x[1:3]', which
 		 * is shorthand for declaring 'x_1, x_2, x_3' */
 		ASTDeclIDRange(ASTDeclIdentifierLitPtr b, ASTExprPtr lbound, ASTExprPtr ubound)
@@ -808,7 +808,7 @@ typedef ASTDeclIDRange::ptr_t ASTDeclIDRangePtr;
 class ASTRelation : public ASTNode {
 
 	public :
-		typedef boost::shared_ptr<ASTRelation> ptr_t;
+		typedef Ptr<ASTRelation> ptr_t;
 		/*! this class represents the relations between variables we will 
 		 * want to be proving in our zero-knowledge proof */
 		virtual ptr_t clone() const = 0;
@@ -825,7 +825,7 @@ class ASTForRel : public ASTRelation,
 	public boost::enable_shared_from_this<ASTForRel> {
 
 	public:	
-		typedef boost::shared_ptr<ASTForRel> ptr_t;
+		typedef Ptr<ASTForRel> ptr_t;
 		/*! this class represents a line of the form 
 		 * 'for(i, 1:4, c_i = g^x_i * h^r_i)' */
 		ASTForRel(ASTIdentifierLitPtr index, ASTExprPtr lbound, 
@@ -876,7 +876,7 @@ class ASTEqual : public ASTRelation,
 	public boost::enable_shared_from_this<ASTEqual> {
 
 	public:	
-		typedef boost::shared_ptr<ASTEqual> ptr_t; 
+		typedef Ptr<ASTEqual> ptr_t; 
 		/*! this class represents a line of the form 'id = expr' */
 		ASTEqual(ASTIdentifierSubPtr i, ASTExprPtr e) 
 			: id(i), expr(e) {}
@@ -913,7 +913,7 @@ class ASTCommitment : public ASTRelation,
 	public boost::enable_shared_from_this<ASTCommitment> {
 
 	public:	
-		typedef boost::shared_ptr<ASTCommitment> ptr_t;
+		typedef Ptr<ASTCommitment> ptr_t;
 		/*! this class represents a line of the form 
 		 * 'commitment to x: c_x = g^x * h^r_x' */
 		ASTCommitment(ASTListIdentifierSubPtr c, ASTIdentifierSubPtr i, ASTExprPtr e) 
@@ -956,7 +956,7 @@ typedef ASTCommitment::ptr_t ASTCommitmentPtr;
 class ASTGiven : public ASTNode {
 
 	public:	
-		typedef boost::shared_ptr<ASTGiven> ptr_t;
+		typedef Ptr<ASTGiven> ptr_t;
 		/*! this class is used to represent blocks of declarations */
 		ASTGiven(ASTListDeclPtr items) : items(items) {}
 	
@@ -978,7 +978,7 @@ class ASTRandomPrime : public ASTGiven,
 	public boost::enable_shared_from_this<ASTRandomPrime> {
 
 	public:	
-		typedef boost::shared_ptr<ASTRandomPrime> ptr_t;
+		typedef Ptr<ASTRandomPrime> ptr_t;
 		/*! this class represents a line of the form 
 		 * 'random prime(s) of length {length}: idList */
 		ASTRandomPrime(ASTExprPtr length, ASTListDeclPtr idList) :
@@ -1012,7 +1012,7 @@ class ASTRandomBnd : public ASTGiven,
 	public boost::enable_shared_from_this<ASTRandomBnd> {
 
 	public:	
-		typedef boost::shared_ptr<ASTRandomBnd> ptr_t;
+		typedef Ptr<ASTRandomBnd> ptr_t;
 		/*! this class represents a line of the form
 		 * 'random integer(s) in [lbound, ubound): idList */
 		ASTRandomBnd(ASTExprPtr lbound, ASTExprPtr ubound, ASTListDeclPtr idList) :
@@ -1050,7 +1050,7 @@ class ASTDeclGroup : public ASTGiven,
 	public boost::enable_shared_from_this<ASTDeclGroup> {
 
 	public:	
-		typedef boost::shared_ptr<ASTDeclGroup> ptr_t; 
+		typedef Ptr<ASTDeclGroup> ptr_t; 
 		/*! this class represents a line of the form
 		 * 'group: G = <g,h> 
 		 *		modulus: N', where specifying both the generators and the 
@@ -1090,7 +1090,7 @@ class ASTDeclIntegers : public ASTGiven,
 	public boost::enable_shared_from_this<ASTDeclIntegers> {
 
 	public:	
-		typedef boost::shared_ptr<ASTDeclIntegers> ptr_t; 
+		typedef Ptr<ASTDeclIntegers> ptr_t; 
 		/*! this class represents a list such as 'integers: stat, m, l_x' */
 		ASTDeclIntegers(ASTListDeclPtr i) 
 			: ASTGiven(i) {}
@@ -1112,7 +1112,7 @@ typedef ASTDeclIntegers::ptr_t ASTDeclIntegersPtr;
 class ASTListGiven : public ASTList {
 
 	public:	
-		typedef boost::shared_ptr<ASTListGiven> ptr_t; 
+		typedef Ptr<ASTListGiven> ptr_t; 
 		/*! this class represents a list of declarations that appear in
 		 * the given block of a program */
 		void visit(ASTVisitor& v) {
@@ -1131,7 +1131,7 @@ typedef ASTListGiven::ptr_t ASTListGivenPtr;
 class ASTListRandoms : public ASTList {
 
 	public:	
-		typedef boost::shared_ptr<ASTListRandoms> ptr_t; 
+		typedef Ptr<ASTListRandoms> ptr_t; 
 		/*! this class represents a collection of random computations, 
 		 * such as computing random primes, computing random integers in 
 		 * a given range, and computing random exponents in a given group */
@@ -1151,7 +1151,7 @@ typedef ASTListRandoms::ptr_t ASTListRandomsPtr;
 class ASTListRelation : public ASTList {
 
 	public:	
-		typedef boost::shared_ptr<ASTListRelation> ptr_t; 
+		typedef Ptr<ASTListRelation> ptr_t; 
 		/*! this class represents a list of relations that will appear in
 		 * the 'such that' block of the program */
 		void visit(ASTVisitor& v) {
@@ -1171,7 +1171,7 @@ class ASTDeclElements : public ASTGiven,
 	public boost::enable_shared_from_this<ASTDeclElements> {
 
 	public:	
-		typedef boost::shared_ptr<ASTDeclElements> ptr_t; 
+		typedef Ptr<ASTDeclElements> ptr_t; 
 		/*! this class represents a declaration of group elements such as
 		 * 'elements in G: A, B, c[1:3]', with an optional area for declaring
 		 * relations (specifically for specifying the forms of commitments) */
@@ -1209,7 +1209,7 @@ class ASTDeclExponents : public ASTGiven,
 	public boost::enable_shared_from_this<ASTDeclExponents> {
 
 	public:	
-		typedef boost::shared_ptr<ASTDeclExponents> ptr_t; 
+		typedef Ptr<ASTDeclExponents> ptr_t; 
 		/*! this class represents a list of declarations of exponents, such as
 		 * 'exponents in G: a, b, c' */
 		ASTDeclExponents(ASTIdentifierLitPtr g, ASTListDeclPtr e) 
@@ -1241,7 +1241,7 @@ class ASTDeclRandExponents : public ASTGiven,
 	public boost::enable_shared_from_this<ASTDeclRandExponents> {
 
 	public:	
-		typedef boost::shared_ptr<ASTDeclRandExponents> ptr_t;
+		typedef Ptr<ASTDeclRandExponents> ptr_t;
 		/*! this class represents a list of declarations of random exponents
 		 * (only to be used in the compute block), such as
 		 * 'random exponents in G: r_a, r_b, r_c' */
@@ -1274,7 +1274,7 @@ class ASTDeclEqual : public ASTRelation,
 	public boost::enable_shared_from_this<ASTDeclEqual> {
 
 	public:	
-		typedef boost::shared_ptr<ASTDeclEqual> ptr_t; 
+		typedef Ptr<ASTDeclEqual> ptr_t; 
 		/*! this class represents a line of the form 'x := a * b */
 		ASTDeclEqual(ASTDeclIdentifierSubPtr i, ASTExprPtr e) 
 			: id(i), expr(e) {}
@@ -1313,7 +1313,7 @@ class ASTRange : public ASTRelation,
 	public boost::enable_shared_from_this<ASTRange> {
 
 	public:	
-		typedef boost::shared_ptr<ASTRange> ptr_t; 
+		typedef Ptr<ASTRange> ptr_t; 
 		/*! this class is the parent for two types of ranges */
 		ASTRange(ASTIdentifierLitPtr g, ASTExprPtr l, bool ls, ASTExprPtr c, 
 				 bool us, ASTExprPtr u) 
@@ -1371,7 +1371,7 @@ class ASTForExpr : public ASTExpr,
 	public boost::enable_shared_from_this<ASTForExpr> {
 
 	public:	
-		typedef boost::shared_ptr<ASTForExpr> ptr_t;
+		typedef Ptr<ASTForExpr> ptr_t;
 		/*! this class represents a line of the form 
 		 * 'for(i, 1:3, *, g^x_i)' */
 		ASTForExpr(ASTIdentifierLitPtr i, ASTExprPtr l, ASTExprPtr u, 
@@ -1440,7 +1440,7 @@ class ASTComputation : public ASTNode,
 	public boost::enable_shared_from_this<ASTComputation> {
 
 	public:	
-		typedef boost::shared_ptr<ASTComputation> ptr_t; 
+		typedef Ptr<ASTComputation> ptr_t; 
 		/*! this class represents an entire computation block, in particular 
 		 * the given block, and the two parts of the compute block: the 
 		 * random computations and the declEqual computations */
@@ -1479,7 +1479,7 @@ class ASTProof : public ASTNode,
 	public boost::enable_shared_from_this<ASTProof> {
 
 	public:	
-		typedef boost::shared_ptr<ASTProof> ptr_t; 
+		typedef Ptr<ASTProof> ptr_t; 
 		/*! this class represents an entire proof block: the given block,
 		 * the 'prove knowledge of' block, and the 'such that' block */
 		ASTProof(ASTListGivenPtr g, ASTListGivenPtr k, ASTListRelationPtr s) 
@@ -1517,7 +1517,7 @@ class ASTSpec : public ASTNode,
 	public boost::enable_shared_from_this<ASTSpec> {
 
 	public:	
-		typedef boost::shared_ptr<ASTSpec> ptr_t; 
+		typedef Ptr<ASTSpec> ptr_t; 
 		/*! this class represents the whole program, consisting of the
 		 * computation block and the proof block (both of which are 
 		 * optional) */

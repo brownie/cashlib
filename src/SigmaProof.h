@@ -16,6 +16,10 @@
 #include "Debug.h"
 #include "Hash.h"
 
+#ifndef USE_STD_MAP
+#define USE_STD_MAP 1
+#endif
+
 #ifdef USE_STD_MAP
  #include <map>
  typedef map<string, ZZ> var_map;

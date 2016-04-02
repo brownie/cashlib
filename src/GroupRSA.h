@@ -17,7 +17,7 @@ class GroupRSA : public Group {
 		GroupRSA(const string &owner, int modulusLength,
 				int stat);
 
-		GroupRSA(const string &owner, ZZ &modulus, int s)
+		GroupRSA(const string &owner, const ZZ& modulus, int s)
 			: Group(owner, modulus), stat(s) {}
 
 		GroupRSA() : Group(), p(0), q(0), stat(0) {}

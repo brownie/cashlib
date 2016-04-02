@@ -1,12 +1,16 @@
 #include "UserTool.h"
 
-UserTool::UserTool(int st, int l, const BankParameters *bp,
-				   const VEPublicKey &vPK, const VEPublicKey &rPK, 
+UserTool::UserTool(int st, int l, 
+                   Ptr<const BankParameters> bp,
+				   Ptr<const VEPublicKey> vPK, 
+                   Ptr<const VEPublicKey> rPK, 
 				   const hashalg_t &ha)
-	: stat(st), lx(l), bankParameters(new BankParameters(*bp)),
-	  vepk(vPK), pk(rPK), hashAlg(ha)
+	: stat(st), lx(l), 
+      bankParameters(bp),
+	  vepk(vPK), pk(rPK), 
+      hashAlg(ha)
 {
-	const GroupPrime* cashGroup = bankParameters->getCashGroup(); 
+	Ptr<const GroupPrime> cashGroup = bankParameters->getCashGroup(); 
 	userSecretKey = cashGroup->randomExponent();
 	 
 	// now compute user public key = g^sk_u
@@ -21,7 +25,7 @@ UserTool::UserTool(int st, int l, const BankParameters *bp,
 	v["sk_u"] = userSecretKey;
 	// now compute proof and save it
 	InterpreterProver p;
-	p.check(CommonFunctions::getZKPDir()+"/userid.txt", groups);
+	p.check(CommonFunctions::getZKPDir()+"/userid.txt", groups, false);
 	p.compute(v);
 	idProof = p.computeProof(hashAlg);
 }

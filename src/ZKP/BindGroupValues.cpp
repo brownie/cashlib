@@ -6,7 +6,7 @@
 void BindGroupValues::applyASTDeclGroup(ASTDeclGroupPtr n) {
 
 	string grpname = n->getGroup()->getName();	
-	const Group* grp = env.groups.at(grpname);
+	Ptr<const Group> grp = env.groups.at(grpname);
 	ASTListDeclPtr gens = n->getItems();
 	
 	// first bind modulus if it has been specified

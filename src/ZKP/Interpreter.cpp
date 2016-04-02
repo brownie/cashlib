@@ -22,10 +22,8 @@
 
 #define UNUSED 0
 
-using boost::shared_ptr;
-
 void Interpreter::check(const string &programName, input_map inputs,
-						group_map groups) {
+						group_map groups, bool enablePowerCache) {
 	// first check if program has already been compiled, with the same groups
 	// and inputs used
 	cache_key_pair key = hashForCache(programName,inputs,groups);
@@ -49,8 +47,8 @@ void Interpreter::check(const string &programName, input_map inputs,
 	
 		ASTSpecPtr n;
 		try {
-			shared_ptr<ZKPLexer> lexer(new ZKPLexer(stream));
-			shared_ptr<ZKPParser> parser(new ZKPParser(*lexer));
+			Ptr<ZKPLexer> lexer(new ZKPLexer(stream));
+			Ptr<ZKPParser> parser(new ZKPParser(*lexer));
 			n = parser->spec();
 			tree = n;
 		} catch(antlr::ANTLRException& e) {
@@ -112,10 +110,11 @@ void Interpreter::check(const string &programName, input_map inputs,
 			// powers for bases that are used multiple times
 			if (!groups.empty()) {
 				env.groups = groups;
-				env.groups[Environment::NO_GROUP] = 0;
+				env.groups[Environment::NO_GROUP] = Ptr<Group>();
 				BindGroupValues binder(env);
 				binder.apply(n);
-				cachePowers();
+				if (enablePowerCache && getenv("CACHE_POWERS"))
+				  cachePowers();
 			}
 			// now want to store output in cache so we can load it up
 			// again later if necessary
@@ -137,7 +136,7 @@ void Interpreter::cachePowers() {
 		vector<string> baseNames;
 		vector<ZZ> baseVals;
 		DLRepresentation rep = it->second;
-		const Group* g = env.groups.at(rep.group);
+		Ptr<const Group> g = env.groups.at(rep.group);
 		for (unsigned i = 0; i < rep.bases.size(); i++) {
 			string name = rep.bases[i]->toString();
 			baseNames.push_back(name);

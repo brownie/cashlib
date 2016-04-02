@@ -6,10 +6,10 @@
 class MerkleProver {
 
 	public:
-		MerkleProver(const vector<EncBuffer*> &encBuffs, 
+		MerkleProver(const vector<Ptr<EncBuffer> > &encBuffs, 
 					 const MerkleContract &contract);
 
-		MerkleProver(const vector<const Buffer*> &buffs, 
+		MerkleProver(const vector<Ptr<const Buffer> > &buffs, 
 					 const MerkleContract &contract);
 
 		MerkleProver(const string &str, const MerkleContract &contract);
@@ -34,7 +34,7 @@ class MerkleProver {
 		hash_t computeSubTree(unsigned index, vector<hash_t> &m_tree);
 		
 		MerkleContract contract;
-		MerkleTree* tree;
+		Ptr<MerkleTree> tree;
 
 };
 

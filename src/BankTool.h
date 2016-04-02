@@ -12,24 +12,20 @@ class BankTool {
 				 vector<int> &coinDenoms);
 
 		BankTool(int st, int l, const hashalg_t &ha,
-				 BankParameters bp);
-
-		BankTool(const BankTool &original);
+				 const BankParameters& bp);
 
 		BankTool(const char *fname) 
-			: bankParameters(0), publicBankParameters(0) 
+			: bankParameters(), publicBankParameters() 
 			{ loadFile(make_nvp("BankTool", *this), fname); }
 
-		~BankTool();
-
 		// getters
-		const BankParameters* getBankParameters() const
+		Ptr<const BankParameters> getBankParameters() const
 						{ return publicBankParameters; }
-		const GroupPrime* getCashGroup() const 
+		Ptr<const GroupPrime> getCashGroup() const 
 						{ return publicBankParameters->getCashGroup(); }
-		const vector<GroupRSA*> getBankPublicKeys() const 
+		const vector<Ptr<GroupRSA> > getBankPublicKeys() const 
 						{ return publicBankParameters->getBankKeys(); }
-		const GroupRSA* getBankPublicKey(int denom) const 
+		Ptr<const GroupRSA> getBankPublicKey(int denom) const 
 						{ return publicBankParameters->getBankKey(denom); }
 
 		/*! Inputs: user public key, group corresponding to public key, and
@@ -37,13 +33,13 @@ class BankTool {
 		 * Output: a tool for interacting with a user who wants to withdraw a
 		 * wallet.
 		 * The BWTool returned must be freed by the caller. */
-		BankWithdrawTool* getWithdrawTool(const ZZ &userPK, int wSize, 
+		Ptr<BankWithdrawTool> getWithdrawTool(const ZZ &userPK, int wSize, 
 										  int coinDenom) const;
 
 		/*! Input: a non interactive sigma proof of knowledge of a user's secret
 		 *  key, using the public key as a commitment to the secret key.
 		 * Ouputs: true if proof accepted, false if proof not accepted. */
-		bool verifyIdentity(ProofMessage* idProof, const ZZ &userPK) const;
+		bool verifyIdentity(Ptr<ProofMessage> idProof, const ZZ &userPK) const;
 
 		// functions for depositing at the bank
 		/*! Returns true if a coin is formed correctly */
@@ -62,8 +58,8 @@ class BankTool {
 	private:
 		int stat, lx;
 		hashalg_t hashAlg;
-		BankParameters* bankParameters;
-		BankParameters* publicBankParameters;
+		Ptr<BankParameters> bankParameters;
+		Ptr<BankParameters> publicBankParameters;
 
 		friend class boost::serialization::access;
 		template <class Archive> 
